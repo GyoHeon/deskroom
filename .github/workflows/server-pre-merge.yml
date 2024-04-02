@@ -43,7 +43,7 @@ jobs:
       - name: Run pre-merge checks
         run: |
           source $VENV
-          poetry run task pre-merge
+          poetry run task pre_merge
         shell: bash
         working-directory: server
 
