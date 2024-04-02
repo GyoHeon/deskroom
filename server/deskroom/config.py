@@ -9,6 +9,7 @@ class Environment(str, Enum):
     staging = "staging"
     production = "production"
     local = "local"
+    test = "test"
 
 
 env = Environment(os.getenv("DSKRM_ENV", Environment.local))
@@ -34,6 +35,9 @@ class Settings(BaseSettings):
 
     def is_development(self) -> bool:
         return self.is_environment(Environment.development)
+
+    def is_test(self) -> bool:
+        return self.is_environment(Environment.test)
 
     def is_local(self) -> bool:
         return self.is_environment(Environment.local)

@@ -49,6 +49,7 @@ jobs:
         env:
           DSKRM_SUPABASE_URL: ${{ secrets.DSKRM_SUPABASE_URL }}
           DSKRM_SUPABASE_ANON_KEY: ${{ secrets.DSKRM_SUPABASE_ANON_KEY }}
+          DSKRM_ENV: test
 
  
  
