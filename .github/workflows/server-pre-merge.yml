@@ -38,12 +38,14 @@ jobs:
         name: Setup environment variables
         run: |
           echo "VENV=$(poetry env info -p)/bin/activate" >> $GITHUB_ENV
+        working-directory: server
       
       - name: Run pre-merge checks
         run: |
           source $VENV
           poetry run task pre-merge
         shell: bash
+        working-directory: server
 
  
  
