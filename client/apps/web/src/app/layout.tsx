@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   title: "Deskroom | 데스크룸",
   description: "더 유저에게 가까이",
   icons: {
-    icon: "/dr-favicon-16x16.png",
-    apple: "/dr-favicon-16x16.png",
+    icon: "/icon.png",
+    apple: "/icon.png",
   },
   openGraph: {
     type: "website",
