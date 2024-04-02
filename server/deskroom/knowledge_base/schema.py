@@ -1,6 +1,6 @@
 from pydantic import Field
 
-from deskroom.common.schema import Schema, ModelSchema
+from deskroom.common.schema import ModelSchema, Schema
 
 
 class KnowledgeBase(ModelSchema):
