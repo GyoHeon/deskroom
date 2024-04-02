@@ -1,6 +1,7 @@
 import os
 from enum import Enum
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,8 +20,14 @@ env_file = ".env.local" if env == Environment.local else ".env"
 class Settings(BaseSettings):
     ENV: Environment = env
 
+    # supabase
     SUPABASE_URL: str = ""
     SUPABASE_ANON_KEY: str = ""
+
+    # newrelic
+    NEW_RELIC_LOG: str = Field("stdout", alias="NEW_RELIC_LOG")
+    NEW_RELIC_LICENSE_KEY: str = Field("", alias="NEW_RELIC_LICENSE_KEY")
+    NEW_RELIC_APP_NAME: str = Field("deskroom", alias="NEW_RELIC_APP_NAME")
 
     model_config = SettingsConfigDict(
         env_prefix="dskrm_",
