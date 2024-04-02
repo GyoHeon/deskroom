@@ -11,6 +11,7 @@ fastapi = "0.105.0"
 uvicorn = "0.25.0"
 supabase = "2.3.0"
 structlog = "^24.1.0"
+pydantic-settings = "^2.2.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"
@@ -25,6 +26,7 @@ lint_check = { cmd = "ruff format --check . && ruff check .", help = "run ruff l
 lint_types = { cmd = "mypy deskroom tests", help = "run mypy type verify" }
 test = { cmd = "pytest tests", help = "run tests" }
 pre_merge = { cmd = "task lint_check && task lint_types && task test", help = "run pre-merge checks" }
+run_server = { cmd = "uvicorn deskroom.app:app --reload", help = "run server" }
 
 [tool.ruff]
 target-version = "py310"

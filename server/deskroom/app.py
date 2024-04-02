@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from structlog import get_logger
 
 from deskroom.logging import Logger
+from deskroom.api import router
 
 logger: Logger = get_logger()
 
@@ -31,6 +32,7 @@ def create_app() -> FastAPI:
         logger.info("Shutting down")
 
     # TODO: Add routes, middlewares here
+    app.include_router(router)
 
     return app
 
