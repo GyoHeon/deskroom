@@ -5,8 +5,8 @@ from typing import TypedDict
 from fastapi import FastAPI
 from structlog import get_logger
 
-from deskroom.logging import Logger
 from deskroom.api import router
+from deskroom.logging import Logger
 
 logger: Logger = get_logger()
 

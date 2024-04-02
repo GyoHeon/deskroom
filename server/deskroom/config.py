@@ -16,6 +16,8 @@ env_file = ".env.local" if env == Environment.local else ".env"
 
 
 class Settings(BaseSettings):
+    ENV: Environment = env
+
     SUPABASE_URL: str = ""
     SUPABASE_ANON_KEY: str = ""
 

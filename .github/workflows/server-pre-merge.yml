@@ -1,0 +1,49 @@
+name: Server Pre-Merge
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+
+jobs: 
+  pre_merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+        shell: bash
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+          cache: 'poetry'
+
+      - shell: bash
+        name: Install packages with poetry
+        run: poetry install
+
+      - shell: bash
+        name: setup environment variables
+        run: |
+          echo "VENV=$(poetry env info -p)/bin/activate" >> $GITHUB_ENV
+      
+      - name: Run pre-merge checks
+        run: |
+          source $VENV
+          poetry run task pre-merge
+        shell: bash
+
+ 
+ 
+  
