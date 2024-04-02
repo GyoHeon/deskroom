@@ -17,7 +17,7 @@
 
 ## Monorepo
 * **[server](./server/README.md)** – Python / FastAPI
-* **[client](./client/README.md)** – Typescript
-  * [web](./clients/apps/web) (KMS) – NextJS (TypeScript)
-  * [chrome-extension](./clients/apps/chrome-extension) (Chrome Extension) - Plasmo / React (Typescript)
+* **[client](./client)** – Typescript
+  * [web](./client/apps/web) (KMS) – NextJS (TypeScript)
+  * [chrome-extension](./client/apps/chrome-extension) (Chrome Extension) - Plasmo / React (Typescript)
   
