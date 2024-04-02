@@ -46,6 +46,9 @@ jobs:
           poetry run task pre_merge
         shell: bash
         working-directory: server
+        env:
+          DSKRM_SUPABASE_URL: ${{ secrets.DSKRM_SUPABASE_URL }}
+          DSKRM_SUPABASE_ANON_KEY: ${{ secrets.DSKRM_SUPABASE_ANON_KEY }}
 
  
  
