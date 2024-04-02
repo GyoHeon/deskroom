@@ -5,6 +5,7 @@ from typing import TypedDict
 from fastapi import FastAPI
 from structlog import get_logger
 
+from deskroom.api import router
 from deskroom.logging import Logger
 
 logger: Logger = get_logger()
@@ -31,6 +32,7 @@ def create_app() -> FastAPI:
         logger.info("Shutting down")
 
     # TODO: Add routes, middlewares here
+    app.include_router(router)
 
     return app
 
