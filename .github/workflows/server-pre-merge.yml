@@ -32,9 +32,10 @@ jobs:
       - shell: bash
         name: Install packages with poetry
         run: poetry install
+        working-directory: server
 
       - shell: bash
-        name: setup environment variables
+        name: Setup environment variables
         run: |
           echo "VENV=$(poetry env info -p)/bin/activate" >> $GITHUB_ENV
       
