@@ -1,0 +1,52 @@
+name: Server Deploy
+
+on:
+  push:
+    tags:
+      - 'server-v*.*.*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+        shell: bash
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'poetry'
+
+      - shell: bash
+        name: Install packages with poetry
+        run: poetry install
+        working-directory: server
+
+      - shell: bash
+        name: Setup environment variables
+        run: |
+          echo "VENV=$(poetry env info -p)/bin/activate" >> $GITHUB_ENV
+        working-directory: server
+
+      - name: Test before deploy
+        run: |
+          source $VENV
+          poetry run task test # TODO: Add pre_deploy test
+        shell: bash
+        working-directory: server
+        env:
+          DSKRM_SUPABASE_URL: ${{ secrets.DSKRM_SUPABASE_URL }}
+          DSKRM_SUPABASE_ANON_KEY: ${{ secrets.DSKRM_SUPABASE_ANON_KEY }}
+          DSKRM_ENV: test
+
+      - uses: akhileshns/heroku-deploy@v3.13.15 # This is the action
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "deskroom-server" 
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+
