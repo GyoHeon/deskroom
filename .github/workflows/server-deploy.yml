@@ -44,7 +44,7 @@ jobs:
           DSKRM_SUPABASE_ANON_KEY: ${{ secrets.DSKRM_SUPABASE_ANON_KEY }}
           DSKRM_ENV: test
 
-      - uses: akhileshns/heroku-deploy@v3.13.15 # This is the action
+      - uses: akhileshns/heroku-deploy@v3.13.15
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "deskroom-server" 
