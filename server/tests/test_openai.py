@@ -1,6 +1,5 @@
-from pytest import fixture
-from deskroom.constants import PROMPT_PATH
 from deskroom.common.openai import read_prompt
+from deskroom.constants import PROMPT_PATH
 
 
 def test_openai_read_prompt_should_load_prompt(tmpdir):
