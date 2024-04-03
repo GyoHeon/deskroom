@@ -25,9 +25,13 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str = ""
 
     # newrelic
+    # NOTE: NEW_RELIC_ prefix is required for newrelic agent
     NEW_RELIC_LOG: str = Field("stdout", alias="NEW_RELIC_LOG")
     NEW_RELIC_LICENSE_KEY: str = Field("", alias="NEW_RELIC_LICENSE_KEY")
     NEW_RELIC_APP_NAME: str = Field("deskroom", alias="NEW_RELIC_APP_NAME")
+
+    # openai
+    OPENAI_API_KEY: str = ""
 
     model_config = SettingsConfigDict(
         env_prefix="dskrm_",
