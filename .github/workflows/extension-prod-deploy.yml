@@ -1,0 +1,38 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "extension-v*.*.*"
+
+jobs:
+  build:
+    name: Publish webextension
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "yarn"
+      - name: Install
+        run: |
+          yarn install --frozen-lockfile --immutable
+      - name: Env file
+        run: |
+          echo "PLASMO_PUBLIC_SUPABASE_URL=${{ secrets.DSKRM_SUPABASE_URL }}" >> .env
+          echo "PLASMO_PUBLIC_SUPABASE_KEY=${{ secrets.DSKRM_SUPABASE_ANON_KEY }}" >> .env
+          echo "PLASMO_PUBLIC_MIXPANEL_TOKEN=${{ secrets.DSKRM_MIXPANEL_TOKEN }}" >> .env
+      - name: Build
+        run: |
+          yarn build --zip
+      - name: Upload & release
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: build/*.zip
+          extension-id: ${{ secrets.DSKRM_EXTENSION_ID }}
+          client-id: ${{ secrets.DSKRM_CLIENT_ID }}
+          client-secret: ${{ secrets.DSKRM_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.DSKRM_REFRESH_TOKEN }}
+          glob: true

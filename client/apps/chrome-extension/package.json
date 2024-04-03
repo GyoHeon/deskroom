@@ -1,5 +1,5 @@
 {
-  "name": "deskroom-browser-extension",
+  "name": "@deskroom/extension",
   "displayName": "__MSG_extensionName__",
   "version": "0.3.4",
   "description": "__MSG_extensionDescription__",
