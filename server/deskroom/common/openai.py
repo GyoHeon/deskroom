@@ -6,15 +6,15 @@ from deskroom.config import settings
 from deskroom.constants import PROMPT_PATH
 
 
-def create_openai_async_client(api_key: str):
+def create_openai_async_client(api_key: str) -> AsyncOpenAI:
     return AsyncOpenAI(api_key=api_key)
 
 
-def create_openai_sync_client(api_key: str):
+def create_openai_sync_client(api_key: str) -> OpenAI:
     return OpenAI(api_key=api_key)
 
 
-def create_openai_client(asynchronous: bool = False):
+def create_openai_client(asynchronous: bool = False) -> AsyncOpenAI | OpenAI:
     if asynchronous:
         return create_openai_async_client(api_key=settings.OPENAI_API_KEY)
     return create_openai_sync_client(api_key=settings.OPENAI_API_KEY)
