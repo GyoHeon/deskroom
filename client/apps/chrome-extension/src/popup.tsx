@@ -15,6 +15,7 @@ import {
 import { ArrowTopRightIcon, GearIcon } from "@radix-ui/react-icons";
 import type { OrganizationStorage } from "~options";
 import browser from "webextension-polyfill";
+import { supabase } from "~core/supabase";
 
 // TODO: find why this is not working
 export const getStyle = () => {
@@ -24,8 +25,13 @@ export const getStyle = () => {
 
 function IndexPopup() {
   // TODO: replace this with DeskroomUserContext
-  const [user, setUser] = useStorage<User>("user");
-  const [orgs, setOrgs] = useStorage<OrganizationStorage | null>("orgs");
+  const [user, _, { remove: removeUserFromStorage }] = useStorage<User>("user");
+  const [orgs, __, { remove: removeOrgsFromStorage }] = useStorage<OrganizationStorage | null>("orgs");
+
+  const cleanUpStorage = () => {
+    removeUserFromStorage();
+    removeOrgsFromStorage();
+  }
 
   return (
     <Flex className="w-60 h-64 px-4 py-2">
@@ -65,9 +71,9 @@ function IndexPopup() {
         </Flex>
         <Button
           className="w-full rounded bg-primary-900 py-2 text-white"
-          onClick={() => {
-            setUser(null);
-            setOrgs(null);
+          onClick={async () => {
+            cleanUpStorage();
+            await supabase.auth.signOut();
             const optionsURL = browser.runtime.getURL("options.html");
             window.open(optionsURL, "_blank", "noopener, noreferrer");
           }}
