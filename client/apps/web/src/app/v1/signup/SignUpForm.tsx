@@ -73,7 +73,7 @@ export const SignUpForm = () => {
             <Text className="my-2 w-64 text-center word-break">
               가입 완료를 클릭하시면 데스크룸의 {""}
               <Text color="gray" className="underline">
-                <a href="/v1/login">Terms of Service 및 Privacy Policy</a>
+                <a href="https://docs.google.com/document/d/1sgYHlhR0Drgtir6HKYH9EGAu_Q3o9r5BGWbPxGNasa4/edit?usp=sharing">Terms of Service 및 Privacy Policy</a>
               </Text>에
               동의한 것으로 간주합니다.
             </Text>
