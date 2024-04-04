@@ -21,7 +21,7 @@ export const SignUpForm = () => {
       <IconButton className="absolute top-0 left-0 m-4 my-8 bg-white text-gray-900 hover:bg-primary-100" onClick={() => setStep(s => s - 1)} hidden={step === 0}>
         <ArrowLeftIcon />
       </IconButton>
-      <form className="flex-1 flex align-center justify-center">
+      <form className="flex-1 flex flex-col align-center justify-center">
         <Flex direction={`column`} gap={`4`} my={`4`} align={`center`} hidden={step !== 0}>
           <Image src="/deskroom-icon.png" alt="Deskroom Logo" width={60} height={60} className="my-8" />
           <Heading className="title">먼저 업무용 이메일을 입력해주세요.</Heading>
