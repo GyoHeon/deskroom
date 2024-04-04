@@ -5,6 +5,10 @@ import Image from "next/image";
 import { useFormState } from "react-dom";
 import signIn from "./actions/signIn";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
+import { createClientComponentClient, createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/lib/database.types";
+import { cookies } from "next/headers";
+import { useMixpanel } from "@/contexts/MixpanelContext";
 
 export type LoginState = {
   errors: string | null;
@@ -19,6 +23,24 @@ const initialState: LoginState = {
 
 const LoginForm = () => {
   const [state, formAction] = useFormState(signIn, initialState)
+  const supabase = createClientComponentClient<Database>();
+  const handleGoogleSignIn = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
+    if (!!error) {
+      console.error({ error })
+      alert(`구글 로그인 중 오류가 발생했습니다. 다시 시도해주세요.\n${error.message}`)
+
+      return
+    }
+  }
 
   return (
     <form action={formAction} method="POST" encType="multipart/form-data">
@@ -54,7 +76,7 @@ const LoginForm = () => {
           {state?.errors}
         </p>
         <ButtonWithLoading >로그인</ButtonWithLoading>
-        <IconButton type="submit" className="w-full h-10 text-gray-900 shadow-md cursor-pointer">
+        <IconButton type="button" className="w-full h-10 text-gray-900 shadow-md cursor-pointer" onClick={handleGoogleSignIn}>
           <Image src="/google-icon.svg" alt="home" width={14.5} height={14.5} className="mx-4 ml-[-9px]" />
           Continue with Google</IconButton>
         <Flex direction={`column`} align={`center`}>
