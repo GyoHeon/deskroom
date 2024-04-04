@@ -15,7 +15,7 @@ const initialState: LoginState = {
   status: null,
 }
 
-const LoginButton = ({ children }) => {
+export const LoginButton = ({ children }) => {
   const { pending } = useFormStatus()
   return (
     <Button type="submit" className={`w-full bg-primary-900 h-10 cursor-pointer ${pending && 'bg-gray-200'}`} disabled={pending}>
