@@ -77,7 +77,6 @@ export default function Content() {
         <Theme>
           <Sidebar
             isOpen={isOpen}
-            auth={user}
             setSidebarOpen={setIsOpen}
             question={question}
             setMessage={setQuestion}

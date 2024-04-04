@@ -11,10 +11,11 @@ type Organization = Pick<
 >;
 type UserContext = {
   user: User | null;
-  setUser: (user: User | null) => void;
+  setUser: (user: Setter<User | null>) => Promise<void>;
   org: OrganizationStorage | null;
-  setOrg: (org: OrganizationStorage | null) => void;
+  setOrg: (org: Setter<OrganizationStorage | null>) => Promise<void>;
 };
+type Setter<T> = ((v?: T, isHydrated?: boolean) => T) | T;
 
 const userContext = createContext<UserContext | undefined>(undefined);
 const useDeskroomUser = (): UserContext => useContext(userContext);

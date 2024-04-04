@@ -1,5 +1,6 @@
 import { Box, Button, Flex, TextArea } from "@radix-ui/themes";
 import { useEffect } from "react";
+import { useDeskroomUser } from "~contexts/DeskroomUserContext";
 
 import { useMixpanel } from "~contexts/MixpanelContext";
 import type { OrganizationStorage } from "~options";
@@ -12,7 +13,6 @@ type NewKnowledgeBaseFormProps = {
   newAnswerLoading: boolean;
   setNewAnswerLoading: (newAnswerLoading: boolean) => void;
   setMode: (mode: "search" | "new") => void;
-  orgs: OrganizationStorage | null;
 };
 
 const NewKnowledgeBaseForm: React.FC<NewKnowledgeBaseFormProps> = ({
@@ -23,8 +23,8 @@ const NewKnowledgeBaseForm: React.FC<NewKnowledgeBaseFormProps> = ({
   newAnswerLoading,
   setNewAnswerLoading,
   setMode,
-  orgs,
 }) => {
+  const { user, org: { currentOrg } } = useDeskroomUser();
   const mixpanel = useMixpanel();
   useEffect(() => {
     mixpanel.track("Knowledge Item Add Page Viewed", {});
@@ -59,18 +59,17 @@ const NewKnowledgeBaseForm: React.FC<NewKnowledgeBaseFormProps> = ({
       <Box className="text-end">
         <Button
           className={`w-16 h-8 rounded-md text-sm transiation-all ease-in-out duration-100
-                ${
-                  newAnswer.length === 0
-                    ? "cursor-not-allowed bg-[#ECECEC] text-[#C4C4C4]"
-                    : "cursor-pointer bg-[#2C2C2C] text-white"
-                }
+                ${newAnswer.length === 0
+              ? "cursor-not-allowed bg-[#ECECEC] text-[#C4C4C4]"
+              : "cursor-pointer bg-[#2C2C2C] text-white"
+            }
               `}
           onClick={async () => {
             setNewAnswerLoading(true);
             fetch(`https://api.deskroom.so/v1/knowledge/new`, {
               method: "POST",
               body: JSON.stringify({
-                org_key: orgs?.currentOrg.key,
+                org_key: currentOrg.key,
                 question: message,
                 answer: newAnswer,
               }),

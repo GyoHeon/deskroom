@@ -23,6 +23,7 @@ export const getStyle = () => {
 };
 
 function IndexPopup() {
+  // TODO: replace this with DeskroomUserContext
   const [user, setUser] = useStorage<User>("user");
   const [orgs, setOrgs] = useStorage<OrganizationStorage | null>("orgs");
 
