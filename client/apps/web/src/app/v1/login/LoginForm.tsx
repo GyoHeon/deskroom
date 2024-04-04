@@ -15,10 +15,12 @@ const initialState: LoginState = {
   status: null,
 }
 
-export const LoginButton = ({ children }) => {
+type LoginButtonProps = {} & React.ComponentProps<typeof Button>
+
+export const LoginButton: React.FC<LoginButtonProps> = ({ children, ...props }) => {
   const { pending } = useFormStatus()
   return (
-    <Button type="submit" className={`w-full bg-primary-900 h-10 cursor-pointer ${pending && 'bg-gray-200'}`} disabled={pending}>
+    <Button type="submit" className={`w-full bg-primary-900 h-10 cursor-pointer ${pending && 'bg-gray-200'} ${props.className}`} disabled={pending}>
       {
         pending && (
           <div role="status">
