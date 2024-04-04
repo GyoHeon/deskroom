@@ -1,11 +1,9 @@
-import { useRouter } from 'next/router';
 
 const ResetPasswordPage = () => {
-  const { query } = useRouter();
-  const { token } = query;
-
   return (
-    <></>
+    <>
+      <h1>Reset Password</h1>
+    </>
     //<ResetPasswordComponent token={token as string} />
   );
 }
