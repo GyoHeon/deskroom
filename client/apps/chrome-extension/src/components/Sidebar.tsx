@@ -1,28 +1,22 @@
 import { ArrowLeftIcon, Cross1Icon } from "@radix-ui/react-icons";
 import {
-  Box,
-  Button,
-  Flex,
+  Box, Flex,
   IconButton,
-  Separator,
-  TextArea,
+  Separator
 } from "@radix-ui/themes";
-import type { User } from "@supabase/supabase-js";
 import deskroomLogo from "data-base64:assets/logo.png";
 import { useEffect, useState } from "react";
 
-import { useStorage } from "@plasmohq/storage/hook";
 
 import { useMixpanel } from "~contexts/MixpanelContext";
-import type { OrganizationStorage } from "~options";
 
 import NewKnowledgeBaseForm from "./NewKnowledgeBaseForm";
 import SidebarContent from "./SidebarContent";
+import { useDeskroomUser } from "~contexts/DeskroomUserContext";
 
 type SidebarProps = {
   isOpen: boolean;
   setSidebarOpen: (isOpen: boolean) => void;
-  auth: User;
   question: string;
   setMessage: (message: string) => void;
   // orgs: OrganizationStorage | null
@@ -34,13 +28,14 @@ export type Answer = {
 
 const Sidebar: React.FC<
   SidebarProps & React.HTMLAttributes<HTMLDivElement>
-> = ({ isOpen, auth, setSidebarOpen, question: message, setMessage }) => {
+> = ({ isOpen, setSidebarOpen, question: message, setMessage }) => {
   const [answers, setAnswers] = useState<Answer[] | null | undefined>(
     undefined
   );
   const [loading, setLoading] = useState<boolean>(false);
   // TODO: set org by select
-  const [orgs, setOrgs] = useStorage<OrganizationStorage | null>("orgs");
+  const { org, setOrg, user } = useDeskroomUser()
+
   const [mode, setMode] = useState<"search" | "new">("search");
   const [newAnswer, setNewAnswer] = useState<string>("");
   const [newAnswerLoading, setNewAnswerLoading] = useState<boolean>(false);
@@ -55,14 +50,6 @@ const Sidebar: React.FC<
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    if (orgs) {
-      mixpanel.register({
-        org: orgs.currentOrg.key,
-      });
-    }
-  }, [orgs]);
-
   // TODO: make it work
   useEffect(() => {
     if (isOpen && message) {
@@ -71,7 +58,7 @@ const Sidebar: React.FC<
   }, [isOpen]);
 
   const handleSearch = async () => {
-    if (!auth) {
+    if (!user) {
       alert("로그인이 필요합니다.");
       return;
     }
@@ -80,7 +67,7 @@ const Sidebar: React.FC<
     mixpanel.track("Answer Search Started", { question: message });
     const res = await fetch(`https://api.closer.so/v1/retrieve/`, {
       body: JSON.stringify({
-        organization_key: orgs?.currentOrg.key,
+        organization_key: org?.currentOrg.key,
         question: message,
       }),
       headers: {
@@ -113,17 +100,17 @@ const Sidebar: React.FC<
     >
       <Flex className="sidebar-title-area flex items-center p-2">
         <img src={deskroomLogo} alt="deskroom logo" className="w-24" />
-        {orgs?.availableOrgs.length >= 1 && (
+        {org?.availableOrgs.length >= 1 && (
           <Flex className="sidebar-organization-select">
             <select
               name="organization"
               id="organization"
-              value={orgs?.currentOrg.name_kor}
+              value={org?.currentOrg.name_kor}
               onChange={(e) => {
-                setOrgs({
-                  availableOrgs: orgs.availableOrgs,
-                  currentOrg: orgs.availableOrgs.find(
-                    (org) => org.name_kor === e.target.value
+                setOrg({
+                  availableOrgs: org?.availableOrgs ?? [],
+                  currentOrg: org?.availableOrgs.find(
+                    (o) => o.name_kor === e.target.value
                   ),
                 }).catch((err) => {
                   console.error(err); // NOTE: QUOTA_BYTES_PER_ITEM Error
@@ -131,7 +118,7 @@ const Sidebar: React.FC<
               }}
               className="mx-2 w-fit rounded-md border border-1 text-xs border-gray-900 px-[2px] py-[0.5px] h-fit"
             >
-              {orgs?.availableOrgs.map((org, orgIndex) => (
+              {org?.availableOrgs.map((org, orgIndex) => (
                 <option value={org.name_kor} key={orgIndex}>
                   {org.name_kor}
                 </option>
@@ -162,7 +149,7 @@ const Sidebar: React.FC<
       <Separator size={`4`} style={{ backgroundColor: "#eee" }} />
       {mode === "search" && (
         <SidebarContent
-          hasLoggedIn={!!auth}
+          hasLoggedIn={!!user}
           message={message}
           setMessage={setMessage}
           loading={loading}
@@ -172,7 +159,6 @@ const Sidebar: React.FC<
       )}
       {mode === "new" && (
         <NewKnowledgeBaseForm
-          orgs={orgs}
           message={message} // TODO: reduce props
           newAnswer={newAnswer}
           newAnswerLoading={newAnswerLoading}

@@ -11,6 +11,7 @@ import Sidebar from "~components/Sidebar";
 import Tooltip from "~components/Tooltip";
 import { MixpanelProvider, useMixpanel } from "~contexts/MixpanelContext";
 import { useTextSelection } from "~hooks/useTextSelection";
+import { DeskroomUserProvider } from "~contexts/DeskroomUserContext";
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -55,14 +56,12 @@ export default function Content() {
   const [question, setQuestion] = useState("");
   const { text, rects } = useTextSelection();
 
-  const mixpanel = useMixpanel();
 
   const handleTooltipClick = () => {
     setIsOpen(true);
     if (text && rects.length > 0) {
       setQuestion(text);
     }
-    mixpanel.track("Answer Panel Triggered"); // TODO: add question in select
   };
 
   return (
@@ -70,21 +69,21 @@ export default function Content() {
       token={process.env.PLASMO_PUBLIC_MIXPANEL_TOKEN}
       config={{
         debug: process.env.NODE_ENV !== "production",
-        track_pageview: true,
         persistence: "localStorage",
       }}
       name={`deskroom-${process.env.NODE_ENV}`}
     >
-      <Theme>
-        <Sidebar
-          isOpen={isOpen}
-          auth={user}
-          setSidebarOpen={setIsOpen}
-          question={question}
-          setMessage={setQuestion}
-        />
-        <Tooltip clickHandler={handleTooltipClick} />
-      </Theme>
+      <DeskroomUserProvider>
+        <Theme>
+          <Sidebar
+            isOpen={isOpen}
+            setSidebarOpen={setIsOpen}
+            question={question}
+            setMessage={setQuestion}
+          />
+          <Tooltip clickHandler={handleTooltipClick} />
+        </Theme>
+      </DeskroomUserProvider>
     </MixpanelProvider>
   );
 }

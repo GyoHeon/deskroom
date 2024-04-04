@@ -1,11 +1,11 @@
 import type { User } from "@supabase/supabase-js";
-import tailwindcssText from "data-text:~style.css";
+import "data-text:@radix-ui/themes/styles.css";
 import { useEffect, useState } from "react";
+import '~/style.css';
 
 import { sendToBackground } from "@plasmohq/messaging";
 import { useStorage } from "@plasmohq/storage/hook";
 
-import { MixpanelProvider, useMixpanel } from "~contexts/MixpanelContext";
 import { supabase } from "~core/supabase";
 import type { Database } from "~lib/database.types";
 
@@ -16,13 +16,6 @@ export type Organization = Pick<
 export type OrganizationStorage = {
   availableOrgs: Organization[];
   currentOrg: Organization | undefined;
-};
-
-// TODO: find why this is not working
-export const getStyle = () => {
-  const style = document.createElement("style");
-  style.textContent += tailwindcssText;
-  return style;
 };
 
 const buttonStyle = {
@@ -53,8 +46,6 @@ function IndexOptions() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const mixpanel = useMixpanel();
 
   useEffect(() => {
     async function init() {
@@ -102,9 +93,9 @@ function IndexOptions() {
       } =
         type === "LOGIN"
           ? await supabase.auth.signInWithPassword({
-              email: username,
-              password,
-            })
+            email: username,
+            password,
+          })
           : await supabase.auth.signUp({ email: username, password });
 
       if (error) {
@@ -113,125 +104,105 @@ function IndexOptions() {
         alert("Signup successful, confirmation mail should be sent soon!");
       } else {
         setUser(user);
-        const orgs = await getOrgs(user.id);
-        if (!orgs) {
+        const availableOrgs = await getOrgs(user.id);
+        if (!availableOrgs) {
           throw new Error("No organizations found for this user");
         }
         setOrgs({
-          availableOrgs: orgs,
-          currentOrg: orgs[0],
+          availableOrgs,
+          currentOrg: orgs.currentOrg ?? orgs[0],
         });
-        console.log({ orgs, user });
       }
-      mixpanel.identify(user.id);
-      mixpanel.register({
-        org: orgs?.currentOrg?.key,
-        platform: "chrome-extension",
-      });
-      mixpanel.people.set({
-        $email: user.email,
-        org: orgs?.currentOrg?.key,
-      });
     } catch (error) {
-      console.log("error", error);
       alert(error.error_description || error);
     }
   };
 
+  // TODO: remove mixpanel in options
   return (
-    <MixpanelProvider
-      token={process.env.PLASMO_PUBLIC_MIXPANEL_TOKEN}
-      config={{
-        debug: process.env.NODE_ENV !== "production",
-        track_pageview: true,
-        persistence: "localStorage",
+    <main
+      className="flex justify-center items-center w-full top-240 relative"
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+        top: 240,
+        position: "relative",
+        flexDirection: "column",
+        fontSize: 16,
+        fontFamily:
+          "ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
       }}
-      name={`deskroom-${process.env.NODE_ENV}`}
     >
-      <main
-        className="flex justify-center items-center w-full top-240 relative"
+      <h1 className="deskroom-options-title">Deskroom</h1>
+      <div className="deskroom-organization">
+        Organization: {orgs?.currentOrg?.name_kor}
+      </div>
+      <div
+        className="bg-white p-4 rounded-lg shadow-lg flex flex-col gap-4.2 content-between w-96"
         style={{
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-          top: 240,
-          position: "relative",
           flexDirection: "column",
-          fontSize: 16,
-          fontFamily:
-            "ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
+          width: 240,
+          justifyContent: "space-between",
+          gap: 4.2,
         }}
       >
-        <h1 className="deskroom-options-title">Deskroom</h1>
-        <div className="deskroom-organization">
-          Organization: {orgs?.currentOrg?.name_kor}
-        </div>
-        <div
-          className="bg-white p-4 rounded-lg shadow-lg flex flex-col gap-4.2 content-between w-96"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: 240,
-            justifyContent: "space-between",
-            gap: 4.2,
-          }}
-        >
-          {user && (
-            <>
-              <h3>
-                {user.email} - {user.id}
-              </h3>
-              <button
-                style={buttonStyle}
-                onClick={() => {
-                  supabase.auth.signOut();
-                  setUser(null);
-                  setOrgs(null);
-                }}
-              >
-                Logout
-              </button>
-            </>
-          )}
-          {!user && (
-            <>
-              <label>Email</label>
-              <input
-                type="text"
-                placeholder="Your Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <label>Password</label>
-              <input
-                type="password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+        {user && (
+          <>
+            <h3>
+              {user.email} - {user.id}
+            </h3>
+            <button
+              style={buttonStyle}
+              onClick={() => {
+                supabase.auth.signOut();
+                setUser(null);
+                setOrgs(null);
+              }}
+            >
+              Logout
+            </button>
+          </>
+        )}
+        {!user && (
+          <>
+            <label>Email</label>
+            <input
+              type="text"
+              placeholder="Your Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-              <button
-                style={buttonStyle}
-                onClick={(e) => {
-                  handleEmailLogin("SIGNUP", username, password);
-                }}
-              >
-                Sign up
-              </button>
-              <button
-                style={buttonStyle}
-                onClick={(e) => {
-                  handleEmailLogin("LOGIN", username, password);
-                }}
-              >
-                Login
-              </button>
-            </>
-          )}
-        </div>
-      </main>
-    </MixpanelProvider>
+            <button
+              style={buttonStyle}
+              onClick={(e) => {
+                handleEmailLogin("SIGNUP", username, password);
+              }}
+            >
+              Sign up
+            </button>
+            <button
+              style={buttonStyle}
+              onClick={(e) => {
+                handleEmailLogin("LOGIN", username, password);
+              }}
+            >
+              Login
+            </button>
+          </>
+        )}
+      </div>
+    </main>
   );
 }
 
