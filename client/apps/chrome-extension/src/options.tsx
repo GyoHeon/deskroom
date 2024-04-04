@@ -1,6 +1,7 @@
 import type { User } from "@supabase/supabase-js";
-import tailwindcssText from "data-text:~style.css";
+import "data-text:@radix-ui/themes/styles.css";
 import { useEffect, useState } from "react";
+import '~/style.css';
 
 import { sendToBackground } from "@plasmohq/messaging";
 import { useStorage } from "@plasmohq/storage/hook";
@@ -16,13 +17,6 @@ export type Organization = Pick<
 export type OrganizationStorage = {
   availableOrgs: Organization[];
   currentOrg: Organization | undefined;
-};
-
-// TODO: find why this is not working
-export const getStyle = () => {
-  const style = document.createElement("style");
-  style.textContent += tailwindcssText;
-  return style;
 };
 
 const buttonStyle = {
@@ -102,9 +96,9 @@ function IndexOptions() {
       } =
         type === "LOGIN"
           ? await supabase.auth.signInWithPassword({
-              email: username,
-              password,
-            })
+            email: username,
+            password,
+          })
           : await supabase.auth.signUp({ email: username, password });
 
       if (error) {
@@ -138,12 +132,12 @@ function IndexOptions() {
     }
   };
 
+  // TODO: remove mixpanel in options
   return (
     <MixpanelProvider
       token={process.env.PLASMO_PUBLIC_MIXPANEL_TOKEN}
       config={{
         debug: process.env.NODE_ENV !== "production",
-        track_pageview: true,
         persistence: "localStorage",
       }}
       name={`deskroom-${process.env.NODE_ENV}`}

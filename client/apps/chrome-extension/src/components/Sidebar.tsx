@@ -1,11 +1,8 @@
 import { ArrowLeftIcon, Cross1Icon } from "@radix-ui/react-icons";
 import {
-  Box,
-  Button,
-  Flex,
+  Box, Flex,
   IconButton,
-  Separator,
-  TextArea,
+  Separator
 } from "@radix-ui/themes";
 import type { User } from "@supabase/supabase-js";
 import deskroomLogo from "data-base64:assets/logo.png";
@@ -41,6 +38,7 @@ const Sidebar: React.FC<
   const [loading, setLoading] = useState<boolean>(false);
   // TODO: set org by select
   const [orgs, setOrgs] = useStorage<OrganizationStorage | null>("orgs");
+  const [user] = useStorage<User>("user");
   const [mode, setMode] = useState<"search" | "new">("search");
   const [newAnswer, setNewAnswer] = useState<string>("");
   const [newAnswerLoading, setNewAnswerLoading] = useState<boolean>(false);
@@ -54,14 +52,6 @@ const Sidebar: React.FC<
       );
     }
   }, [isOpen]);
-
-  useEffect(() => {
-    if (orgs) {
-      mixpanel.register({
-        org: orgs.currentOrg.key,
-      });
-    }
-  }, [orgs]);
 
   // TODO: make it work
   useEffect(() => {
