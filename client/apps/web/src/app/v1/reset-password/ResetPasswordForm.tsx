@@ -1,6 +1,6 @@
 'use client';
-import { Box, Flex, Heading, Text } from '@radix-ui/themes';
-import { LoginButton } from '../login/LoginForm';
+import { Flex, Heading, Text } from '@radix-ui/themes';
+import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { useFormState } from 'react-dom';
 import sendResetPasswordEmail from './actions';
 
@@ -23,7 +23,7 @@ export const ResetPasswordForm = () => {
       <Flex direction={`column`}>
         <Heading className="title" >비밀번호 재설정 요청이 완료되었습니다.</Heading>
         <Text size="2" className="my-1 font-thin">이메일로 전달된 비밀번호 재설정 링크를 확인해주세요.</Text>
-        <LoginButton className='my-2'>로그인 페이지로 이동하기</LoginButton>
+        <ButtonWithLoading className='my-2'>로그인 페이지로 이동하기</ButtonWithLoading>
       </Flex>
     )
   }
@@ -48,7 +48,7 @@ export const ResetPasswordForm = () => {
             {state?.errors}
           </p>
         </Flex>
-        <LoginButton>비밀번호 재설정 하기</LoginButton>
+        <ButtonWithLoading>비밀번호 재설정 하기</ButtonWithLoading>
       </form>
     </>
   );
