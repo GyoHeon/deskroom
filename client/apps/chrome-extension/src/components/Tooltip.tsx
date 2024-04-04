@@ -1,6 +1,7 @@
 import { IconButton } from "@radix-ui/themes";
 import deskroomIcon from "data-base64:assets/icon.png";
 import React, { useEffect, useState } from "react";
+import { useMixpanel } from "~contexts/MixpanelContext";
 
 import { useTextSelection } from "~hooks/useTextSelection";
 
@@ -12,6 +13,7 @@ const Tooltip: React.FC<TooltipProps> = ({ clickHandler }) => {
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
   const { text, rects } = useTextSelection();
+  const mixpanel = useMixpanel();
 
   useEffect(() => {
     if (text !== "") {
@@ -32,12 +34,16 @@ const Tooltip: React.FC<TooltipProps> = ({ clickHandler }) => {
     }
   }, [text, rects]);
 
+  const handleOnClick = () => {
+    clickHandler();
+    mixpanel.track("Answer Panel Triggered"); // TODO: add question in select
+  }
+
   return (
     <div
-      className={`tooltip flex items-center justify-end fixed transition-opacity ease-linear duration-75 cursor-pointer w-fit h-fit z-50 hover:scale-110 hover:transition-transform rounded-md ${
-        text === "" ? "opacity-0" : "opacity-1"
-      }`}
-      onClick={clickHandler}
+      className={`tooltip flex items-center justify-end fixed transition-opacity ease-linear duration-75 cursor-pointer w-fit h-fit z-50 hover:scale-110 hover:transition-transform rounded-md ${text === "" ? "opacity-0" : "opacity-1"
+        }`}
+      onClick={handleOnClick}
       style={{
         top: tooltipPosition.top,
         left: tooltipPosition.left,

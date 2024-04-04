@@ -56,14 +56,12 @@ export default function Content() {
   const [question, setQuestion] = useState("");
   const { text, rects } = useTextSelection();
 
-  const mixpanel = useMixpanel();
 
   const handleTooltipClick = () => {
     setIsOpen(true);
     if (text && rects.length > 0) {
       setQuestion(text);
     }
-    mixpanel.track("Answer Panel Triggered"); // TODO: add question in select
   };
 
   return (
