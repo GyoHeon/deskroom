@@ -11,7 +11,7 @@ export default function Loading() {
     >
       <svg
         aria-hidden="true"
-        className="w-32 h-32 text-gray-400 animate-spin dark:text-gray-600 fill-purple-600"
+        className="w-32 h-32 text-gray-400 animate-spin dark:text-gray-600 fill-primary-900"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
