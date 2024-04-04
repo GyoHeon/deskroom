@@ -22,7 +22,7 @@ export default async function NewIndex({ searchParams }) {
 
   if (!session) {
     // this is a protected route - only users who are signed in can view this route
-    redirect("/login");
+    redirect("/v1/login");
   }
 
   const { data: organizations, error: organizationError } = await supabase

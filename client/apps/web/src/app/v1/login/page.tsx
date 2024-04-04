@@ -1,9 +1,10 @@
 import { Database } from "@/lib/database.types";
-import { Box, Button, Card, Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+import { Box, Flex, Heading, Text } from "@radix-ui/themes";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import LoginForm from "./LoginForm";
 import Image from "next/image";
+import { redirect } from "next/navigation";
+import LoginForm from "./LoginForm";
 
 const LoginPage = async () => {
   const supabase = createServerComponentClient<Database>({
@@ -15,7 +16,7 @@ const LoginPage = async () => {
   } = await supabase.auth.getSession();
 
   if (!!session) {
-    console.error("User already logged in");
+    redirect("/");
   }
 
   return (
