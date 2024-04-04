@@ -1,19 +1,22 @@
 'use server';
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { ResetPasswordState } from "./ResetPasswordForm"
+import { Database } from "@/lib/database.types";
+import { cookies } from "next/headers";
 
 export default async function sendResetPasswordEmail(prevState: any, formData: FormData): Promise<ResetPasswordState> {
-  return { errors: "Not implemented", status: 501, message: "아직 구현되지 않은 기능입니다." }
-  // TODO: Implement
-  const response = await fetch('/api/v1/reset-password', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData),
-  })
-  const data = await response.json()
-  if (response.ok) {
-    return { errors: null, status: response.status, message: data.message }
+  const email = String(formData.get('email'))
+
+  if (!email) {
+    return { errors: 'Email is required', status: 400, message: 'Email is required' }
   }
-  return { errors: data.error, status: response.status, message: data.message }
+
+  const supabase = createServerComponentClient<Database>({ cookies })
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${process.env.NEXT_PUBLIC_WEB_URL}/v1/reset-password` })
+  if (!error) {
+    return { errors: null, status: 200, message: '이메일이 발송되었습니다.' }
+
+  }
+  return { errors: error.name, status: error.status, message: error.message }
 }
