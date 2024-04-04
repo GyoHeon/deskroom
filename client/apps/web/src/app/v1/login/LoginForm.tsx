@@ -1,14 +1,12 @@
 'use client';
 
-import { Button, Flex, IconButton, Text } from "@radix-ui/themes";
+import { ButtonWithLoading } from "@/components/ButtonWithLoading";
+import { Database } from "@/lib/database.types";
+import { Flex, IconButton, Text } from "@radix-ui/themes";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { useFormState } from "react-dom";
 import signIn from "./actions/signIn";
-import { ButtonWithLoading } from "@/components/ButtonWithLoading";
-import { createClientComponentClient, createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/lib/database.types";
-import { cookies } from "next/headers";
-import { useMixpanel } from "@/contexts/MixpanelContext";
 
 export type LoginState = {
   errors: string | null;
