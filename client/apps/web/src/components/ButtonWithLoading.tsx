@@ -3,11 +3,11 @@ import { Button } from "@radix-ui/themes";
 import { useFormStatus } from "react-dom";
 
 
-export type ButtonWithLoadingProps = {} & React.ComponentProps<typeof Button>
-export const ButtonWithLoading: React.FC<ButtonWithLoadingProps> = ({ children, ...props }) => {
+export type ButtonWithLoadingProps = { shouldSubmit?: boolean } & React.ComponentProps<typeof Button>
+export const ButtonWithLoading: React.FC<ButtonWithLoadingProps> = ({ shouldSubmit = true, children, ...props }) => {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" className={`w-full bg-primary-900 h-10 cursor-pointer ${pending && 'bg-gray-200'} ${props.className}`} disabled={pending}>
+    <Button type={shouldSubmit ? "submit" : "button"} className={`w-full bg-primary-900 h-10 cursor-pointer ${pending && 'bg-gray-200'} ${props.className}`} disabled={pending} onClick={props.onClick}>
       {pending && (
         <div role="status">
           <svg aria-hidden="true" className="w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
