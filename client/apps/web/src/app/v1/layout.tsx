@@ -7,7 +7,7 @@ export default function V1FormsLayout({
 }) {
   return (
     <Box className="h-screen">
-      <Flex justify={`center`} align={`center`} height={`100%`} direction={`column`}>
+      <Flex justify={`center`} align={`center`} direction={`column`} className="h-screen">
         {children}
       </Flex>
     </Box>
