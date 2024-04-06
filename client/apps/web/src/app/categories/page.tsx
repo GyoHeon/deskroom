@@ -1,12 +1,13 @@
 import { Sidebar } from "@/components/Sidebar";
 import { HotkeyProvider } from "@/contexts/HotkeyContext";
-import { Box, Container, Flex } from "@radix-ui/themes";
+import { Container, Flex } from "@radix-ui/themes";
 import { getCategories } from "../api/categories";
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/lib/database.types";
 import { redirect } from "next/navigation";
 import TopNav from "@/components/TopNav";
+import CategoryTable from "./CategoryTable";
 
 const CategoriesPage = async ({ searchParams }) => {
   const supabase = createServerComponentClient<Database>({
@@ -25,7 +26,7 @@ const CategoriesPage = async ({ searchParams }) => {
   if (!orgKey) {
     redirect(`/v1/login`);
   }
-  const { data: categories } = await getCategories(supabase, orgKey);
+  const categories = await getCategories(supabase, orgKey);
 
   return (
     <HotkeyProvider categories={categories}>
@@ -33,8 +34,7 @@ const CategoriesPage = async ({ searchParams }) => {
       <Flex direction={`column`} className="min-h-screen w-full">
         <TopNav />
         <Container className='px-16 pt-4 bg-primary-100'>
-          <Box className="rounded-xl bg-white p-5">
-          </Box>
+          <CategoryTable categories={categories} />
         </Container>
       </Flex>
     </HotkeyProvider>

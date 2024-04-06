@@ -72,7 +72,7 @@ export default async function NewIndex({ searchParams }) {
     revalidatePath("/", "page"); // NOTE: NOT WORKING
   };
 
-  const { data: categories } = await getCategories(supabase, organization.key);
+  const categories = await getCategories(supabase, organization.key);
 
   return (
     <HotkeyProvider categories={categories}>
