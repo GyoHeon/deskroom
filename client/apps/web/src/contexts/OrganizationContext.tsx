@@ -16,7 +16,7 @@ interface OrganizationContextType {
 // Create the organization context
 export const OrganizationContext = createContext<OrganizationContextType>({
   currentOrg: null,
-  setCurrentOrg: () => {},
+  setCurrentOrg: () => { },
   availableOrgs: [],
 });
 
@@ -50,6 +50,10 @@ export const OrganizationContextProvider: React.FC<{
       } = await supabase.auth.getSession();
 
       if (!!loginError) {
+        return;
+      }
+
+      if (!session) {
         return;
       }
 

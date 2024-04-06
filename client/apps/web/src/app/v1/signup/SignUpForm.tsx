@@ -1,13 +1,34 @@
 'use client';
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { Box, Grid, IconButton, Text } from "@radix-ui/themes";
+import { Box, Button, Flex, Grid, Heading, IconButton, Text } from "@radix-ui/themes";
 import { useState } from "react";
 import { SignUpStep } from "./SignUpStep";
+import { useFormState } from "react-dom";
+import { signUp } from "./actions";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 
 
 const steps = ["Email", "Password", "Company", "Misc", "Name"];
 export const SignUpForm = () => {
   const [step, setStep] = useState(0)
+  const [state, formAction] = useFormState(signUp, {
+    errors: null,
+    status: null,
+  })
+
+  if (state.status === 200) {
+    return (
+      <Flex direction={`column`} gap={`4`} my={`4`} align={`center`}>
+        <Image src="/deskroom-icon.png" alt="Deskroom Logo" width={60} height={60} className="my-8" />
+        <Box className="my-2 text-center">
+          <Heading className="title">유저 생성 확인을 위해 메일로 확인 링크를 보내드렸습니다. 💌</Heading>
+          <Text size="2" className="my-[-12px] font-thin">최대 10분 소요됩니다.</Text>
+        </Box>
+      </Flex>
+    )
+  }
 
   return (
     <>
@@ -21,7 +42,7 @@ export const SignUpForm = () => {
       <IconButton className="absolute top-0 left-0 m-4 my-8 bg-white text-gray-900 hover:bg-primary-100" onClick={() => setStep(s => s - 1)} hidden={step === 0}>
         <ArrowLeftIcon />
       </IconButton>
-      <form className="flex-1 flex flex-col align-center justify-center">
+      <form className="flex-1 flex flex-col align-center justify-center" action={formAction}>
         <SignUpStep
           step={step}
           index={0}
