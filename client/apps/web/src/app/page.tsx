@@ -8,6 +8,7 @@ import KnowledgeBaseListView from "../components/KnowledgeBaseListView";
 import TopNav from "../components/TopNav";
 import { getCategories } from "./api/categories";
 import { HotkeyProvider } from "@/contexts/HotkeyContext";
+import { Sidebar } from "@/components/Sidebar";
 
 export const revalidate = 0;
 
@@ -75,7 +76,8 @@ export default async function NewIndex({ searchParams }) {
 
   return (
     <HotkeyProvider categories={categories}>
-      <Flex direction={`column`} className="min-h-screen">
+      <Sidebar />
+      <Flex direction={`column`} className="min-h-screen w-full">
         <TopNav
           organizations={organizations}
           currentOrg={organization.name_kor}

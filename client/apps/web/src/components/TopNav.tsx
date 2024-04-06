@@ -45,17 +45,6 @@ const TopNav: React.FC<TopNavProps> = ({ organizations, currentOrg }) => {
 
   return (
     <Flex className="px-16 py-4" align={`center`}>
-      <Box
-        className="cursor-pointer"
-        onClick={() => router.push(`/?org=${searchParams.get("org") ?? ""}`)}
-      >
-        <Image
-          src={isDarkMode ? "/deskroom-logo-white.png" : "/deskroom-logo.png"} // TODO: use default when theme is light mode.
-          width={120}
-          height={40}
-          alt="deskrooom-logo"
-        />
-      </Box>
       <Flex className="ml-auto gap-5">
         <Select.Root
           defaultValue={currentOrg}
