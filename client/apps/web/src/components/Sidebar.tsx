@@ -81,7 +81,7 @@ export const Sidebar = () => {
         </Flex>
         {
           sidebarMenus.map((menu, index) => (
-            <Grid className={`group items-center justify-start p-2 px-4 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer h-12 ${menu.disabled && 'text-gray-300 cursor-not-allowed'} ${menu.url === pathname && 'bg-primary-900 text-white shadow-lg hover:bg-primary-900 transition-all duration-300'}`} columns="4"
+            <Grid className={`group items-center justify-start p-2 px-4 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer h-12 ${menu.disabled && 'text-gray-300 cursor-not-allowed'} ${menu.url === pathname && 'bg-primary-900 text-white shadow-lg hover:bg-primary-900 transition-all duration-300'}`} columns="4" key={index}
               onClick={() => {
                 if (menu.disabled) return;
                 router.push(`${menu.url}?org=${searchParams.get("org") ?? ""}`);
