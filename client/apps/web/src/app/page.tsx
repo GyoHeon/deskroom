@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import KnowledgeBaseListView from "../components/KnowledgeBaseListView";
 import TopNav from "../components/TopNav";
 import { getCategories } from "./api/categories";
+import { HotkeyProvider } from "@/contexts/HotkeyContext";
 
 export const revalidate = 0;
 
@@ -73,21 +74,23 @@ export default async function NewIndex({ searchParams }) {
   const { data: categories } = await getCategories(supabase, organization.key);
 
   return (
-    <Flex direction={`column`} className="min-h-screen">
-      <TopNav
-        organizations={organizations}
-        currentOrg={organization.name_kor}
-      />
-      <Container className='px-16 pt-4 bg-primary-100'>
-        <Box className="rounded-xl bg-white p-5">
-          <KnowledgeBaseListView
-            categories={categories}
-            knowledgeItems={knowledgeBase}
-            organization={organization}
-            callback={handleDataChange}
-          />
-        </Box>
-      </Container>
-    </Flex>
+    <HotkeyProvider>
+      <Flex direction={`column`} className="min-h-screen">
+        <TopNav
+          organizations={organizations}
+          currentOrg={organization.name_kor}
+        />
+        <Container className='px-16 pt-4 bg-primary-100'>
+          <Box className="rounded-xl bg-white p-5">
+            <KnowledgeBaseListView
+              categories={categories}
+              knowledgeItems={knowledgeBase}
+              organization={organization}
+              callback={handleDataChange}
+            />
+          </Box>
+        </Container>
+      </Flex>
+    </HotkeyProvider>
   );
 }
