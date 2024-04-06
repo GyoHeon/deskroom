@@ -78,10 +78,7 @@ export default async function NewIndex({ searchParams }) {
     <HotkeyProvider categories={categories}>
       <Sidebar />
       <Flex direction={`column`} className="min-h-screen w-full">
-        <TopNav
-          organizations={organizations}
-          currentOrg={organization.name_kor}
-        />
+        <TopNav />
         <Container className='px-16 pt-4 bg-primary-100'>
           <Box className="rounded-xl bg-white p-5">
             <KnowledgeBaseListView

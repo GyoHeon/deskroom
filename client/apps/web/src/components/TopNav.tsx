@@ -1,6 +1,6 @@
 "use client";
 import { useMixpanel } from "@/contexts/MixpanelContext";
-import { Organization } from "@/contexts/OrganizationContext";
+import { Organization, useOrganizationContext } from "@/contexts/OrganizationContext";
 import { Avatar, Box, DropdownMenu, Flex, Select, useThemeContext } from "@radix-ui/themes";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
@@ -8,16 +8,17 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 export type TopNavProps = {
-  organizations: Organization[];
-  currentOrg: string;
+  // organizations: Organization[];
+  // currentOrg: string;
 } & React.HTMLProps<HTMLDivElement>;
 
-const TopNav: React.FC<TopNavProps> = ({ organizations, currentOrg }) => {
+const TopNav: React.FC<TopNavProps> = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const mixpanel = useMixpanel();
   const supabase = createClientComponentClient();
+  const { currentOrg: currentOrg, availableOrgs, setCurrentOrg } = useOrganizationContext();
 
   useEffect(() => {
     mixpanel.register({
@@ -27,7 +28,7 @@ const TopNav: React.FC<TopNavProps> = ({ organizations, currentOrg }) => {
   }, [mixpanel, searchParams]);
 
   const handleOrgChange = (org: string) => {
-    const selectedOrg = organizations.find((o) => o.name_kor === org);
+    const selectedOrg = availableOrgs.find((o) => o.name_kor === org);
     router.push(`${pathname}?org=${selectedOrg.key}`);
   };
   const theme = useThemeContext();
@@ -42,12 +43,15 @@ const TopNav: React.FC<TopNavProps> = ({ organizations, currentOrg }) => {
 
     // TODO: track logout
   }
+  if (!currentOrg) {
+    router.refresh();
+  }
 
   return (
     <Flex className="px-16 py-4" align={`center`}>
       <Flex className="ml-auto gap-5">
         <Select.Root
-          defaultValue={currentOrg}
+          defaultValue={currentOrg?.name_kor}
           onValueChange={handleOrgChange}
           size="2"
         >
@@ -55,7 +59,7 @@ const TopNav: React.FC<TopNavProps> = ({ organizations, currentOrg }) => {
           <Select.Content>
             <Select.Group>
               <Select.Label>조직</Select.Label>
-              {organizations.map((org) => (
+              {availableOrgs.map((org) => (
                 <Select.Item key={org.key} value={org.name_kor}>
                   {org.name_kor}
                 </Select.Item>
