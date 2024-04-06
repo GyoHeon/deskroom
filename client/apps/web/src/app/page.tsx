@@ -74,7 +74,7 @@ export default async function NewIndex({ searchParams }) {
   const { data: categories } = await getCategories(supabase, organization.key);
 
   return (
-    <HotkeyProvider>
+    <HotkeyProvider categories={categories}>
       <Flex direction={`column`} className="min-h-screen">
         <TopNav
           organizations={organizations}

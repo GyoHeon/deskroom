@@ -1,8 +1,9 @@
 "use client";
 
+import { KnowledgeCategory } from "@/components/KnowledgeBaseListView";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { Box } from "@radix-ui/themes";
+import { Box, Flex, Select, TextArea } from "@radix-ui/themes";
 import { createContext, useContext, useState } from 'react';
 
 type Hotkey = {
@@ -28,9 +29,10 @@ const cmdPlusK = (e: React.KeyboardEvent) => {
 
 
 type HotkeyProviderProps = {
+  categories: KnowledgeCategory[]
   children: React.ReactNode;
 }
-export const HotkeyProvider: React.FC<HotkeyProviderProps> = ({ children }) => {
+export const HotkeyProvider: React.FC<HotkeyProviderProps> = ({ children, categories }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hotkey, setHotkey] = useState<Hotkey[]>([{
     key: 'cmd+k',
@@ -40,6 +42,8 @@ export const HotkeyProvider: React.FC<HotkeyProviderProps> = ({ children }) => {
       }
     }
   }]);
+  // TODO: move this to other component
+  const [formData, setFormData] = useState<{ category: string, answer?: string }>({ category: '' });
   return (
     <hotkeyContext.Provider value={{ hotkey, setHotkey: () => { } }}>
       <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -55,9 +59,54 @@ export const HotkeyProvider: React.FC<HotkeyProviderProps> = ({ children }) => {
             <Dialog.Description className="text-mauve11 my-2 text-[15px] leading-normal">
               고객 질문을 그대로 붙여넣거나, 핵심적인 키워드만 입력하세요!
             </Dialog.Description>
+            <Flex direction={`column`} className="my-2">
+              <label
+                htmlFor="category"
+                className="font-bold text-[11px]  pb-[5px]"
+              >
+                카테고리
+              </label>
+              <Select.Root
+                size="3"
+                defaultValue="apple"
+                value={formData?.category}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, category: value })
+                }
+              >
+                <Select.Trigger className="w-[125px] h-[35px] px-2 rounded-lg bg-[#EFF1F999] border-2" />
+                <Select.Content>
+                  {categories.map((category, categoryIdx) => (
+                    <Select.Item key={categoryIdx} value={category.name}>
+                      {category.name}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Root>
+            </Flex>
+            <Flex direction="column" className="my-2">
+              <label
+                htmlFor="question"
+                className="font-bold text-[11px]  pb-[5px]"
+              >
+                고객 질문
+              </label>
+              <TextArea
+                contentEditable
+                rows={1}
+                size={`1`}
+                className="block p-2.5 w-full h-fit text-sm text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-[#EFF1F999] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="예. 이거 환불 받고 싶어요."
+                id="answer"
+                name="answer"
+                value={formData?.answer}
+                onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
+              />
+            </Flex>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
+
       <Box onKeyDown={hotkey?.[0].action}>
         {children}
       </Box>
