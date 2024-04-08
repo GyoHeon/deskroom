@@ -57,19 +57,23 @@ export const OrganizationContextProvider: React.FC<{
         return;
       }
 
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      mixpanel.identify(session.user.id);
-
       const { data: orgs, error: organizationError } = await supabase
         .from("organizations")
         .select("*, users!inner(*)")
-        .eq("users.id", session?.user.id);
+        .eq("users.id", session.user.id);
 
       if (organizationError != null) {
         console.log(organizationError);
       }
       setOrganizations(orgs);
       setCurrentOrg(orgs.find((org) => org.key === orgFromURL));
+
+      if (!mixpanel) {
+        return
+      }
+
+      mixpanel.identify(session.user.id);
+
       mixpanel.register({
         org: orgFromURL,
         platform: "knowledge_base_admin",

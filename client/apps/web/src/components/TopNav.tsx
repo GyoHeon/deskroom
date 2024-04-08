@@ -5,7 +5,7 @@ import { Avatar, Box, DropdownMenu, Flex, Select, useThemeContext } from "@radix
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export type TopNavProps = {
   // organizations: Organization[];
@@ -14,18 +14,18 @@ export type TopNavProps = {
 
 const TopNav: React.FC<TopNavProps> = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
-  const mixpanel = useMixpanel();
   const supabase = createClientComponentClient();
-  const { currentOrg: currentOrg, availableOrgs, setCurrentOrg } = useOrganizationContext();
+  const { currentOrg, availableOrgs } = useOrganizationContext();
+  const [org, setOrg] = useState<string>('');
 
   useEffect(() => {
-    mixpanel.register({
-      org: searchParams.get("org"),
-      platform: "knowledge_base_admin",
-    });
-  }, [mixpanel, searchParams]);
+    setInterval(() => {
+      if (!currentOrg) return;
+      if (org === currentOrg?.name_kor) return;
+      setOrg(currentOrg?.name_kor);
+    }, 100);
+  }, []);
 
   const handleOrgChange = (org: string) => {
     const selectedOrg = availableOrgs.find((o) => o.name_kor === org);
@@ -41,15 +41,12 @@ const TopNav: React.FC<TopNavProps> = () => {
 
     // TODO: track logout
   }
-  if (!currentOrg) {
-    router.refresh();
-  }
 
   return (
     <Flex className="px-16 py-4" align={`center`}>
       <Flex className="ml-auto gap-5">
         <Select.Root
-          defaultValue={currentOrg?.name_kor ?? ''}
+          defaultValue={currentOrg?.name_kor ?? org}
           onValueChange={handleOrgChange}
           size="2"
         >
