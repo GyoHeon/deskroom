@@ -1,11 +1,11 @@
 'use client';
 
 import { KnowledgeCategory, StyledColumnHeaderCell } from "@/components/KnowledgeBaseListView";
-import { Box, Button, Flex, Heading, Table, TextArea } from "@radix-ui/themes";
+import { Box, Button, Flex, Heading, IconButton, Table } from "@radix-ui/themes";
 import { useRef, useState } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
 import * as Toast from "@radix-ui/react-toast";
+import { CategoryDialog } from "./CategoryDialog";
 
 type CategoryTableProps = {
   categories: KnowledgeCategory[]
@@ -18,18 +18,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ categories }) => {
   );
   const [open, setOpen] = useState(false);
   const timerRef = useRef(0);
-  const [formData, setFormData] = useState<KnowledgeCategory | null>(
-    selectedItem
-  );
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    e.preventDefault();
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
-  };
 
   return (
     <Box className="rounded-xl bg-white p-5">
@@ -38,6 +26,21 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ categories }) => {
           카테고리 관리하기
         </Heading>
       </Box>
+      <Flex className="mb-2">
+        <Heading size="2" as="h3">
+          Q&A 카테고리
+        </Heading>
+        <IconButton className="bg-secondary-900 ml-auto w-fit px-2 text-sm hover:bg-secondary-700"
+          onClick={() => {
+            setSelectedItem(null);
+            setDialogMode("create");
+            setOpenDialog(true);
+          }}
+        >
+          <PlusIcon className="mx-1" />
+          카테고리 추가하기
+        </IconButton>
+      </Flex>
       <Toast.Provider>
         <Table.Root className="border-t-gray-200 border-y">
           <Table.Header>
@@ -87,84 +90,12 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ categories }) => {
             ))}
           </Table.Body>
         </Table.Root>
-        <Dialog.Root open={openDialog} onOpenChange={setOpenDialog}>
-          <Dialog.Portal>
-            <Dialog.Overlay id="dialog-overlay" className="fixed blur-lg" />
-            <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[70vw] max-w-[1200px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-inherit p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none">
-              <Dialog.Close className="absolute top-4 right-4">
-                <Cross2Icon width={32} height={32} />
-              </Dialog.Close>
-              <Dialog.Title className="text-mauve12 text-[24px] font-medium">
-                {dialogMode === "create"
-                  ? "카테고리 추가하기"
-                  : dialogMode === "edit"
-                    ? "카테고리 수정하기"
-                    : "카테고리 삭제하기"}
-              </Dialog.Title>
-              <Dialog.Description className="text-mauve11 my-2 text-[15px] leading-normal">
-                {["create", "edit"].includes(dialogMode)
-                  ? "고객 상담에 추가할 카테고리를 작성해주세요."
-                  : "등록된 카테고리를 삭제합니다"}
-              </Dialog.Description>
-              <form>
-                <Flex direction={`column`} className="my-2">
-                  <label
-                    htmlFor="category-name"
-                    className="text-violet11 font-bold text-[11px] leading-[18px] pb-[5px]"
-                  >
-                    카테고리명
-                  </label>
-                  <input
-                    id="category-name"
-                    name="category-name"
-                    className="h-[35px] pl-2 rounded-md bg-[#EFF1F999] border-2 border-gray-300 text-[12px]"
-                    value={formData?.name}
-                    onChange={handleChange}
-                  />
-                </Flex>
-                <Box>
-                  <Flex direction={`column`}>
-                    <label
-                      htmlFor="answer"
-                      className="text-violet11 font-bold text-[11px] leading-[18px] pb-[5px]"
-                    >
-                      카테고리 설명
-                    </label>
-                    <TextArea
-                      contentEditable
-                      rows={5}
-                      size={`3`}
-                      className="block p-2.5 w-full h-fit text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 bg-[#EFF1F999] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Write Answer..."
-                      id="answer"
-                      name="answer"
-                      value={formData?.description}
-                      onChange={handleChange}
-                    />
-                  </Flex>
-                </Box>
-                <Flex justify={`end`} className="my-4">
-                  <Box width="9">
-                    <Button
-                      variant={`solid`}
-                      size={`3`}
-                      color={dialogMode !== "delete" ? `violet` : `red`}
-                      className="p-2 rounded w-[100px] h-[35px] pl-2"
-                    >
-                      <Box className="px-1 text-sm">
-                        {dialogMode === "create"
-                          ? "등록 하기"
-                          : dialogMode === "edit"
-                            ? "수정 하기"
-                            : "삭제 하기"}
-                      </Box>
-                    </Button>
-                  </Box>
-                </Flex>
-              </form>
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
+        <CategoryDialog
+          open={openDialog}
+          onOpenChange={setOpenDialog}
+          selectedItem={selectedItem}
+          mode={dialogMode}
+        />
         <Toast.Root
           className="bg-white rounded-md px-4 py-2 shadow-lg border border-gray-200 text-gray-700 text-[11px] font-medium leading-[18px]"
           open={open}

@@ -49,7 +49,7 @@ const TopNav: React.FC<TopNavProps> = () => {
     <Flex className="px-16 py-4" align={`center`}>
       <Flex className="ml-auto gap-5">
         <Select.Root
-          defaultValue={currentOrg?.name_kor ?? availableOrgs.find((o) => o.key === searchParams.get("org"))?.name_kor}
+          defaultValue={currentOrg?.name_kor ?? ''}
           onValueChange={handleOrgChange}
           size="2"
         >
