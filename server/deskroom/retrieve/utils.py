@@ -1,5 +1,4 @@
-from deskroom.common.openai import create_openai_client
-from deskroom.common.openai import read_prompt
+from deskroom.common.openai import create_openai_client, read_prompt
 
 
 async def retrieve_qns(policy: str, qa_db: str, user_qn: str) -> str:

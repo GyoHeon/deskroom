@@ -1,10 +1,11 @@
-from pathlib import Path
 import os
+from pathlib import Path
+
+from azure.storage.blob import BlobClient
 from openai import AsyncOpenAI, OpenAI
 
 from deskroom.config import settings
 from deskroom.constants import PROMPT_PATH
-from azure.storage.blob import BlobClient
 
 
 def create_openai_async_client(api_key: str) -> AsyncOpenAI:

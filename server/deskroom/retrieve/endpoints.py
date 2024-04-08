@@ -1,17 +1,19 @@
+from ast import literal_eval
+
 import structlog
 from fastapi import APIRouter, Depends
-
-from ast import literal_eval
 from supabase._async.client import AsyncClient
+
 from deskroom.common.supabase import create_supabase_async_client
 from deskroom.logging import Logger
+from deskroom.retrieve.utils import retrieve_qns
+
 from .schema import (
     KnowledgeQueryIn,
-    KnowledgeQueryOut,
     KnowledgeQueryInWithCategory,
+    KnowledgeQueryOut,
     KnowledgeQueryOutWithCategory,
 )
-from deskroom.retrieve.utils import retrieve_qns
 
 logger: Logger = structlog.get_logger()
 
@@ -52,7 +54,7 @@ async def retrieve_and_process(
                     {"category": predicted_category, "answer": predicted_ans}
                 )
 
-        except:
+        except BaseException:
             pass
 
     return retrieved_msgs
@@ -88,7 +90,6 @@ async def get_nearest_knowledge_item(
     knowledge_query_in: KnowledgeQueryIn,
     supabase: AsyncClient = Depends(create_supabase_async_client),
 ) -> KnowledgeQueryOut:
-
     company_policy = ""
 
     supabase_response = (

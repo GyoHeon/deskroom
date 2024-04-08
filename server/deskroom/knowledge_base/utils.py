@@ -1,9 +1,9 @@
-from tqdm import tqdm
-import pandas as pd
-from typing import IO
 from tempfile import NamedTemporaryFile
-from deskroom.common.openai import create_openai_client
-from deskroom.common.openai import read_prompt
+from typing import IO
+
+import pandas as pd
+
+from deskroom.common.openai import create_openai_client, read_prompt
 
 
 def save_file(file: IO):
@@ -13,8 +13,6 @@ def save_file(file: IO):
 
 
 def process_raw_file(df):
-    from tqdm import tqdm
-
     chatids = []
     persontypes = []
     utterances = []
@@ -61,7 +59,7 @@ def generate_discovery_string(df):
             utterance = row_instance["utterances"]
             tmp_str = f"{chat_id} | {person_type} | {utterance}\n"
             strings += tmp_str
-        except:
+        except BaseException:
             pass
     return strings
 

@@ -1,20 +1,21 @@
+from ast import literal_eval
+
+import pandas as pd
 import structlog
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, UploadFile
 from supabase._async.client import AsyncClient
 
 from deskroom.common.supabase import create_supabase_async_client
 from deskroom.logging import Logger
-from fastapi import APIRouter, File, UploadFile
-import pandas as pd
+
 from .schema import KnowledgeBase, KnowledgeBaseFetch
 from .utils import (
-    process_raw_file,
-    generate_discovery_string,
-    generate_qa_string,
     create_policy,
     create_qa,
+    generate_discovery_string,
+    generate_qa_string,
+    process_raw_file,
 )
-from ast import literal_eval
 
 logger: Logger = structlog.get_logger()
 
@@ -61,14 +62,14 @@ async def make_knowledge_base(
     chat_ids = list(processed_df["chatId"].unique())
     for chat_id in chat_ids:
         try:
-
             qa_string = generate_qa_string(processed_df, chat_id)
             discovered = create_qa(company_policy, qa_string)
             discovered_ = literal_eval(discovered)
             for qa in list(discovered_.values()):
                 questions.append(qa["Question"])
                 answers.append(qa["Answer"])
-        except:
+        except BaseException:
+            logger.info("Retrieved Messages")
             pass
     update_df = pd.DataFrame({"Question": questions, "Answer": answers})
     updated_data = []
