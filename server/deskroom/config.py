@@ -43,6 +43,7 @@ class Settings(BaseSettings):
 
     # azure
     AZURE_PROMPT_TOKEN: str = Field("deskroom_azure", alias="AZURE_PROMPT_TOKEN")
+    AZURE_PROMPT_PATH: str = Field("deskroom_prompt_dir", alias="AZURE_PROMPT_PATH")
 
     def is_environment(self, environment: Environment) -> bool:
         return self.ENV == environment
