@@ -15,6 +15,11 @@ class KnowledgeQueryRetrieved(Schema):
     category: str
 
 
+class KnowledgeQueryOutWithCategory(KnowledgeQueryInWithCategory):
+    cleansed_question: str
+    retrieved_messages: list[KnowledgeQueryRetrieved]
+
+
 class KnowledgeQueryOut(KnowledgeQueryIn):
     cleansed_question: str
     retrieved_messages: list[KnowledgeQueryRetrieved]

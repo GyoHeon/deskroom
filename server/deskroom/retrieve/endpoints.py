@@ -5,7 +5,12 @@ from ast import literal_eval
 from supabase._async.client import AsyncClient
 from deskroom.common.supabase import create_supabase_async_client
 from deskroom.logging import Logger
-from .schema import KnowledgeQueryIn, KnowledgeQueryOut, KnowledgeQueryInWithCategory
+from .schema import (
+    KnowledgeQueryIn,
+    KnowledgeQueryOut,
+    KnowledgeQueryInWithCategory,
+    KnowledgeQueryOutWithCategory,
+)
 from deskroom.retrieve.utils import retrieve_qns
 
 logger: Logger = structlog.get_logger()
@@ -13,32 +18,12 @@ logger: Logger = structlog.get_logger()
 router = APIRouter(tags=["retrieve"], prefix="/retrieve")
 
 
-@router.post("/category/")
-async def get_knowledge_with_category_filter(
-    knowledge_query_in: KnowledgeQueryInWithCategory,
-    supabase: AsyncClient = Depends(create_supabase_async_client),
-) -> KnowledgeQueryOut:
-    pass
-
-
-@router.post("/")
-async def get_nearest_knowledge_item(
-    knowledge_query_in: KnowledgeQueryIn,
-    supabase: AsyncClient = Depends(create_supabase_async_client),
-) -> KnowledgeQueryOut:
-
+async def retrieve_and_process(
+    qn,
+    knowledge_base,
+):
+    cleansed_question = qn
     company_policy = ""
-
-    response = (
-        await supabase.table("knowledge_base")
-        .select("*, organizations(company_info_policy)")
-        .eq("org_key", knowledge_query_in.organization_name)
-        .execute()
-    )
-    knowledge_base = response.data
-
-    cleansed_question = knowledge_query_in.question
-
     input_samples = {}
     for idx in range(len(knowledge_base)):
         input_samples[f"Q{idx + 1}"] = knowledge_base[idx]["question"]
@@ -69,9 +54,55 @@ async def get_nearest_knowledge_item(
 
         except:
             pass
+
+    return retrieved_msgs
+
+
+@router.post("/category/")
+async def get_knowledge_with_category_filter(
+    knowledge_query_in: KnowledgeQueryInWithCategory,
+    supabase: AsyncClient = Depends(create_supabase_async_client),
+) -> KnowledgeQueryOutWithCategory:
+    supabase_response = (
+        await supabase.table("knowledge_base")
+        .select("*, organizations(company_info_policy)")
+        .eq("org_key", knowledge_query_in.organization_name)
+        .eq("category", knowledge_query_in.category)
+        .execute()
+    )
+
+    retrieved_msgs = await retrieve_and_process(
+        qn=knowledge_query_in.question, knowledge_base=supabase_response.data
+    )
+    return KnowledgeQueryOutWithCategory(
+        organization_name=knowledge_query_in.organization_name,
+        question=knowledge_query_in.question,
+        cleansed_question=knowledge_query_in.question,
+        retrieved_messages=retrieved_msgs,
+        category=knowledge_query_in.category,
+    )
+
+
+@router.post("/")
+async def get_nearest_knowledge_item(
+    knowledge_query_in: KnowledgeQueryIn,
+    supabase: AsyncClient = Depends(create_supabase_async_client),
+) -> KnowledgeQueryOut:
+
+    company_policy = ""
+
+    supabase_response = (
+        await supabase.table("knowledge_base")
+        .select("*, organizations(company_info_policy)")
+        .eq("org_key", knowledge_query_in.organization_name)
+        .execute()
+    )
+    retrieved_msgs = await retrieve_and_process(
+        qn=knowledge_query_in.question, knowledge_base=supabase_response.data
+    )
     return KnowledgeQueryOut(
         organization_name=knowledge_query_in.organization_name,
         question=knowledge_query_in.question,
-        cleansed_question=cleansed_question,
+        cleansed_question=knowledge_query_in.question,
         retrieved_messages=retrieved_msgs,
     )
