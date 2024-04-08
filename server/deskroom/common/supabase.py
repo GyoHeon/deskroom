@@ -17,7 +17,7 @@ def _create_supabase_client(url: str, key: str) -> Client:
     )
 
 
-def create_supabase_client() -> Client:
+async def create_supabase_client() -> Client:
     return _create_supabase_client(
         url=settings.SUPABASE_URL, key=settings.SUPABASE_ANON_KEY
     )

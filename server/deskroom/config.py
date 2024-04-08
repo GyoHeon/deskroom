@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     NEW_RELIC_APP_NAME: str = Field("deskroom", alias="NEW_RELIC_APP_NAME")
 
     # openai
-    OPENAI_API_KEY: str = ""
+    OPENAI_API_KEY: str = Field("deskroom_openai", alias="OPENAI_API_KEY")
 
     model_config = SettingsConfigDict(
         env_prefix="dskrm_",
@@ -40,6 +40,9 @@ class Settings(BaseSettings):
         env_file=env_file,
         extra="allow",
     )
+
+    # azure
+    AZURE_PROMPT_TOKEN: str = Field("deskroom_azure", alias="AZURE_PROMPT_TOKEN")
 
     def is_environment(self, environment: Environment) -> bool:
         return self.ENV == environment

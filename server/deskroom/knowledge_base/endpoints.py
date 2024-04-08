@@ -19,8 +19,9 @@ async def get_knowledge_base(
 ) -> list[KnowledgeBase]:
     response = (
         await supabase.table("knowledge_base")
-        .select("*")
+        .select("*, organizations(company_info_policy)")
         .eq("org_key", item.organization_key)
         .execute()
     )
+
     return response.data

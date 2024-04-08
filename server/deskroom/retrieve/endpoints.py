@@ -46,12 +46,12 @@ async def get_nearest_knowledge_item(
 
             if predicted is not None:
                 predicted_num = int(predicted.replace("Q", ""))
-                print(predicted_num)
+
                 predicted_category, predicted_ans = (
                     knowledge_base[predicted_num - 1]["category"],
                     [i["answer"] for i in knowledge_base][predicted_num - 1],
                 )
-                print(predicted_category)
+
                 if not predicted_category:
                     predicted_category = "공통"
 
