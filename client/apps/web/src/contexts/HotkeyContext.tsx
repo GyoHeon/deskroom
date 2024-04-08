@@ -221,7 +221,7 @@ export const HotkeyProvider: React.FC<HotkeyProviderProps> = ({ children, catego
         </Dialog.Portal>
       </Dialog.Root>
 
-      <Box onKeyDown={hotkey?.[0].action}>
+      <Box onKeyDown={hotkey?.[0].action} className="flex">
         {children}
       </Box>
     </hotkeyContext.Provider>

@@ -75,10 +75,7 @@ export default async function UploadPage({ searchParams }) {
   if (pendingUploadCount > 0) {
     return (
       <Flex direction={`column`}>
-        <TopNav
-          organizations={organizations}
-          currentOrg={organization.name_kor}
-        />
+        <TopNav />
         <Container my={`4`}>
           <Heading my={`2`}>Upload</Heading>
           <Flex direction={`column`} gap={`4`}>
@@ -119,10 +116,7 @@ export default async function UploadPage({ searchParams }) {
   if (completedUploadCount > 0) {
     return (
       <Flex direction={`column`}>
-        <TopNav
-          organizations={organizations}
-          currentOrg={organization.name_kor}
-        />
+        <TopNav />
         <Container my={`4`}>
           <Heading my={`2`}>Upload</Heading>
           <Flex direction={`column`} gap={`4`}>
@@ -144,10 +138,7 @@ export default async function UploadPage({ searchParams }) {
 
   return (
     <Flex direction={`column`}>
-      <TopNav
-        organizations={organizations}
-        currentOrg={organization.name_kor}
-      />
+      <TopNav />
       <Container className="px-16 pt-4 bg-primary-100 min-h-[800px]">
         <Box className="rounded-xl bg-white p-5">
           <Heading my={`2`}>Upload</Heading>
