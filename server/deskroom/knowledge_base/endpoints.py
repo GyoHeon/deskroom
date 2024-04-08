@@ -55,13 +55,13 @@ async def make_knowledge_base(
 
     raw_df = raw_df.dropna()
     processed_df = process_raw_file(raw_df)
-    print("==========Discovering Company Policies=========")
+
     discovery_str = generate_discovery_string(processed_df)
     company_policy = create_policy(discovery_str)
     chat_ids = list(processed_df["chatId"].unique())
     for chat_id in chat_ids:
         try:
-            print(f"======Generating QA Pair from chat {chat_id}========")
+
             qa_string = generate_qa_string(processed_df, chat_id)
             discovered = create_qa(company_policy, qa_string)
             discovered_ = literal_eval(discovered)

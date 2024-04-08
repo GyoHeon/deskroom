@@ -23,7 +23,7 @@ def process_raw_file(df):
 
     current_chat = ""
 
-    for chat_id in tqdm(list(df["chatId"].unique())):
+    for chat_id in list(df["chatId"].unique()):
         df_ = df.loc[df["chatId"] == chat_id]
         current_speaker = ""
         current_text = ""
@@ -53,7 +53,7 @@ def process_raw_file(df):
 
 def generate_discovery_string(df):
     strings = "chatId | person_types | utterances\n"
-    for idx in tqdm(range(len(df))):
+    for idx in range(len(df)):
         try:
             row_instance = df.iloc[idx]
             chat_id = row_instance["chatId"]
