@@ -1,4 +1,4 @@
-from deskroom.common.openai import create_openai_async_client, create_openai_client
+from deskroom.common.openai import create_openai_client
 from deskroom.common.openai import read_prompt
 
 

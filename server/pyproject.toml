@@ -16,6 +16,8 @@ newrelic = "^9.8.0"
 openai = "^1.16.0"
 azure-storage-blob = "^12.19.1"
 azure-identity = "^1.15.0"
+pandas = "^2.2.1"
+python-multipart = "^0.0.9"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"
