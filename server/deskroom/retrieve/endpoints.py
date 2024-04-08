@@ -5,12 +5,20 @@ from ast import literal_eval
 from supabase._async.client import AsyncClient
 from deskroom.common.supabase import create_supabase_async_client
 from deskroom.logging import Logger
-from .schema import KnowledgeQueryIn, KnowledgeQueryOut
+from .schema import KnowledgeQueryIn, KnowledgeQueryOut, KnowledgeQueryInWithCategory
 from deskroom.retrieve.utils import retrieve_qns
 
 logger: Logger = structlog.get_logger()
 
 router = APIRouter(tags=["retrieve"], prefix="/retrieve")
+
+
+@router.post("/category/")
+async def get_knowledge_with_category_filter(
+    knowledge_query_in: KnowledgeQueryInWithCategory,
+    supabase: AsyncClient = Depends(create_supabase_async_client),
+) -> KnowledgeQueryOut:
+    pass
 
 
 @router.post("/")

@@ -6,6 +6,10 @@ class KnowledgeQueryIn(Schema):
     question: str
 
 
+class KnowledgeQueryInWithCategory(KnowledgeQueryIn):
+    category: str
+
+
 class KnowledgeQueryRetrieved(Schema):
     answer: str
     category: str
