@@ -50,20 +50,21 @@ async def make_knowledge_base(
         file.file.read(), engine="openpyxl", sheet_name="Message data"
     )
 
-    org_info = (
-        supabase.table("organizations").select("*").eq("key", org_key).execute().data[0]
+    supabase_response = await (
+        supabase.table("organizations").select("*").eq("key", org_key).execute()
     )
+    org_info = supabase_response.data[0]
 
     raw_df = raw_df.dropna()
-    processed_df = process_raw_file(raw_df)
+    processed_df = await process_raw_file(raw_df)
 
-    discovery_str = generate_discovery_string(processed_df)
-    company_policy = create_policy(discovery_str)
+    discovery_str = await generate_discovery_string(processed_df)
+    company_policy = await create_policy(discovery_str)
     chat_ids = list(processed_df["chatId"].unique())
     for chat_id in chat_ids:
         try:
-            qa_string = generate_qa_string(processed_df, chat_id)
-            discovered = create_qa(company_policy, qa_string)
+            qa_string = await generate_qa_string(processed_df, chat_id)
+            discovered = await create_qa(company_policy, qa_string)
             discovered_ = literal_eval(discovered)
             for qa in list(discovered_.values()):
                 questions.append(qa["Question"])
@@ -75,12 +76,12 @@ async def make_knowledge_base(
     updated_data = []
     for _ in range(len(update_df)):
         updated_files = {
-            "org_id": org_info["org_id"],
-            "org_name": org_info["org_name"],
+            "org_id": org_info["id"],
+            "org_name": org_info["name_eng"],
             "org_key": org_key,
             "question": update_df["Question"].tolist()[_],
             "answer": update_df["Answer"].tolist()[_],
         }
-        data = supabase.table("knowledge_base").insert(updated_files).execute()
+        data = await supabase.table("knowledge_base").insert(updated_files).execute()
         updated_data.append(data)
     return updated_data
