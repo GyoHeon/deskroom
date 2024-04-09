@@ -3,7 +3,7 @@
 import { ButtonWithLoading } from "@/components/ButtonWithLoading"
 import { Box, Flex, Heading, Text, Button } from "@radix-ui/themes"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useState } from "react"
+import { FormEvent, useState } from "react"
 import Image from 'next/image'
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -27,9 +27,9 @@ const ResetPasswordNewIndex = async () => {
   //   router.push('/v1/login')
   // }
   //
-  console.log({ code })
 
-  const handleChangePassword = async () => {
+  const handleChangePassword = async (e: FormEvent) => {
+    e.preventDefault()
     const { data, error } = await supabase.auth.updateUser({
       password: newPassword
     })
