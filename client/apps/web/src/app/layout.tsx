@@ -5,7 +5,6 @@ import "./globals.css";
 import "@mdxeditor/editor/style.css";
 import { Theme } from "@radix-ui/themes";
 import { OrganizationContextProvider } from "../contexts/OrganizationContext";
-import mixpanel from "mixpanel-browser";
 import { MixpanelProvider } from "@/contexts/MixpanelContext";
 
 const inter = Inter({ subsets: ["latin"] });

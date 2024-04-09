@@ -3,7 +3,7 @@ import { Flex, Heading, Text } from '@radix-ui/themes';
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { useFormState } from 'react-dom';
 import sendResetPasswordEmail from './actions';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/lib/database.types';
@@ -21,22 +21,10 @@ const initialState: ResetPasswordState = {
 
 export const ResetPasswordForm = async () => {
   const [state, formAction] = useFormState(sendResetPasswordEmail, initialState)
-  const [newPassword, setNewPassword] = useState<string>("")
   const [isRecovery, setIsRecovery] = useState<boolean>(false)
   const supabase = createClientComponentClient<Database>();
   const router = useRouter()
 
-  const handleChangePassword = async () => {
-    const { data, error } = await supabase.auth.updateUser({
-      password: newPassword
-    })
-    if (!!error) {
-      console.error({ error })
-      alert(`비밀번호 변경 중 오류가 발생했습니다. 다시 시도해주세요.\n${error.message}`)
-
-      return
-    }
-  }
 
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (event, session) => {
@@ -44,42 +32,11 @@ export const ResetPasswordForm = async () => {
         setIsRecovery(true)
       }
     })
-  }, [])
 
-  if (isRecovery) {
-    return (
-      <Flex direction={`column`}>
-        <Heading className="title" >비밀번호를 재설정 해주세요.</Heading>
-        <Flex className="form-group" direction={`column`}>
-          <label className="font-bold" htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="새로운 비밀번호"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out my-2 shadow h-10"
-          />
-        </Flex>
-        <Flex className="form-group" direction={`column`}>
-          <label className="font-bold" htmlFor="password-confirm">
-            Password
-          </label>
-          <input
-            id="password-confirm"
-            name="password-confirm"
-            type="password"
-            placeholder="비밀번호 확인"
-            className="w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out my-2 shadow h-10"
-          />
-        </Flex>
-        <ButtonWithLoading className='my-2' onClick={handleChangePassword}>제출하기</ButtonWithLoading>
-      </Flex>
-    )
-  }
+    if (isRecovery) {
+      redirect("/v1/reset-password/new")
+    }
+  }, [])
 
   if (state.status === 200) {
     return (
