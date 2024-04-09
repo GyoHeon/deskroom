@@ -68,7 +68,10 @@ export const SignUpForm = () => {
           numOfSteps={steps.length}
           title="기업 또는 브랜드 이름을 입력해 주세요."
           subtitle="입력한 이름은 이후에 변경할 수 있어요."
-          inputs={[{ label: "org-name", placeholder: "예. 데스크룸", type: "text", showLabel: false, name: "org-name" }]}
+          inputs={[
+            { label: "org-name", placeholder: "예. 데스크룸", type: "text", showLabel: false, name: "org-name" },
+            { label: "org-eng-name", placeholder: "예. deskroom", type: "text", showLabel: false, name: "org-eng-name" }
+          ]}
           onButtonClick={() => setStep(step_ => step_ + 1)}
         />
         <SignUpStep
@@ -91,13 +94,16 @@ export const SignUpForm = () => {
           title="가입하시는 담당자분의 이름을 입력해주세요."
           inputs={[{ label: "name", placeholder: "예. 박경호", type: "text", showLabel: false, name: "name" }]}
           bottomTextOverride={
-            <Text className="my-2 w-64 text-center word-break">
-              가입 완료를 클릭하시면 데스크룸의 {""}
-              <Text color="gray" className="underline">
-                <a href="https://docs.google.com/document/d/1sgYHlhR0Drgtir6HKYH9EGAu_Q3o9r5BGWbPxGNasa4/edit?usp=sharing">Terms of Service 및 Privacy Policy</a>
-              </Text>에
-              동의한 것으로 간주합니다.
-            </Text>
+            <>
+              <Text className="my-2 w-64 text-center word-break">
+                가입 완료를 클릭하시면 데스크룸의 {""}
+                <Text color="gray" className="underline">
+                  <a href="https://docs.google.com/document/d/1sgYHlhR0Drgtir6HKYH9EGAu_Q3o9r5BGWbPxGNasa4/edit?usp=sharing">Terms of Service 및 Privacy Policy</a>
+                </Text>에
+                동의한 것으로 간주합니다.
+              </Text>
+              {state.errors && <Text className="text-red-500">{state.errors}</Text>}
+            </>
           }
         />
       </form></>
