@@ -36,7 +36,7 @@ jobs:
         with:
           file-path: client/apps/chrome-extension/build/*.zip
           extension-id: ${{ secrets.DSKRM_EXTENSION_ID }}
-          client-id: ${{ secrets.DSKRM_STG_CLIENT_ID }}
+          client-id: ${{ secrets.DSKRM_CLIENT_ID }}
           client-secret: ${{ secrets.DSKRM_CLIENT_SECRET }}
           refresh-token: ${{ secrets.DSKRM_REFRESH_TOKEN }}
           glob: true
