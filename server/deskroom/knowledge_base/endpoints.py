@@ -39,10 +39,10 @@ async def get_knowledge_base(
 
 @router.post("/upload/{org_key}")
 async def make_knowledge_base(
-    org_key,
+    org_key: str,
     file: UploadFile = File(...),
     supabase: AsyncClient = Depends(create_supabase_async_client),
-):
+) -> list:
     questions = []
     answers = []
 

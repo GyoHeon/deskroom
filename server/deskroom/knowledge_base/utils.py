@@ -1,18 +1,9 @@
-from tempfile import NamedTemporaryFile
-from typing import IO
-
 import pandas as pd
 
 from deskroom.common.openai import create_openai_client, read_prompt
 
 
-async def save_file(file: IO):
-    with NamedTemporaryFile("wb", delete=False) as tempfile:
-        tempfile.write(file.read())
-        return tempfile.name
-
-
-async def process_raw_file(df: pd.DataFrame):
+async def process_raw_file(df: pd.DataFrame) -> pd.DataFrame:
     chatids = []
     persontypes = []
     utterances = []
@@ -49,7 +40,7 @@ async def process_raw_file(df: pd.DataFrame):
     return out_df
 
 
-async def generate_discovery_string(df: pd.DataFrame):
+async def generate_discovery_string(df: pd.DataFrame) -> str:
     strings = "chatId | person_types | utterances\n"
     for idx in range(len(df)):
         try:
@@ -64,7 +55,7 @@ async def generate_discovery_string(df: pd.DataFrame):
     return strings
 
 
-async def generate_qa_string(df: pd.DataFrame, chatid: str):
+async def generate_qa_string(df: pd.DataFrame, chatid: str) -> str:
     tmp_df = df[df["chatId"] == chatid]
 
     conversation_str = "speaker | utterance\n"
@@ -77,7 +68,7 @@ async def generate_qa_string(df: pd.DataFrame, chatid: str):
     return conversation_str
 
 
-async def create_policy(chat_logs: str):
+async def create_policy(chat_logs: str) -> str:
     prompt = read_prompt("create_policy.txt")
     openai_client = create_openai_client(asynchronous=True)
     response = await openai_client.chat.completions.create(
@@ -99,7 +90,7 @@ async def create_policy(chat_logs: str):
     return response.choices[0].message.content
 
 
-async def create_qa(policy: str, conversation: str):
+async def create_qa(policy: str, conversation: str) -> str:
     prompt = read_prompt("create_qa.txt")
     openai_client = create_openai_client(asynchronous=True)
     response = await openai_client.chat.completions.create(

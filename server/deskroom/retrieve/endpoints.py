@@ -21,9 +21,9 @@ router = APIRouter(tags=["retrieve"], prefix="/retrieve")
 
 
 async def retrieve_and_process(
-    qn,
-    knowledge_base,
-):
+    qn: str,
+    knowledge_base: list,
+) -> list:
     cleansed_question = qn
     company_policy = ""
     input_samples = {}

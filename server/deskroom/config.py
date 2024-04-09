@@ -33,6 +33,18 @@ class Settings(BaseSettings):
     # openai
     OPENAI_API_KEY: str = Field("deskroom_openai", alias="OPENAI_API_KEY")
 
+    AZURE_OPENAI_API_KEY: str = Field(
+        "deskroom_openai_api_key", alias="AZURE_OPENAI_API_KEY"
+    )
+
+    AZURE_OPENAI_ENDPOINT: str = Field(
+        "deskroom_openai_endpoint", alias="AZURE_OPENAI_ENDPOINT"
+    )
+
+    AZURE_OPENAI_API_VERSION: str = Field(
+        "deskroom_openai_api_version", alias="AZURE_OPENAI_API_VERSION"
+    )
+
     model_config = SettingsConfigDict(
         env_prefix="dskrm_",
         env_file_encoding="utf-8",
