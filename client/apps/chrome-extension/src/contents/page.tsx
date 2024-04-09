@@ -38,6 +38,8 @@ export const config: PlasmoCSConfig = {
     "https://www.thecloudgate.io/*",
     "https://admin.dcamp.kr/*",
     "https://*.notion.site/*",
+    "https://counselor.happytalk.io/*",
+    "https://wing.coupang.com/*",
   ],
   run_at: "document_start",
   all_frames: true,
