@@ -22,18 +22,19 @@ router = APIRouter(tags=["retrieve"], prefix="/retrieve")
 
 async def retrieve_and_process(
     qn: str,
-    knowledge_base: list,
-) -> list:
+    knowledge_base: list[dict[str, str]],
+) -> list[dict[str, str]]:
     cleansed_question = qn
     company_policy = ""
     input_samples = {}
     for idx in range(len(knowledge_base)):
         input_samples[f"Q{idx + 1}"] = knowledge_base[idx]["question"]
+
     retrieved = await retrieve_qns(
         company_policy, str(input_samples), cleansed_question
     )
 
-    output = literal_eval(retrieved)
+    output = literal_eval(str(retrieved))
     retrieved_msgs = []
     for retrieve_num in range(1, 4):
         try:

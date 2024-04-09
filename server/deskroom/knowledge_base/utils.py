@@ -78,7 +78,7 @@ async def create_policy(chat_logs: str) -> str:
                 "role": "system",
                 "content": prompt % (chat_logs),
             }
-        ],
+        ],  # type: ignore
         temperature=0,
         max_tokens=2024,
         top_p=1,
@@ -100,7 +100,7 @@ async def create_qa(policy: str, conversation: str) -> str:
                 "role": "system",
                 "content": prompt % (policy, conversation),
             }
-        ],
+        ],  # type: ignore
         temperature=0,
         max_tokens=2024,
         top_p=1,

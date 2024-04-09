@@ -42,7 +42,7 @@ async def make_knowledge_base(
     org_key: str,
     file: UploadFile = File(...),
     supabase: AsyncClient = Depends(create_supabase_async_client),
-) -> list:
+) -> list[KnowledgeBase]:
     questions = []
     answers = []
 
@@ -83,5 +83,5 @@ async def make_knowledge_base(
             "answer": update_df["Answer"].tolist()[_],
         }
         data = await supabase.table("knowledge_base").insert(updated_files).execute()
-        updated_data.append(data)
+        updated_data.append(data.data[0])
     return updated_data
