@@ -50,7 +50,6 @@ export default function RootLayout({
             token={process.env.NEXT_PUBLIC_MIXPANEL_API_KEY}
             config={{
               debug: process.env.NODE_ENV !== "production",
-              track_pageview: true,
               persistence: "localStorage",
             }}
             name={`deskroom-${process.env.NODE_ENV}`}
