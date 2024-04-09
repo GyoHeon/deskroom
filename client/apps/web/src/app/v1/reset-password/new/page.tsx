@@ -5,13 +5,27 @@ import { Box, Flex, Heading, Text, Button } from "@radix-ui/themes"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react"
 import Image from 'next/image'
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-const ResetPasswordNewIndex = () => {
+const ResetPasswordNewIndex = async () => {
   const [newPassword, setNewPassword] = useState<string>("")
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isDone, setDone] = useState(false);
   const supabase = createClientComponentClient()
+  const code = searchParams.get('code')
+
+  if (!code) {
+    alert('잘못된 요청입니다. 다시 시도해주세요.')
+    router.push('/v1/login')
+  }
+
+
+  const { error } = await supabase.auth.exchangeCodeForSession(code)
+  if (!!error) {
+    alert('잘못된 요청입니다. 다시 시도해주세요.')
+    router.push('/v1/login')
+  }
 
   const handleChangePassword = async () => {
     const { data, error } = await supabase.auth.updateUser({
