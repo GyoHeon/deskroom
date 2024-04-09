@@ -15,17 +15,19 @@ const ResetPasswordNewIndex = async () => {
   const supabase = createClientComponentClient()
   const code = searchParams.get('code')
 
-  if (!code) {
-    alert('잘못된 요청입니다. 다시 시도해주세요.')
-    router.push('/v1/login')
-  }
-
-
-  const { error } = await supabase.auth.exchangeCodeForSession(code)
-  if (!!error) {
-    alert('잘못된 요청입니다. 다시 시도해주세요.')
-    router.push('/v1/login')
-  }
+  // if (!code) {
+  //   alert('잘못된 요청입니다. 다시 시도해주세요.')
+  //   router.push('/v1/login')
+  // }
+  //
+  //
+  // const { error } = await supabase.auth.exchangeCodeForSession(code)
+  // if (!!error) {
+  //   alert('잘못된 요청입니다. 다시 시도해주세요.')
+  //   router.push('/v1/login')
+  // }
+  //
+  console.log({ code })
 
   const handleChangePassword = async () => {
     const { data, error } = await supabase.auth.updateUser({
