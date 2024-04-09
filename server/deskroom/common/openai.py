@@ -1,10 +1,12 @@
 import os
 from pathlib import Path
-from .azure import create_azure_container_client
-from openai import AsyncOpenAI, OpenAI, AzureOpenAI, AsyncAzureOpenAI
+
+from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 
 from deskroom.config import settings
 from deskroom.constants import PROMPT_PATH
+
+from .azure import create_azure_container_client
 
 
 def create_azure_openai_async_client(
@@ -59,7 +61,6 @@ def read_prompt(txt_file_from_prompts_dir: str | Path) -> str:
             prompt_file = file.readlines()
         prompt = "\n".join(prompt_file)
     else:
-
         container_client = create_azure_container_client("prompts")
         byte_data = container_client.download_blob(txt_file_from_prompts_dir)
         prompt = byte_data.readall().decode("utf-8")

@@ -1,5 +1,4 @@
 from azure.storage.blob import BlobServiceClient, ContainerClient
-from fastapi import Depends
 
 from deskroom.config import settings
 
