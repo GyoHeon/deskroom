@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: 20
           cache: "yarn"
+          cache-dependency-path: client/apps/chrome-extension/yarn.lock
       - name: Install
         working-directory: client/apps/chrome-extension
         run: |
