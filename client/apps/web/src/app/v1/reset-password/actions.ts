@@ -13,7 +13,7 @@ export default async function sendResetPasswordEmail(prevState: any, formData: F
 
   const supabase = createServerComponentClient<Database>({ cookies })
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${process.env.NEXT_PUBLIC_WEB_URL}/v1/reset-password?email=${formData.get('email')}` })
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${process.env.NEXT_PUBLIC_URL}/v1/reset-password?email=${formData.get('email')}` })
   if (!error) {
     return { errors: null, status: 200, message: '이메일이 발송되었습니다.' }
 

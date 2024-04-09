@@ -12,6 +12,7 @@ const ResetPasswordNewIndex = () => {
   const router = useRouter()
   const [isDone, setDone] = useState(false);
   const supabase = createClientComponentClient()
+
   const handleChangePassword = async () => {
     const { data, error } = await supabase.auth.updateUser({
       password: newPassword
@@ -39,35 +40,38 @@ const ResetPasswordNewIndex = () => {
   }
 
   return (
-    <form>
+    <form onSubmit={handleChangePassword}>
+      <Image src="/deskroom-icon.png" alt="Deskroom Logo" width={60} height={60} className="my-8" />
       <Flex direction={`column`}>
         <Heading className="title" >비밀번호를 재설정 해주세요.</Heading>
-        <Flex className="form-group" direction={`column`}>
-          <label className="font-bold" htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="새로운 비밀번호"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out my-2 shadow h-10"
-          />
-        </Flex>
-        <Flex className="form-group" direction={`column`}>
-          <label className="font-bold" htmlFor="password-confirm">
-            Password
-          </label>
-          <input
-            id="password-confirm"
-            name="password-confirm"
-            type="password"
-            placeholder="비밀번호 확인"
-            className="w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out my-2 shadow h-10"
-          />
-        </Flex>
+        <Box className="my-2">
+          <Flex className="form-group" direction={`column`}>
+            <label className="font-bold" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="새로운 비밀번호"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out my-2 shadow h-10"
+            />
+          </Flex>
+          <Flex className="form-group" direction={`column`}>
+            <label className="font-bold" htmlFor="password-confirm">
+              Password
+            </label>
+            <input
+              id="password-confirm"
+              name="password-confirm"
+              type="password"
+              placeholder="비밀번호 확인"
+              className="w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out my-2 shadow h-10"
+            />
+          </Flex>
+        </Box>
         <ButtonWithLoading className='my-2' onClick={handleChangePassword}>제출하기</ButtonWithLoading>
       </Flex>
     </form>
