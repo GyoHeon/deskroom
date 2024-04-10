@@ -1,3 +1,4 @@
+from typing import Any, Coroutine
 from supabase._async.client import (
     AsyncClient,
 )
@@ -30,7 +31,7 @@ async def _create_supabase_async_client(url: str, key: str) -> AsyncClient:
     )
 
 
-async def create_supabase_async_client() -> AsyncClient:
-    return await _create_supabase_async_client(
+def create_supabase_async_client() -> Coroutine[Any, Any, AsyncClient]:
+    return _create_supabase_async_client(
         url=settings.SUPABASE_URL, key=settings.SUPABASE_ANON_KEY
     )
