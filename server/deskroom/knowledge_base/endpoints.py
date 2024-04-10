@@ -74,6 +74,7 @@ async def make_knowledge_base(
                 questions.append(qa["Question"])
                 answers.append(qa["Answer"])
         except (ValueError, KeyError):
+            pass
     update_df = pd.DataFrame({"Question": questions, "Answer": answers})
     updated_data = []
     for row_num in range(len(update_df)):
