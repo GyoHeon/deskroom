@@ -10,8 +10,6 @@ async def process_raw_file(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.dropna()
 
-    current_chat = ""
-
     for chat_id in list(df["chatId"].unique()):
         df_ = df.loc[df["chatId"] == chat_id]
         current_speaker = ""
