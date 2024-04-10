@@ -8,6 +8,7 @@ from structlog import get_logger
 
 from deskroom.api import router
 from deskroom.logging import Logger
+from deskroom.middlewares import FlushEnqueuedWorkerJobsMiddleware
 from deskroom.worker import worker_lifespan
 
 logger: Logger = get_logger()
@@ -39,6 +40,7 @@ def create_app() -> FastAPI:
 
     # TODO: Add routes, middlewares here
     app.include_router(router)
+    app.add_middleware(FlushEnqueuedWorkerJobsMiddleware)
 
     return app
 

@@ -39,6 +39,10 @@ class KnowledgeBaseFetch(Schema):
     offset: int | None = Field(None)
 
 
+class KnowledgeBaseCreateJobIn(Schema):
+    name: str
+
+
 class KnowledgeBaseCreateJob(Schema):
     job_id: str = Field(alias="id")
     status: int | None = Field(None)
