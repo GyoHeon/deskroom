@@ -12,8 +12,13 @@ logger = structlog.get_logger()
 async def create_knowledge_base_create_job(ctx: JobContext, org_key: str) -> None:
     logger.info(f"supabase_url: ${settings.SUPABASE_URL}")
     supabase = await create_supabase_async_client()
+    job_id = ctx.get("job_id")
+
+    if not job_id:
+        raise ValueError("Job ID is not found")
+
     create_job = await service.create_knowledge_base_create_job(
-        supabase, ctx.get("job_id"), org_key
+        supabase, job_id, org_key
     )
     # TODO: do something with prompt
     # TODO: notify slack
