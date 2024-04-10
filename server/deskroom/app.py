@@ -1,8 +1,8 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import TypedDict
-from arq.connections import ArqRedis
 
+from arq.connections import ArqRedis
 from fastapi import FastAPI
 from structlog import get_logger
 

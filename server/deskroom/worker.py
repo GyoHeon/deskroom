@@ -1,3 +1,8 @@
+"""
+This module is inspired by polar's worker module.
+https://github.com/polarsource/polar/blob/main/server/polar/worker.py
+"""
+
 import contextvars
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
@@ -7,11 +12,11 @@ from functools import wraps
 from typing import Any, ParamSpec, TypeAlias, TypedDict, TypeVar, cast
 
 import structlog
-from arq import cron, func
+from arq import func
 from arq.connections import ArqRedis, RedisSettings
 from arq.connections import create_pool as arq_create_pool
 from arq.cron import CronJob
-from arq.typing import OptionType, SecondsTimedelta, WeekdayOptionType
+from arq.typing import SecondsTimedelta
 from arq.worker import Function
 
 from deskroom.config import settings
