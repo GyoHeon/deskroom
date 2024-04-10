@@ -43,14 +43,14 @@ jobs:
           DSKRM_SUPABASE_URL: ${{ secrets.DSKRM_SUPABASE_URL }}
           DSKRM_SUPABASE_ANON_KEY: ${{ secrets.DSKRM_SUPABASE_ANON_KEY }}
           DSKRM_ENV: test
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY}}
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY}}
-          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT}}
-          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION}}
-          AZURE_PROMPT_TOKEN : ${{ secrets.AZURE_PROMPT_TOKEN}}
-          AZURE_PROMPT_PATH : ${{ secrets.AZURE_PROMPT_TOKEN}}
-          AZURE_ACCOUNT_URL : ${{ secrets.AZURE_ACCOUNT_URL}}
-          AZURE_ACCOUNT_CREDENTIAL : ${{secrets.AZURE_ACCOUNT_CREDENTIAL}}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AZURE_PROMPT_TOKEN : ${{ secrets.AZURE_PROMPT_TOKEN }}
+          AZURE_PROMPT_PATH : ${{ secrets.AZURE_PROMPT_TOKEN }}
+          AZURE_ACCOUNT_URL : ${{ secrets.AZURE_ACCOUNT_URL }}
+          AZURE_ACCOUNT_CREDENTIAL : ${{ secrets.AZURE_ACCOUNT_CREDENTIAL }}
 
       - uses: akhileshns/heroku-deploy@v3.13.15
         with:
