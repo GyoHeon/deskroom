@@ -6,7 +6,7 @@ from deskroom.knowledge_base.schema import KnowledgeBaseCreateJob
 
 
 async def create_knowledge_base_create_job(
-    supabase: AsyncClient, name: str
+    supabase: AsyncClient, name: str, org_key: str
 ) -> KnowledgeBaseCreateJob:
     response = await (
         supabase.table("jobs")
@@ -15,6 +15,7 @@ async def create_knowledge_base_create_job(
                 "name": name,
                 "status": 0,
                 "type": "knowledge_base_create",
+                "org_key": org_key,
             }
         )
         .execute()
@@ -24,7 +25,7 @@ async def create_knowledge_base_create_job(
 
 
 async def mark_create_job_done(
-    supabase: AsyncClient, job_id: str
+    supabase: AsyncClient, job_id: int
 ) -> KnowledgeBaseCreateJob:
     response = await (
         supabase.table("jobs").update({"status": 1}).eq("id", job_id).execute()

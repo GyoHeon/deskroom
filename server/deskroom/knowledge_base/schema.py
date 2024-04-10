@@ -41,8 +41,10 @@ class KnowledgeBaseFetch(Schema):
 
 class KnowledgeBaseCreateJobIn(Schema):
     name: str
+    org_key: str
 
 
 class KnowledgeBaseCreateJob(Schema):
-    job_id: str = Field(alias="id")
+    job_id: int = Field(alias="id")
     status: int | None = Field(None)
+    org_key: str

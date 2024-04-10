@@ -1,4 +1,6 @@
-from typing import Any, Coroutine
+from collections.abc import Coroutine
+from typing import Any
+
 from supabase._async.client import (
     AsyncClient,
 )

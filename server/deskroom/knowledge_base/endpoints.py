@@ -30,6 +30,5 @@ async def get_knowledge_base(
 @router.post("/create")
 async def create_knowledge_base(
     item: KnowledgeBaseCreateJobIn,
-    supabase: AsyncClient = Depends(create_supabase_async_client),
 ) -> None:
-    enqueue_job("knowledge_base.create")
+    enqueue_job("knowledge_base.create", item.org_key)
