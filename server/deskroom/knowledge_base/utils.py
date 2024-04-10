@@ -50,7 +50,7 @@ async def generate_discovery_string(df: pd.DataFrame) -> str:
             utterance = row_instance["utterances"]
             tmp_str = f"{chat_id} | {person_type} | {utterance}\n"
             strings += tmp_str
-        except BaseException:
+        except (ValueError, KeyError):
             pass
     return strings
 

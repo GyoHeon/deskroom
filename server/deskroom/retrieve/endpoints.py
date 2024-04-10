@@ -1,7 +1,7 @@
 from ast import literal_eval
 
 import structlog
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from supabase._async.client import AsyncClient
 
 from deskroom.common.supabase import create_supabase_async_client
@@ -55,7 +55,7 @@ async def retrieve_and_process(
                     {"category": predicted_category, "answer": predicted_ans}
                 )
 
-        except BaseException:
+        except (KeyError, ValueError):
             pass
 
     return retrieved_msgs
@@ -73,7 +73,8 @@ async def get_knowledge_with_category_filter(
         .eq("category", knowledge_query_in.category)
         .execute()
     )
-
+    if not supabase_response.data:
+        raise HTTPException(status_code=400, detail="Data Not Found.")
     retrieved_msgs = await retrieve_and_process(
         qn=knowledge_query_in.question, knowledge_base=supabase_response.data
     )

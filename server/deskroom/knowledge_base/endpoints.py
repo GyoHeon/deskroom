@@ -51,9 +51,13 @@ async def make_knowledge_base(
     )
 
     supabase_response = await (
-        supabase.table("organizations").select("*").eq("key", org_key).execute()
+        supabase.table("organizations")
+        .select("id", "name_eng")
+        .eq("key", org_key)
+        .execute()
     )
-    org_info = supabase_response.data[0]
+    if not supabase_response.data:
+        raise ValueError("No ID / Name for given Org Key")
 
     raw_df = raw_df.dropna()
     processed_df = await process_raw_file(raw_df)
@@ -69,18 +73,17 @@ async def make_knowledge_base(
             for qa in list(discovered_.values()):
                 questions.append(qa["Question"])
                 answers.append(qa["Answer"])
-        except BaseException:
-            logger.info("Retrieved Messages")
+        except (ValueError, KeyError):
             pass
     update_df = pd.DataFrame({"Question": questions, "Answer": answers})
     updated_data = []
-    for _ in range(len(update_df)):
+    for row_num in range(len(update_df)):
         updated_files = {
-            "org_id": org_info["id"],
-            "org_name": org_info["name_eng"],
+            "org_id": supabase_response.data[0]["id"],
+            "org_name": supabase_response.data[0]["name_eng"],
             "org_key": org_key,
-            "question": update_df["Question"].tolist()[_],
-            "answer": update_df["Answer"].tolist()[_],
+            "question": update_df["Question"].tolist()[row_num],
+            "answer": update_df["Answer"].tolist()[row_num],
         }
         data = await supabase.table("knowledge_base").insert(updated_files).execute()
         updated_data.append(data.data[0])
