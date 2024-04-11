@@ -54,7 +54,7 @@ export const HotkeyProvider: React.FC<HotkeyProviderProps> = ({ children, catego
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const res = await fetch(`https://api.closer.so/v1/retrieve/`, {
+    const res = await fetch(`https://api-dev.deskroom.so/v1/retrieve/`, {
       body: JSON.stringify({
         organization_key: currentOrg.key,
         question: formData?.answer,
