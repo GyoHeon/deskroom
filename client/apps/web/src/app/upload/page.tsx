@@ -144,39 +144,41 @@ export default async function UploadPage({ searchParams }) {
         <Box className="rounded-xl bg-white p-5">
           <Box className="mb-2">
             <Heading>파일 업로드로 Q&A 등록하기</Heading>
-            <Text as="p" className="font-thin text-sm">
+            <Text as="p" className="text-sm">
               고객 상담에 관련한 데이터를 업로드해주세요. 각 카테고리 별로 Q&A를 구축해 KMS에 등록해드립니다.
             </Text>
           </Box>
-          <form className="my-2">
-            <UploadInputGroup
-              label="카테고리 정보"
-              description="현재 이용하고 계신 카테고리들을 콤마(,)로 구분해 입력해주세요. 입력해주신 카테고리를 반영해 Q&A를 정리합니다."
-              placeholder="ex. 환불, 제품 이상, 서비스 장애"
-              id="category"
-              name="category"
-            />
-            <UploadInputGroup
-              label="필수 질문"
-              description="Q&A에 꼭 포함되었으면 하는 질문들을 콤마(,)로 구분해 입력해주세요. 해당 질문은 필수로 포함해 Q&A를 정리합니다."
-              placeholder="ex. 환불 정책이 어떻게 되나요?, 기능 이용 방법을 알려주세요, 제품이 정상 작동하지 않는데 어떻게하죠?"
-              id="required-questions"
-              name="required-questions"
-            />
-            <UploadInputGroup
-              label="Tone & Manner"
-              description="희망하시는 답변의 어조나 어투들을 콤마 (,)로 구분해 입력해주세요. 입력해주신 내역을 기반으로 Q&A를 정리합니다."
-              placeholder="ex. 답변의 시작은 “고객님”이라는 단어로 시작, 모든 문장의 끝은 ~다 로 끝내주세요"
-              id="tone-manner"
-              name="tone-manner"
-            />
-            <Flex direction={`column`} gap={`4`}>
-              <Box>
-                <Text weight={`bold`} my={`4`}>
-                  Upload a file
-                </Text>
-                <DropzoneContextMenu />
-              </Box>
+          <form className="my-4">
+            <Flex direction="column" gap="2">
+              <UploadInputGroup
+                label="카테고리 정보"
+                description="현재 이용하고 계신 카테고리들을 콤마(,)로 구분해 입력해주세요. 입력해주신 카테고리를 반영해 Q&A를 정리합니다."
+                placeholder="ex. 환불, 제품 이상, 서비스 장애"
+                id="category"
+                name="category"
+              />
+              <UploadInputGroup
+                label="필수 질문"
+                description="Q&A에 꼭 포함되었으면 하는 질문들을 콤마(,)로 구분해 입력해주세요. 해당 질문은 필수로 포함해 Q&A를 정리합니다."
+                placeholder="ex. 환불 정책이 어떻게 되나요?, 기능 이용 방법을 알려주세요, 제품이 정상 작동하지 않는데 어떻게하죠?"
+                id="required-questions"
+                name="required-questions"
+              />
+              <UploadInputGroup
+                label="Tone & Manner"
+                description="희망하시는 답변의 어조나 어투들을 콤마 (,)로 구분해 입력해주세요. 입력해주신 내역을 기반으로 Q&A를 정리합니다."
+                placeholder="ex. 답변의 시작은 “고객님”이라는 단어로 시작, 모든 문장의 끝은 ~다 로 끝내주세요"
+                id="tone-manner"
+                name="tone-manner"
+              />
+              <Flex direction={`column`}>
+                <Box>
+                  <Text weight={`bold`} my={`4`}>
+                    Upload a file
+                  </Text>
+                  <DropzoneContextMenu />
+                </Box>
+              </Flex>
             </Flex>
           </form>
         </Box>

@@ -19,7 +19,7 @@ export const UploadInputGroup: React.FC<UploadInputGroupProps> = ({
   return (
     <Flex direction="column">
       <label className="block text-lg font-bold">{label}</label>
-      <Text className="font-thin">{description}</Text>
+      <Text className="text-sm">{description}</Text>
       <input className="p-2 border rounded my-2" type="text" placeholder={placeholder} id={id} name={name} />
     </Flex>
   )
