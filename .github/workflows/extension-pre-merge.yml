@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - "client/apps/chrome-extension/**"
 
 jobs:
   build:
