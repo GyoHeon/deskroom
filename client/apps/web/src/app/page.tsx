@@ -22,6 +22,11 @@ export default async function NewIndex({ searchParams }) {
     data: { session },
   } = await supabase.auth.getSession();
 
+  if (!session) {
+    // this is a protected route - only users who are signed in can view this route
+    redirect("/v1/login");
+  }
+
   const { data: organizations, error: organizationError } = await supabase
     .from("organizations")
     .select("*, users!inner(*)")
