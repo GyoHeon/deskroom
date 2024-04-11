@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from structlog import get_logger
 
 from deskroom.api import router
+from deskroom.common.openai import download_prompts
+from deskroom.config import settings
 from deskroom.logging import Logger
 from deskroom.middlewares import FlushEnqueuedWorkerJobsMiddleware
 from deskroom.worker import worker_lifespan
@@ -22,6 +24,9 @@ class State(TypedDict):
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     async with worker_lifespan() as arq_pool:
+        logger.info("Downloading Prompts")
+        if not settings.is_local() and not settings.is_test():
+            download_prompts()
         logger.info("Creating app")
         yield State(count=0, arq_pool=arq_pool)
         logger.info("Destroying app")
