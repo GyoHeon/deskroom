@@ -2,12 +2,14 @@
 
 import { Flex, Grid, Text } from "@radix-ui/themes";
 
-export type DropzoneProps = {
-  heading?: string;
-} & React.HTMLProps<HTMLDivElement>;
 import { useRef, useState } from "react";
 
-export default function Dropzone({ heading }: DropzoneProps) {
+export type DropzoneProps = {
+  heading?: string;
+  id: string;
+  name: string;
+} & React.HTMLProps<HTMLDivElement>;
+export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name }: DropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,7 +42,7 @@ export default function Dropzone({ heading }: DropzoneProps) {
     if (
       file &&
       file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       alert("Not implemented");
       throw new Error("Not implemented");
@@ -103,6 +105,8 @@ export default function Dropzone({ heading }: DropzoneProps) {
         </Text>
       </Flex>
       <input
+        id={id}
+        name={name}
         type="file"
         style={{ display: "none" }}
         ref={fileInputRef}
