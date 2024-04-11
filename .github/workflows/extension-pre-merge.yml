@@ -30,5 +30,6 @@ jobs:
           echo "PLASMO_PUBLIC_SUPABASE_KEY=${{ secrets.DSKRM_SUPABASE_ANON_KEY }}" >> .env
           echo "PLASMO_PUBLIC_MIXPANEL_TOKEN=${{ secrets.DSKRM_MIXPANEL_TOKEN }}" >> .env
       - name: Lint
+        working-directory: client/apps/chrome-extension
         run: |
           yarn lint
