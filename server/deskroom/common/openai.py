@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
@@ -5,7 +6,7 @@ from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from deskroom.config import settings
 from deskroom.constants import PROMPT_PATH
 
-from .azure import create_azure_container_client
+from .azure import create_azure_service_client
 
 
 def create_azure_openai_async_client(
@@ -54,14 +55,26 @@ def create_azure_openai_client(
     )
 
 
+def download_prompts() -> None:
+    blob_service_client = create_azure_service_client()
+
+    container_client = blob_service_client.get_container_client(container="prompts")
+    prompt_list = container_client.list_blobs()
+    for prompt in prompt_list:
+        blob_client = blob_service_client.get_blob_client(
+            container="prompts", blob=prompt["name"]
+        )
+        with open(file=PROMPT_PATH / prompt["name"], mode="wb") as prompt_blob:
+            download_stream = blob_client.download_blob()
+            prompt_blob.write(download_stream.readall())
+
+
 def read_prompt(txt_file_from_prompts_dir: str | Path) -> str:
-    if settings.is_local():
+    if not os.path.exists(PROMPT_PATH / txt_file_from_prompts_dir):
+        raise FileNotFoundError(f"{txt_file_from_prompts_dir} Prompt File Not Found")
+    else:
         with open(PROMPT_PATH / txt_file_from_prompts_dir) as file:
             prompt_file = file.readlines()
         prompt = "\n".join(prompt_file)
-    else:
-        container_client = create_azure_container_client("prompts")
-        byte_data = container_client.download_blob(str(txt_file_from_prompts_dir))
-        prompt = byte_data.readall().decode("utf-8")
 
     return prompt
