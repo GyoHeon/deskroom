@@ -1,14 +1,14 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test"
 
 export default defineConfig({
   projects: [
     {
       name: "chromium",
       use: {
-        ...devices["Desktop Chrome"],
-      },
-    },
+        ...devices["Desktop Chrome"]
+      }
+    }
   ],
   testDir: "./tests",
-  retries: 2,
-});
+  retries: 2
+})

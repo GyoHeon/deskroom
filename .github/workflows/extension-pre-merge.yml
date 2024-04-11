@@ -1,0 +1,35 @@
+name: Extension Pre-merge Check
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "client/apps/chrome-extension/**"
+
+jobs:
+  build:
+    name: Publish webextension
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "yarn"
+          cache-dependency-path: client/apps/chrome-extension/yarn.lock
+      - name: Install
+        working-directory: client/apps/chrome-extension
+        run: |
+          yarn install --frozen-lockfile --immutable
+      - name: Env file
+        working-directory: client/apps/chrome-extension
+        run: |
+          echo "PLASMO_PUBLIC_SUPABASE_URL=${{ secrets.DSKRM_SUPABASE_URL }}" >> .env
+          echo "PLASMO_PUBLIC_SUPABASE_KEY=${{ secrets.DSKRM_SUPABASE_ANON_KEY }}" >> .env
+          echo "PLASMO_PUBLIC_MIXPANEL_TOKEN=${{ secrets.DSKRM_MIXPANEL_TOKEN }}" >> .env
+      - name: Lint
+        working-directory: client/apps/chrome-extension
+        run: |
+          yarn lint

@@ -1,85 +1,88 @@
-import type { User } from "@supabase/supabase-js";
-import "data-text:@radix-ui/themes/styles.css";
-import { useEffect, useState } from "react";
-import '~/style.css';
+import type { User } from "@supabase/supabase-js"
 
-import { sendToBackground } from "@plasmohq/messaging";
-import { useStorage } from "@plasmohq/storage/hook";
+import "data-text:@radix-ui/themes/styles.css"
 
-import { supabase } from "~core/supabase";
-import type { Database } from "~lib/database.types";
+import { useEffect, useState } from "react"
+
+import "~/style.css"
+
+import { sendToBackground } from "@plasmohq/messaging"
+import { useStorage } from "@plasmohq/storage/hook"
+
+import { supabase } from "~core/supabase"
+import type { Database } from "~lib/database.types"
 
 export type Organization = Pick<
   Database["public"]["Tables"]["organizations"]["Row"],
   "id" | "name_eng" | "name_kor" | "key"
->;
+>
 export type OrganizationStorage = {
-  availableOrgs: Organization[];
-  currentOrg: Organization | undefined;
-};
+  availableOrgs: Organization[]
+  currentOrg: Organization | undefined
+}
 
 const buttonStyle = {
   backgroundColor: "whitesmoke",
   border: "unset",
   padding: "8px 16px",
-  margin: "8px 0",
-};
+  margin: "8px 0"
+}
 
 const getOrgs = async (userId: string) => {
   const { data, error } = await supabase
     .from("organizations")
     .select("id, name_eng, name_kor, key, users!inner(*)")
-    .eq("users.id", userId);
+    .eq("users.id", userId)
 
   if (error != null) {
-    console.error(error);
+    console.error(error)
   }
   for (const org of data) {
-    delete org.users;
+    delete org.users
   }
-  return data;
-};
+  return data
+}
 
 function IndexOptions() {
-  const [user, setUser] = useStorage<User>("user");
-  const [orgs, setOrgs] = useStorage<OrganizationStorage>("orgs");
+  const [user, setUser] = useStorage<User>("user")
+  const [orgs, setOrgs] = useStorage<OrganizationStorage>("orgs")
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
 
   useEffect(() => {
     async function init() {
-      const { data, error } = await supabase.auth.getSession();
+      const { data, error } = await supabase.auth.getSession()
 
       if (error) {
-        console.error(error);
-        return;
+        console.error(error)
+        return
       }
 
-      const organizations = await getOrgs(data.session.user.id);
+      const organizations = await getOrgs(data.session.user.id)
 
       if (!organizations) {
-        throw new Error("No organizations found for this user");
+        throw new Error("No organizations found for this user")
       }
       setOrgs({
         availableOrgs: organizations,
-        currentOrg: organizations[0],
-      });
+        currentOrg: organizations[0]
+      })
 
       if (!!data.session) {
-        setUser(data.session.user);
+        setUser(data.session.user)
         sendToBackground({
           name: "init-session",
           body: {
             refresh_token: data.session.refresh_token,
-            access_token: data.session.access_token,
-          },
-        });
+            access_token: data.session.access_token
+          }
+        })
       }
     }
 
-    init();
-  }, []);
+    init()
+  }, [])
 
   const handleEmailLogin = async (
     type: "LOGIN" | "SIGNUP",
@@ -89,34 +92,34 @@ function IndexOptions() {
     try {
       const {
         error,
-        data: { user },
+        data: { user }
       } =
         type === "LOGIN"
           ? await supabase.auth.signInWithPassword({
-            email: username,
-            password,
-          })
-          : await supabase.auth.signUp({ email: username, password });
+              email: username,
+              password
+            })
+          : await supabase.auth.signUp({ email: username, password })
 
       if (error) {
-        alert("Error with auth: " + error.message);
+        alert("Error with auth: " + error.message)
       } else if (!user) {
-        alert("Signup successful, confirmation mail should be sent soon!");
+        alert("Signup successful, confirmation mail should be sent soon!")
       } else {
-        setUser(user);
-        const availableOrgs = await getOrgs(user.id);
+        setUser(user)
+        const availableOrgs = await getOrgs(user.id)
         if (!availableOrgs) {
-          throw new Error("No organizations found for this user");
+          throw new Error("No organizations found for this user")
         }
         setOrgs({
           availableOrgs,
-          currentOrg: orgs.currentOrg ?? orgs[0],
-        });
+          currentOrg: orgs.currentOrg ?? orgs[0]
+        })
       }
     } catch (error) {
-      alert(error.error_description || error);
+      alert(error.error_description || error)
     }
-  };
+  }
 
   // TODO: remove mixpanel in options
   return (
@@ -132,9 +135,8 @@ function IndexOptions() {
         flexDirection: "column",
         fontSize: 16,
         fontFamily:
-          "ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
-      }}
-    >
+          "ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji"
+      }}>
       <h1 className="deskroom-options-title">Deskroom</h1>
       <div className="deskroom-organization">
         Organization: {orgs?.currentOrg?.name_kor}
@@ -146,9 +148,8 @@ function IndexOptions() {
           flexDirection: "column",
           width: 240,
           justifyContent: "space-between",
-          gap: 4.2,
-        }}
-      >
+          gap: 4.2
+        }}>
         {user && (
           <>
             <h3>
@@ -157,11 +158,10 @@ function IndexOptions() {
             <button
               style={buttonStyle}
               onClick={() => {
-                supabase.auth.signOut();
-                setUser(null);
-                setOrgs(null);
-              }}
-            >
+                supabase.auth.signOut()
+                setUser(null)
+                setOrgs(null)
+              }}>
               Logout
             </button>
           </>
@@ -186,24 +186,22 @@ function IndexOptions() {
             <button
               style={buttonStyle}
               onClick={(e) => {
-                handleEmailLogin("SIGNUP", username, password);
-              }}
-            >
+                handleEmailLogin("SIGNUP", username, password)
+              }}>
               Sign up
             </button>
             <button
               style={buttonStyle}
               onClick={(e) => {
-                handleEmailLogin("LOGIN", username, password);
-              }}
-            >
+                handleEmailLogin("LOGIN", username, password)
+              }}>
               Login
             </button>
           </>
         )}
       </div>
     </main>
-  );
+  )
 }
 
-export default IndexOptions;
+export default IndexOptions
