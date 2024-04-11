@@ -65,11 +65,80 @@ export type Database = {
           },
         ]
       }
+      category_tag: {
+        Row: {
+          category_id: number
+          created_at: string
+          tag: string
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: number
+          created_at?: string
+          tag: string
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: number
+          created_at?: string
+          tag?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_category_tag_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          org_key: string
+          status: number
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+          org_key: string
+          status?: number
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+          org_key?: string
+          status?: number
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_jobs_org_key_fkey"
+            columns: ["org_key"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       knowledge_base: {
         Row: {
           answer: string | null
           category: string | null
+          caution_required: boolean | null
           created_at: string
+          frequently_asked: boolean | null
           id: number
           intent: string | null
           org_id: number
@@ -77,12 +146,15 @@ export type Database = {
           org_name: string | null
           question: string | null
           similar_questions: string | null
+          support_manual: string | null
           updated_at: string
         }
         Insert: {
           answer?: string | null
           category?: string | null
+          caution_required?: boolean | null
           created_at?: string
+          frequently_asked?: boolean | null
           id?: number
           intent?: string | null
           org_id: number
@@ -90,12 +162,15 @@ export type Database = {
           org_name?: string | null
           question?: string | null
           similar_questions?: string | null
+          support_manual?: string | null
           updated_at?: string
         }
         Update: {
           answer?: string | null
           category?: string | null
+          caution_required?: boolean | null
           created_at?: string
+          frequently_asked?: boolean | null
           id?: number
           intent?: string | null
           org_id?: number
@@ -103,6 +178,7 @@ export type Database = {
           org_name?: string | null
           question?: string | null
           similar_questions?: string | null
+          support_manual?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -183,6 +259,71 @@ export type Database = {
         }
         Relationships: []
       }
+      question_image: {
+        Row: {
+          created_at: string
+          image_url: string | null
+          question_id: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          image_url?: string | null
+          question_id?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          image_url?: string | null
+          question_id?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_question_image_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: true
+            referencedRelation: "knowledge_base"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_tag: {
+        Row: {
+          created_at: string
+          question_id: number
+          tag: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          question_id?: number
+          tag?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          question_id?: number
+          tag?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_question_tag_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: true
+            referencedRelation: "knowledge_base"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_question_tag_tag_fkey"
+            columns: ["tag"]
+            isOneToOne: false
+            referencedRelation: "category_tag"
+            referencedColumns: ["tag"]
+          },
+        ]
+      }
       questions: {
         Row: {
           "\bcategory": string | null
@@ -238,8 +379,7 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          org_id: number
-          org_name: string | null
+          org_key: string
           status: string
           updated_at: string
           user_id: string
@@ -247,8 +387,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: number
-          org_id: number
-          org_name?: string | null
+          org_key: string
           status?: string
           updated_at?: string
           user_id: string
@@ -256,19 +395,18 @@ export type Database = {
         Update: {
           created_at?: string
           id?: number
-          org_id?: number
-          org_name?: string | null
+          org_key?: string
           status?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "public_uploads_org_id_fkey"
-            columns: ["org_id"]
+            foreignKeyName: "public_uploads_org_key_fkey"
+            columns: ["org_key"]
             isOneToOne: false
             referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedColumns: ["key"]
           },
           {
             foreignKeyName: "public_uploads_user_id_fkey"

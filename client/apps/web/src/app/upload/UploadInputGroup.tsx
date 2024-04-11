@@ -8,6 +8,7 @@ type UploadInputGroupProps = {
   placeholder: string;
   id: string;
   name?: string;
+  required?: boolean;
 } & React.HTMLAttributes<HTMLDivElement>;
 export const UploadInputGroup: React.FC<UploadInputGroupProps> = ({
   label,
@@ -15,12 +16,13 @@ export const UploadInputGroup: React.FC<UploadInputGroupProps> = ({
   placeholder,
   id,
   name,
+  required
 }) => {
   return (
     <Flex direction="column">
       <label className="block text-lg font-bold">{label}</label>
       <Text className="text-sm">{description}</Text>
-      <input className="p-2 border rounded my-2 text-sm" type="text" placeholder={placeholder} id={id} name={name} />
+      <input className="p-2 border rounded my-2 text-sm" type="text" placeholder={placeholder} id={id} name={name} required={required} />
     </Flex>
   )
 }
