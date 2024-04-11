@@ -4,7 +4,7 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import KnowledgeBaseListView from "../components/KnowledgeBaseListView";
+import KnowledgeBaseListView, { KnowledgeItemQueryType } from "../components/KnowledgeBaseListView";
 import TopNav from "../components/TopNav";
 import { getCategories } from "./api/categories";
 import { HotkeyProvider } from "@/contexts/HotkeyContext";
@@ -21,11 +21,6 @@ export default async function NewIndex({ searchParams }) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
-  if (!session) {
-    // this is a protected route - only users who are signed in can view this route
-    redirect("/v1/login");
-  }
 
   const { data: organizations, error: organizationError } = await supabase
     .from("organizations")
@@ -60,8 +55,21 @@ export default async function NewIndex({ searchParams }) {
 
   const { data: knowledgeBase, error: kbError } = await supabase
     .from("knowledge_base")
-    .select("*")
-    .eq("org_id", organization.id);
+    .select(`
+      *, 
+      knowledge_categories(
+        name,
+        knowledge_tags (
+          name
+        )
+      ),
+      knowledge_images (
+        image_url
+      )
+    `)
+    .eq("org_key", organization.key);
+
+
   if (kbError) {
     console.error("Error fetching knowledge base:", kbError);
     return;
@@ -83,7 +91,7 @@ export default async function NewIndex({ searchParams }) {
           <Box className="rounded-xl bg-white p-5">
             <KnowledgeBaseListView
               categories={categories}
-              knowledgeItems={knowledgeBase}
+              knowledgeItems={knowledgeBase as any[]} // TODO: fix type
               organization={organization}
               callback={handleDataChange}
             />

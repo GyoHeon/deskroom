@@ -65,35 +65,6 @@ export type Database = {
           },
         ]
       }
-      category_tag: {
-        Row: {
-          category_id: number
-          created_at: string
-          tag: string
-          updated_at: string | null
-        }
-        Insert: {
-          category_id?: number
-          created_at?: string
-          tag: string
-          updated_at?: string | null
-        }
-        Update: {
-          category_id?: number
-          created_at?: string
-          tag?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_category_tag_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "knowledge_categories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       jobs: {
         Row: {
           created_at: string
@@ -136,6 +107,7 @@ export type Database = {
         Row: {
           answer: string | null
           category: string | null
+          category_id: number | null
           caution_required: boolean | null
           created_at: string
           frequently_asked: boolean | null
@@ -152,6 +124,7 @@ export type Database = {
         Insert: {
           answer?: string | null
           category?: string | null
+          category_id?: number | null
           caution_required?: boolean | null
           created_at?: string
           frequently_asked?: boolean | null
@@ -168,6 +141,7 @@ export type Database = {
         Update: {
           answer?: string | null
           category?: string | null
+          category_id?: number | null
           caution_required?: boolean | null
           created_at?: string
           frequently_asked?: boolean | null
@@ -187,6 +161,13 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_knowledge_base_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -220,6 +201,70 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["key"]
+          },
+        ]
+      }
+      knowledge_images: {
+        Row: {
+          created_at: string
+          id: number
+          image_url: string | null
+          question_id: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          image_url?: string | null
+          question_id: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          image_url?: string | null
+          question_id?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_question_image_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_base"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_tags: {
+        Row: {
+          category_id: number
+          created_at: string
+          id: number
+          name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: number
+          created_at?: string
+          id?: number
+          name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: number
+          created_at?: string
+          id?: number
+          name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_question_tag_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -258,71 +303,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
-      }
-      question_image: {
-        Row: {
-          created_at: string
-          image_url: string | null
-          question_id: number
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          image_url?: string | null
-          question_id?: number
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          image_url?: string | null
-          question_id?: number
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_question_image_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: true
-            referencedRelation: "knowledge_base"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      question_tag: {
-        Row: {
-          created_at: string
-          question_id: number
-          tag: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          question_id?: number
-          tag?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          question_id?: number
-          tag?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_question_tag_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: true
-            referencedRelation: "knowledge_base"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "public_question_tag_tag_fkey"
-            columns: ["tag"]
-            isOneToOne: false
-            referencedRelation: "category_tag"
-            referencedColumns: ["tag"]
-          },
-        ]
       }
       questions: {
         Row: {
@@ -371,6 +351,38 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tags_categories: {
+        Row: {
+          category_id: number | null
+          created_at: string
+          id: number
+          tag_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: number | null
+          created_at?: string
+          id?: number
+          tag_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: number | null
+          created_at?: string
+          id?: number
+          tag_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_tags_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
             referencedColumns: ["id"]
           },
         ]
