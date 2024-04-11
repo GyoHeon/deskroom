@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 from deskroom.common.openai import create_azure_openai_client, read_prompt
 
 
