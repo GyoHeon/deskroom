@@ -55,7 +55,7 @@ def create_azure_openai_client(
 
 
 def read_prompt(txt_file_from_prompts_dir: str | Path) -> str:
-    if settings.ENV.local:
+    if settings.ENV == "local":
         with open(PROMPT_PATH / txt_file_from_prompts_dir) as file:
             prompt_file = file.readlines()
         prompt = "\n".join(prompt_file)
