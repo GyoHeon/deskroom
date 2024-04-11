@@ -140,7 +140,7 @@ export default async function UploadPage({ searchParams }) {
   return (
     <Flex direction={`column`}>
       <TopNav />
-      <Container className="px-16 pt-4 bg-primary-100 min-h-[800px]">
+      <Container className="px-16 py-4 bg-primary-100 min-h-[800px]">
         <Box className="rounded-xl bg-white p-5">
           <Box className="mb-2">
             <Heading>파일 업로드로 Q&A 등록하기</Heading>
@@ -148,7 +148,7 @@ export default async function UploadPage({ searchParams }) {
               고객 상담에 관련한 데이터를 업로드해주세요. 각 카테고리 별로 Q&A를 구축해 KMS에 등록해드립니다.
             </Text>
           </Box>
-          <form className="my-4">
+          <form className="my-8">
             <Flex direction="column" gap="2">
               <UploadInputGroup
                 label="카테고리 정보"
@@ -172,12 +172,32 @@ export default async function UploadPage({ searchParams }) {
                 name="tone-manner"
               />
               <Flex direction={`column`}>
-                <Box>
-                  <Text weight={`bold`} my={`4`}>
-                    Upload a file
-                  </Text>
-                  <DropzoneContextMenu />
-                </Box>
+                <Text weight={`bold`}>
+                  채널톡 대화 내역 업로드
+                </Text>
+                <Text>
+                  채널톡 대화 내역을 업로드하시는 경우, 아래 창에 업로드해주세요.
+                </Text>
+                <DropzoneContextMenu />
+              </Flex>
+              <Flex direction={`column`}>
+                <Text weight={`bold`}>
+                  기타 자료 업로드
+                </Text>
+                <Text>
+                  상담 매뉴얼과 운영 가이드 등 Q&A 구축에 필요한 데이터를 업로드하시는 경우, 아래 창에 업로드해주세요.
+                </Text>
+                <DropzoneContextMenu />
+              </Flex>
+              <Flex direction="column">
+                <Text weight="bold">네이버 스마트스토어 및 카카오톡 채널 데이터
+                </Text>
+                <Text>
+                  네이버 스마트스토어나 카카오톡 채널 데이터를 이용하실 경우, 네이버와 카카오의 정책 상 데이터 추출이 불가능합니다. {"\n"}
+                </Text>
+                <Text>
+                  해당 가이드북을 따라 채널의 부관리자/매니저 권한을 부여해주시면, 데스크룸 팀이 데이터 수집 후 Q&A를 구축해드립니다.
+                </Text>
               </Flex>
             </Flex>
           </form>
