@@ -1,4 +1,3 @@
-import DropzoneContextMenu from "@/components/DropzoneContextMenu";
 import { Database } from "@/lib/database.types";
 import { Box, Container, Flex, Heading, Text } from "@radix-ui/themes";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -7,6 +6,7 @@ import { redirect } from "next/navigation";
 import TopNav from "../../components/TopNav";
 import Spinner from "@/components/Spinner";
 import { UploadInputGroup } from "./UploadInputGroup";
+import Dropzone from "@/components/Dropzone";
 
 const getDuration = (createdTime: string) => {
   const createdDate = new Date(createdTime);
@@ -178,7 +178,7 @@ export default async function UploadPage({ searchParams }) {
                 <Text>
                   채널톡 대화 내역을 업로드하시는 경우, 아래 창에 업로드해주세요.
                 </Text>
-                <DropzoneContextMenu />
+                <Dropzone id="channel-talk-files" name="channel-talk-files" />
               </Flex>
               <Flex direction={`column`}>
                 <Text weight={`bold`}>
@@ -187,7 +187,7 @@ export default async function UploadPage({ searchParams }) {
                 <Text>
                   상담 매뉴얼과 운영 가이드 등 Q&A 구축에 필요한 데이터를 업로드하시는 경우, 아래 창에 업로드해주세요.
                 </Text>
-                <DropzoneContextMenu />
+                <Dropzone id="misc-files" name="misc-files" />
               </Flex>
               <Flex direction="column">
                 <Text weight="bold">네이버 스마트스토어 및 카카오톡 채널 데이터
