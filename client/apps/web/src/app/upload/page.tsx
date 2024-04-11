@@ -128,9 +128,6 @@ export default async function UploadPage({ searchParams }) {
                 {/* Uploads are completed. Click the button below to start a new upload. */}
               </Text>
             </Box>
-            <Box>
-              <DropzoneContextMenu />
-            </Box>
           </Flex>
         </Container>
       </Flex>
