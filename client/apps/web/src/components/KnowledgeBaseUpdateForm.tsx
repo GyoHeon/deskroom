@@ -185,11 +185,11 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
           </Flex>
           <Flex gap="2" className="gap-2">
             <Flex align="center" justify="center" gap="1" className="gap-2">
-              <input type="checkbox" id="frequently_asked" name="frequently_asked" value={formData.frequently_asked ? 0 : 1} onChange={handleChange} />
+              <input type="checkbox" id="frequently_asked" name="frequently_asked" value={formData?.frequently_asked ? 0 : 1} onChange={handleChange} />
               <label htmlFor="frequently_asked" className="text-violet11 text-sm leading-[18px]">자주 묻는 질문</label>
             </Flex>
             <Flex align="center" justify="center" gap="1" className="gap-2">
-              <input type="checkbox" id="caution_required" name="caution_required" value={formData.caution_required ? 0 : 1} onChange={handleChange} />
+              <input type="checkbox" id="caution_required" name="caution_required" value={formData?.caution_required ? 0 : 1} onChange={handleChange} />
               <label htmlFor="caution_required" className="text-violet11 text-sm leading-[18px]">답변 주의</label>
             </Flex>
           </Flex>
