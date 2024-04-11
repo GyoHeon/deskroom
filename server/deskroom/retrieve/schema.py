@@ -1,3 +1,5 @@
+from typing import Any
+
 from deskroom.common.schema import Schema
 
 
@@ -17,9 +19,9 @@ class KnowledgeQueryRetrieved(Schema):
 
 class KnowledgeQueryOutWithCategory(KnowledgeQueryInWithCategory):
     cleansed_question: str
-    retrieved_messages: list[dict[str, str]]
+    retrieved_messages: list[dict[str, Any]]
 
 
 class KnowledgeQueryOut(KnowledgeQueryIn):
     cleansed_question: str
-    retrieved_messages: list[dict[str, str]]
+    retrieved_messages: list[dict[str, Any]]
