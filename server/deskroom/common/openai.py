@@ -3,10 +3,9 @@ from pathlib import Path
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 
+from deskroom.common.azure import create_azure_service_client
 from deskroom.config import settings
 from deskroom.constants import PROMPT_PATH
-
-from .azure import create_azure_service_client
 
 
 def create_azure_openai_async_client(
@@ -72,9 +71,9 @@ def download_prompts() -> None:
 def read_prompt(txt_file_from_prompts_dir: str | Path) -> str:
     if not os.path.exists(PROMPT_PATH / txt_file_from_prompts_dir):
         raise FileNotFoundError(f"{txt_file_from_prompts_dir} Prompt File Not Found")
-    else:
-        with open(PROMPT_PATH / txt_file_from_prompts_dir) as file:
-            prompt_file = file.readlines()
-        prompt = "\n".join(prompt_file)
+
+    with open(PROMPT_PATH / txt_file_from_prompts_dir) as file:
+        prompt_file = file.readlines()
+    prompt = "\n".join(prompt_file)
 
     return prompt
