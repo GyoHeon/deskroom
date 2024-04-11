@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
 
     # redis
-    REDIS_URL: str = Field("redis://localhost:6379/0")
+    REDIS_URL: str = Field("redis://localhost:6379/0", alias="REDIS_URL")
 
     model_config = SettingsConfigDict(
         env_prefix="dskrm_",
