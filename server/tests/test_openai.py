@@ -9,6 +9,6 @@ def test_openai_read_prompt_should_load_prompt(tmpdir: Path) -> None:
         file.write("Hello, World!")
         file.write("This is a test prompt.")
 
-    prompt = read_prompt(tmpdir / "hello.txt")
+    prompt = read_prompt("hello.txt")
     assert "Hello, World!" in prompt
     assert "This is a test prompt." in prompt
