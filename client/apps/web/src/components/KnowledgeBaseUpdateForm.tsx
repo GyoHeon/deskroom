@@ -5,6 +5,7 @@ import { Box, Button, Flex, Select, TextArea } from "@radix-ui/themes";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React, { useState } from "react";
 import { KnowledgeItem } from "./KnowledgeBaseListView";
+import Dropzone from "./Dropzone";
 
 interface KnowledgeBaseUpdateFormProps {
   onSubmit: (data: KnowledgeItem) => void;
@@ -110,7 +111,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
                 setFormData({ ...formData, category: value })
               }
             >
-              <Select.Trigger className="w-[125px] h-[35px] px-2 rounded-lg bg-[#EFF1F999] border-2" />
+              <Select.Trigger className="w-[125px] h-[35px] px-2 rounded-lg bg-[#EFF1F999] border-2 text-sm" />
               <Select.Content>
                 {categories.map((category, categoryIdx) => (
                   <Select.Item key={categoryIdx} value={category}>
@@ -130,32 +131,68 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
             <input
               id="question"
               name="question"
-              className="h-[35px] pl-2 rounded-md bg-[#EFF1F999] border-2 border-gray-300 text-[12px]"
+              className="h-[35px] pl-2 rounded-md bg-[#EFF1F999] border-2 border-gray-300 text-sm"
               value={formData?.question}
               onChange={handleChange}
             />
           </Flex>
-          <Box>
-            <Flex direction={`column`}>
-              <label
-                htmlFor="answer"
-                className="text-violet11 font-bold text-[11px] leading-[18px] pb-[5px]"
-              >
-                답변
-              </label>
-              <TextArea
-                contentEditable
-                rows={5}
-                size={`3`}
-                className="block p-2.5 w-full h-fit text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 bg-[#EFF1F999] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Write Answer..."
-                id="answer"
-                name="answer"
-                value={formData?.answer}
-                onChange={handleChange}
-              />
+          <Flex direction={`column`}>
+            <label
+              htmlFor="answer"
+              className="text-violet11 font-bold text-[11px] leading-[18px] pb-[5px]"
+            >
+              답변
+            </label>
+            <TextArea
+              contentEditable
+              rows={5}
+              size={`3`}
+              className="block p-2.5 w-full h-fit text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 bg-[#EFF1F999] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Write Answer..."
+              id="answer"
+              name="answer"
+              value={formData?.answer}
+              onChange={handleChange}
+            />
+          </Flex>
+          <Flex direction={`column`} className="my-2">
+            <label
+              htmlFor="support_manual"
+              className="text-violet11 font-bold text-[11px] leading-[18px] pb-[5px]"
+            >
+              응답 매뉴얼
+            </label>
+            <input
+              id="support_manual"
+              name="support_manual"
+              className="h-[35px] pl-2 rounded-md bg-[#EFF1F999] border-2 border-gray-300 text-sm"
+              value={formData?.support_manual}
+              onChange={handleChange}
+            />
+          </Flex>
+          <Flex direction={`column`} className="my-2">
+            <label
+              htmlFor="files"
+              className="text-violet11 font-bold text-[11px] leading-[18px] pb-[5px]"
+            >
+              첨부 파일
+            </label>
+            <Dropzone
+              id="files"
+              name="files"
+              multiple
+            />
+          </Flex>
+          <Flex gap="2" className="gap-2">
+            <Flex align="center" justify="center" gap="1" className="gap-2">
+              <input type="checkbox" id="frequently_asked" name="frequently_asked" value={formData.frequently_asked ? 0 : 1} onChange={handleChange} />
+              <label htmlFor="frequently_asked" className="text-violet11 text-sm leading-[18px]">자주 묻는 질문</label>
             </Flex>
-          </Box>
+            <Flex align="center" justify="center" gap="1" className="gap-2">
+              <input type="checkbox" id="caution_required" name="caution_required" value={formData.caution_required ? 0 : 1} onChange={handleChange} />
+              <label htmlFor="caution_required" className="text-violet11 text-sm leading-[18px]">답변 주의</label>
+            </Flex>
+          </Flex>
         </>
       )}
 
@@ -165,14 +202,14 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
             variant={`solid`}
             size={`3`}
             color={mode !== "delete" ? `violet` : `red`}
-            className="p-2 rounded w-[100px] h-[35px] pl-2"
+            className="p-2 rounded w-[100px] h-[35px] pl-2 bg-primary-900 text-white text-sm"
           >
             <Box className="px-1 text-sm">
               {mode === "create"
                 ? "등록 하기"
                 : mode === "edit"
-                ? "수정 하기"
-                : "삭제 하기"}
+                  ? "수정 하기"
+                  : "삭제 하기"}
             </Box>
           </Button>
         </Box>

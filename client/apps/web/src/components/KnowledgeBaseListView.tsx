@@ -286,14 +286,14 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                   <Table.Cell className="max-w-96">{item.answer}</Table.Cell>
                   <Table.Cell className="max-w-96"><Flex gap="2" align="center" justify="center">
                     {item.support_manual && <ClipboardIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
-                    {item.knowledge_images.length !== 0 && <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
+                    {item?.knowledge_images?.length !== 0 && <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
                   </Flex></Table.Cell>
                   <Table.Cell className="w-52">
                     <Flex align={`center`} height={`100%`} gap={`2`}>
                       <Button
                         className="bg-gray-100 text-gray-500"
                         onClick={() => {
-                          setSelectedItem(item);
+                          setSelectedItem((({ knowledge_images, knowledge_categories, ...o }) => o)(item));
                           setDialogMode("edit");
                           setOpenDialog(true);
                         }}
@@ -303,7 +303,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                       <Button
                         className="bg-gray-100 text-gray-500"
                         onClick={() => {
-                          setSelectedItem(item);
+                          setSelectedItem((({ knowledge_images, knowledge_categories, ...o }) => o)(item));
                           setOpenDialog(true);
                           setDialogMode("delete");
                         }}
