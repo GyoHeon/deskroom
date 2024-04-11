@@ -8,8 +8,9 @@ export type DropzoneProps = {
   heading?: string;
   id: string;
   name: string;
+  multiple?: boolean;
 } & React.HTMLProps<HTMLDivElement>;
-export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name }: DropzoneProps) {
+export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false }: DropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -111,6 +112,7 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
         style={{ display: "none" }}
         ref={fileInputRef}
         accept=".xlsx"
+        multiple={multiple}
       />
     </Grid>
   );
