@@ -63,6 +63,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
     "edit"
   );
   const [selectedCategory, setSelectedCategory] = useState<string>(null)
+  const [selectedTag, setSelectedTag] = useState<string>(null)
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.currentTarget.value);
@@ -72,6 +73,8 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   const [open, setOpen] = React.useState(false);
   const timerRef = React.useRef(0);
   const mixpanel = useMixpanel();
+
+  const tags = knowledgeItems.map((item) => item.knowledge_categories?.knowledge_tags).flat().filter((tag) => !!tag?.name).map((tag) => tag.name);
 
   const handleKnowledgeBaseDataChange = async (
     payload: RealtimePostgresChangesPayload<{
@@ -189,6 +192,32 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                         {categories.map((category, categoryIdx) => (
                           <Select.Item key={categoryIdx} value={category.name}>
                             {category.name}
+                          </Select.Item>
+                        ))}
+                      </Select.Group>
+                    </Select.Content>
+                  </Select.Root>
+                )
+              }
+              {
+                tags.length > 0 && (
+                  <Select.Root
+                    defaultValue={'태그'}
+                    onValueChange={(value) => {
+                      setSelectedTag(value);
+                      setFilteredItems(value ? knowledgeItems.filter((item) => item.knowledge_categories?.knowledge_tags.map((tag) => tag.name).includes(value)) : knowledgeItems);
+                    }}
+                    value={selectedTag}
+                  >
+                    <Select.Trigger className="font-semibold w-32 max-w-48">
+                      태그
+                    </Select.Trigger>
+                    <Select.Content>
+                      <Select.Group>
+                        <Select.Item value={null}>태그</Select.Item>
+                        {tags.map((tag, tagIdx) => (
+                          <Select.Item key={tagIdx} value={tag}>
+                            {tag}
                           </Select.Item>
                         ))}
                       </Select.Group>
