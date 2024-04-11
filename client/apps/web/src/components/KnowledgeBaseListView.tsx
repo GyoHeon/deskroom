@@ -3,7 +3,9 @@ import { Organization } from "@/contexts/OrganizationContext";
 import { Database } from "@/lib/database.types";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
+  ClipboardIcon,
   Cross2Icon,
+  DownloadIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   UploadIcon,
@@ -31,8 +33,15 @@ export type KnowledgeItem =
   Database["public"]["Tables"]["knowledge_base"]["Row"];
 export type KnowledgeCategory =
   Database["public"]["Tables"]["knowledge_categories"]["Row"];
+export type QuestionTag = Database["public"]["Tables"]["knowledge_tags"]["Row"];
+type QuestionTagName = Pick<QuestionTag, "name">;
+type KnowledgeCategoryName = Pick<KnowledgeCategory, "name">;
+export type QuestionImage = Database["public"]["Tables"]["knowledge_images"]["Row"];
+type QuestionImageURL = Pick<QuestionImage, "image_url">;
+export type KnowledgeItemQueryType = KnowledgeItem & { knowledge_categories: KnowledgeCategoryName & { knowledge_tags: QuestionTagName[] } } & { knowledge_images: QuestionImageURL[] };
+
 export type KnowledgeBaseListViewProps = {
-  knowledgeItems: KnowledgeItem[];
+  knowledgeItems: KnowledgeItemQueryType[];
   categories: KnowledgeCategory[];
   organization: Organization;
   callback?: () => void;
@@ -48,12 +57,13 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   const [openDialog, setOpenDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredItems, setFilteredItems] =
-    useState<KnowledgeItem[]>(knowledgeItems);
+    useState<KnowledgeItemQueryType[]>(knowledgeItems);
   const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
   const [dialogMode, setDialogMode] = useState<"create" | "edit" | "delete">(
     "edit"
   );
   const [selectedCategory, setSelectedCategory] = useState<string>(null)
+  const [selectedTag, setSelectedTag] = useState<string>(null)
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.currentTarget.value);
@@ -63,6 +73,8 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   const [open, setOpen] = React.useState(false);
   const timerRef = React.useRef(0);
   const mixpanel = useMixpanel();
+
+  const tags = knowledgeItems.map((item) => item.knowledge_categories?.knowledge_tags).flat().filter((tag) => !!tag?.name).map((tag) => tag.name);
 
   const handleKnowledgeBaseDataChange = async (
     payload: RealtimePostgresChangesPayload<{
@@ -77,14 +89,14 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
     }
 
     if (payload?.eventType === "INSERT") {
-      const updatedItems = [...knowledgeItems, payload.new as KnowledgeItem];
+      const updatedItems = [...knowledgeItems, payload.new as KnowledgeItemQueryType];
       setFilteredItems(updatedItems);
     }
 
     if (payload?.eventType === "UPDATE") {
       const updatedItems = knowledgeItems.map((item) => {
         if (item.id === payload.new.id) {
-          return payload.new as KnowledgeItem;
+          return payload.new as KnowledgeItemQueryType;
         }
         return item;
       });
@@ -187,6 +199,32 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                   </Select.Root>
                 )
               }
+              {
+                tags.length > 0 && (
+                  <Select.Root
+                    defaultValue={'태그'}
+                    onValueChange={(value) => {
+                      setSelectedTag(value);
+                      setFilteredItems(value ? knowledgeItems.filter((item) => item.knowledge_categories?.knowledge_tags.map((tag) => tag.name).includes(value)) : knowledgeItems);
+                    }}
+                    value={selectedTag}
+                  >
+                    <Select.Trigger className="font-semibold w-32 max-w-48">
+                      태그
+                    </Select.Trigger>
+                    <Select.Content>
+                      <Select.Group>
+                        <Select.Item value={null}>태그</Select.Item>
+                        {tags.map((tag, tagIdx) => (
+                          <Select.Item key={tagIdx} value={tag}>
+                            {tag}
+                          </Select.Item>
+                        ))}
+                      </Select.Group>
+                    </Select.Content>
+                  </Select.Root>
+                )
+              }
               <Button
                 className="bg-primary-900 text-white hover:bg-violet-300 transition-colors duration-200 ease-in-out cursor-pointer rounded-md"
                 onClick={() => {
@@ -213,8 +251,10 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
             <Table.Header>
               <Table.Row>
                 <StyledColumnHeaderCell>Question</StyledColumnHeaderCell>
-                <StyledColumnHeaderCell>Answer</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Category</StyledColumnHeaderCell>
+                <StyledColumnHeaderCell>Tag</StyledColumnHeaderCell>
+                <StyledColumnHeaderCell>Answer</StyledColumnHeaderCell>
+                <StyledColumnHeaderCell>Guide</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Action</StyledColumnHeaderCell>
               </Table.Row>
             </Table.Header>
@@ -227,16 +267,33 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
               {filteredItems.map((item) => (
                 <Table.Row key={item.id} className="text-gray-600">
                   <Table.RowHeaderCell width={300}>
+                    <Flex gap="1">
+                      {
+                        item.frequently_asked && <Box className="bg-white border border-primary-900 text-primary-900 rounded w-fit px-1 text-[9px]">자주 묻는 질문</Box>
+                      }
+                      {
+                        item.caution_required && <Box className="bg-primary-900 text-white rounded w-fit px-1 text-[9px]">답변 주의</Box>
+                      }
+                    </Flex>
                     {item.question}
                   </Table.RowHeaderCell>
-                  <Table.Cell className="max-w-96">{item.answer}</Table.Cell>
                   <Table.Cell>{item.category}</Table.Cell>
+                  <Table.Cell>
+                    <Flex gap="2">
+                      {item?.knowledge_categories?.knowledge_tags.map((tag, idx) => (<Box key={idx} className="bg-primary-800 text-[11px] rounded text-white text-center px-2">{tag.name}</Box>))}
+                    </Flex>
+                  </Table.Cell>
+                  <Table.Cell className="max-w-96">{item.answer}</Table.Cell>
+                  <Table.Cell className="max-w-96"><Flex gap="2" align="center" justify="center">
+                    {item.support_manual && <ClipboardIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
+                    {item?.knowledge_images?.length !== 0 && <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
+                  </Flex></Table.Cell>
                   <Table.Cell className="w-52">
                     <Flex align={`center`} height={`100%`} gap={`2`}>
                       <Button
                         className="bg-gray-100 text-gray-500"
                         onClick={() => {
-                          setSelectedItem(item);
+                          setSelectedItem((({ knowledge_images, knowledge_categories, ...o }) => o)(item));
                           setDialogMode("edit");
                           setOpenDialog(true);
                         }}
@@ -246,7 +303,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                       <Button
                         className="bg-gray-100 text-gray-500"
                         onClick={() => {
-                          setSelectedItem(item);
+                          setSelectedItem((({ knowledge_images, knowledge_categories, ...o }) => o)(item));
                           setOpenDialog(true);
                           setDialogMode("delete");
                         }}
