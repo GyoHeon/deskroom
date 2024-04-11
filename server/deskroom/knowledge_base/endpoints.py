@@ -2,13 +2,14 @@ from ast import literal_eval
 
 import pandas as pd
 import structlog
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from supabase._async.client import AsyncClient
 
 from deskroom.common.supabase import create_supabase_async_client
 from deskroom.logging import Logger
+from deskroom.worker import enqueue_job
 
-from .schema import KnowledgeBase, KnowledgeBaseFetch
+from .schema import KnowledgeBase, KnowledgeBaseCreateJobIn, KnowledgeBaseFetch
 from .utils import (
     create_policy,
     create_qa,
@@ -37,6 +38,13 @@ async def get_knowledge_base(
     return response.data
 
 
+@router.post("/create")
+async def create_knowledge_base(
+    item: KnowledgeBaseCreateJobIn,
+) -> None:
+    enqueue_job("knowledge_base.create", item.org_key)
+
+
 @router.post("/upload/{org_key}")
 async def make_knowledge_base(
     org_key: str,
@@ -57,7 +65,7 @@ async def make_knowledge_base(
         .execute()
     )
     if not supabase_response.data:
-        raise ValueError("No ID / Name for given Org Key")
+        raise HTTPException(status_code=404, detail="Item Not Found")
 
     raw_df = raw_df.dropna()
     processed_df = await process_raw_file(raw_df)
@@ -74,17 +82,23 @@ async def make_knowledge_base(
                 questions.append(qa["Question"])
                 answers.append(qa["Answer"])
         except (ValueError, KeyError):
-            pass
+            continue
     update_df = pd.DataFrame({"Question": questions, "Answer": answers})
-    updated_data = []
-    for row_num in range(len(update_df)):
-        updated_files = {
-            "org_id": supabase_response.data[0]["id"],
-            "org_name": supabase_response.data[0]["name_eng"],
-            "org_key": org_key,
-            "question": update_df["Question"].tolist()[row_num],
-            "answer": update_df["Answer"].tolist()[row_num],
-        }
-        data = await supabase.table("knowledge_base").insert(updated_files).execute()
-        updated_data.append(data.data[0])
-    return updated_data
+    supabase_update_response = (
+        await supabase.table("knowledge_base")
+        .insert(
+            [
+                {
+                    "org_id": supabase_response.data[0]["id"],
+                    "org_name": supabase_response.data[0]["name_eng"],
+                    "org_key": org_key,
+                    "question": update_df["Question"].tolist()[row_num],
+                    "answer": update_df["Answer"].tolist()[row_num],
+                }
+                for row_num in update_df
+            ]
+        )
+        .execute()
+    )
+
+    return supabase_update_response.data

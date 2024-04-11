@@ -56,7 +56,7 @@ async def retrieve_and_process(
                 )
 
         except (KeyError, ValueError):
-            pass
+            continue
 
     return retrieved_msgs
 
@@ -93,13 +93,16 @@ async def get_nearest_knowledge_item(
     supabase: AsyncClient = Depends(create_supabase_async_client),
 ) -> KnowledgeQueryOut:
     company_policy = ""
-
     supabase_response = (
         await supabase.table("knowledge_base")
         .select("*, organizations(company_info_policy)")
         .eq("org_key", knowledge_query_in.organization_name)
         .execute()
     )
+
+    if not supabase_response.data:
+        raise HTTPException(status_code=404, detail="Item Not Found")
+
     retrieved_msgs = await retrieve_and_process(
         qn=knowledge_query_in.question, knowledge_base=supabase_response.data
     )
