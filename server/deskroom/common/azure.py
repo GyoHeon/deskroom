@@ -32,6 +32,7 @@ async def create_azure_async_container_client(
     ) as client:
         return client.get_container_client(container_name)
 
+
 __all__ = [
     "create_azure_container_client",
     "create_azure_service_client",
