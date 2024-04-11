@@ -31,7 +31,22 @@ class Settings(BaseSettings):
     NEW_RELIC_APP_NAME: str = Field("deskroom", alias="NEW_RELIC_APP_NAME")
 
     # openai
-    OPENAI_API_KEY: str = ""
+    OPENAI_API_KEY: str = Field(..., alias="OPENAI_API_KEY")
+
+    AZURE_OPENAI_API_KEY: str = Field(..., alias="AZURE_OPENAI_API_KEY")
+
+    AZURE_OPENAI_ENDPOINT: str = Field(..., alias="AZURE_OPENAI_ENDPOINT")
+
+    AZURE_OPENAI_API_VERSION: str = Field(..., alias="AZURE_OPENAI_API_VERSION")
+
+    # azure
+    AZURE_PROMPT_TOKEN: str = Field(..., alias="AZURE_PROMPT_TOKEN")
+
+    AZURE_PROMPT_PATH: str = Field(..., alias="AZURE_PROMPT_PATH")
+
+    AZURE_ACCOUNT_URL: str = Field(..., alias="AZURE_ACCOUNT_URL")
+
+    AZURE_ACCOUNT_CREDENTIAL: str = Field(..., alias="AZURE_ACCOUNT_CREDENTIAL")
 
     # redis
     REDIS_URL: str = Field("redis://localhost:6379/0", alias="REDIS_URL")
