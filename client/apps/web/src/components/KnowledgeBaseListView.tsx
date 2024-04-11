@@ -3,7 +3,9 @@ import { Organization } from "@/contexts/OrganizationContext";
 import { Database } from "@/lib/database.types";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
+  ClipboardIcon,
   Cross2Icon,
+  DownloadIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   UploadIcon,
@@ -36,7 +38,7 @@ type QuestionTagName = Pick<QuestionTag, "name">;
 type KnowledgeCategoryName = Pick<KnowledgeCategory, "name">;
 export type QuestionImage = Database["public"]["Tables"]["knowledge_images"]["Row"];
 type QuestionImageURL = Pick<QuestionImage, "image_url">;
-export type KnowledgeItemQueryType = KnowledgeItem & { knowledge_categories: KnowledgeCategoryName & { knowledge_tags: QuestionTagName[] } } & QuestionImageURL[];
+export type KnowledgeItemQueryType = KnowledgeItem & { knowledge_categories: KnowledgeCategoryName & { knowledge_tags: QuestionTagName[] } } & { knowledge_images: QuestionImageURL[] };
 
 export type KnowledgeBaseListViewProps = {
   knowledgeItems: KnowledgeItemQueryType[];
@@ -223,6 +225,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                 <StyledColumnHeaderCell>Category</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Tag</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Answer</StyledColumnHeaderCell>
+                <StyledColumnHeaderCell>Guide</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Action</StyledColumnHeaderCell>
               </Table.Row>
             </Table.Header>
@@ -248,10 +251,14 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                   <Table.Cell>{item.category}</Table.Cell>
                   <Table.Cell>
                     <Flex gap="2">
-                      {item?.knowledge_categories?.knowledge_tags.map((tag, idx) => (<Box key={idx} className="bg-primary-800 text-sm rounded text-white text-center p-1 px-2">{tag.name}</Box>))}
+                      {item?.knowledge_categories?.knowledge_tags.map((tag, idx) => (<Box key={idx} className="bg-primary-800 text-[11px] rounded text-white text-center px-2">{tag.name}</Box>))}
                     </Flex>
                   </Table.Cell>
                   <Table.Cell className="max-w-96">{item.answer}</Table.Cell>
+                  <Table.Cell className="max-w-96"><Flex gap="2" align="center" justify="center">
+                    {item.support_manual && <ClipboardIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
+                    {item.knowledge_images.length !== 0 && <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
+                  </Flex></Table.Cell>
                   <Table.Cell className="w-52">
                     <Flex align={`center`} height={`100%`} gap={`2`}>
                       <Button
