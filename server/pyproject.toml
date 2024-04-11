@@ -14,6 +14,8 @@ structlog = "^24.1.0"
 pydantic-settings = "^2.2.1"
 newrelic = "^9.8.0"
 openai = "^1.16.0"
+arq = "^0.25.0"
+watchfiles = "^0.21.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"
@@ -26,9 +28,10 @@ taskipy = "^1.12.2"
 lint = { cmd = "ruff format . && ruff check --fix .", help = "run linters with autofix" }
 lint_check = { cmd = "ruff format --check . && ruff check .", help = "run ruff linter" }
 lint_types = { cmd = "mypy deskroom tests", help = "run mypy type verify" }
-test = { cmd = "pytest tests", help = "run tests" }
+test = { cmd = "DSKRM_ENV=test pytest tests", help = "run tests" }
 pre_merge = { cmd = "task lint_check && task lint_types && task test", help = "run pre-merge checks" }
 run_server = { cmd = "uvicorn deskroom.app:app --reload", help = "run server" }
+worker = { cmd = "arq run_worker.WorkerSettings --watch deskroom", help = "run worker" }
 
 [tool.ruff]
 target-version = "py310"

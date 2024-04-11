@@ -37,3 +37,14 @@ class KnowledgeBaseFetch(Schema):
     category: str | None = Field(None)
     page: int | None = Field(None)
     offset: int | None = Field(None)
+
+
+class KnowledgeBaseCreateJobIn(Schema):
+    name: str
+    org_key: str
+
+
+class KnowledgeBaseCreateJob(Schema):
+    job_id: int = Field(alias="id")
+    status: int | None = Field(None)
+    org_key: str
