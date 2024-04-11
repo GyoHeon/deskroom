@@ -4,7 +4,11 @@ from pytest import fixture
 
 @fixture
 def client() -> TestClient:
+    import os
+
     from deskroom.app import app
+
+    os.environ["DSKRM_ENV"] = "test"
 
     return TestClient(app)
 

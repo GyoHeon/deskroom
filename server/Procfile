@@ -1,1 +1,2 @@
 web: newrelic-admin run-program uvicorn deskroom.app:app --host=0.0.0.0 --port=${PORT:-5000}
+worker: newrelic-admin run-program arq run_worker.WorkerSettings 

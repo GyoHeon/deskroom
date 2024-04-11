@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import KnowledgeBaseListView from "../components/KnowledgeBaseListView";
 import TopNav from "../components/TopNav";
 import { getCategories } from "./api/categories";
+import { HotkeyProvider } from "@/contexts/HotkeyContext";
+import { Sidebar } from "@/components/Sidebar";
 
 export const revalidate = 0;
 
@@ -70,24 +72,24 @@ export default async function NewIndex({ searchParams }) {
     revalidatePath("/", "page"); // NOTE: NOT WORKING
   };
 
-  const { data: categories } = await getCategories(supabase, organization.key);
+  const categories = await getCategories(supabase, organization.key);
 
   return (
-    <Flex direction={`column`} className="min-h-screen">
-      <TopNav
-        organizations={organizations}
-        currentOrg={organization.name_kor}
-      />
-      <Container className='px-16 pt-4 bg-primary-100'>
-        <Box className="rounded-xl bg-white p-5">
-          <KnowledgeBaseListView
-            categories={categories}
-            knowledgeItems={knowledgeBase}
-            organization={organization}
-            callback={handleDataChange}
-          />
-        </Box>
-      </Container>
-    </Flex>
+    <HotkeyProvider categories={categories}>
+      <Sidebar />
+      <Flex direction={`column`} className="min-h-screen w-full">
+        <TopNav />
+        <Container className='px-16 pt-4 bg-primary-100'>
+          <Box className="rounded-xl bg-white p-5">
+            <KnowledgeBaseListView
+              categories={categories}
+              knowledgeItems={knowledgeBase}
+              organization={organization}
+              callback={handleDataChange}
+            />
+          </Box>
+        </Container>
+      </Flex>
+    </HotkeyProvider>
   );
 }

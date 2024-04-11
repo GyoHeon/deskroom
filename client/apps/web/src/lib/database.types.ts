@@ -118,18 +118,21 @@ export type Database = {
       knowledge_categories: {
         Row: {
           created_at: string
+          description: string | null
           id: number
           name: string
           org_key: string
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: number
           name: string
           org_key: string
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: number
           name?: string
           org_key?: string

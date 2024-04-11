@@ -1,17 +1,17 @@
-import { Theme } from "@radix-ui/themes";
-import type { User } from "@supabase/supabase-js";
-import radixUIText from "data-text:@radix-ui/themes/styles.css";
-import tailwindcssText from "data-text:~style.css";
-import type { PlasmoCSConfig } from "plasmo";
-import { useState } from "react";
+import { Theme } from "@radix-ui/themes"
+import type { User } from "@supabase/supabase-js"
+import radixUIText from "data-text:@radix-ui/themes/styles.css"
+import tailwindcssText from "data-text:~style.css"
+import type { PlasmoCSConfig } from "plasmo"
+import { useState } from "react"
 
-import { useStorage } from "@plasmohq/storage/hook";
+import { useStorage } from "@plasmohq/storage/hook"
 
-import Sidebar from "~components/Sidebar";
-import Tooltip from "~components/Tooltip";
-import { MixpanelProvider, useMixpanel } from "~contexts/MixpanelContext";
-import { useTextSelection } from "~hooks/useTextSelection";
-import { DeskroomUserProvider } from "~contexts/DeskroomUserContext";
+import Sidebar from "~components/Sidebar"
+import Tooltip from "~components/Tooltip"
+import { DeskroomUserProvider } from "~contexts/DeskroomUserContext"
+import { MixpanelProvider, useMixpanel } from "~contexts/MixpanelContext"
+import { useTextSelection } from "~hooks/useTextSelection"
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -38,41 +38,41 @@ export const config: PlasmoCSConfig = {
     "https://www.thecloudgate.io/*",
     "https://admin.dcamp.kr/*",
     "https://*.notion.site/*",
+    "https://counselor.happytalk.io/*",
+    "https://wing.coupang.com/*"
   ],
   run_at: "document_start",
-  all_frames: true,
-};
+  all_frames: true
+}
 
 export const getStyle = () => {
-  const style = document.createElement("style");
-  style.textContent += radixUIText;
-  style.textContent += tailwindcssText;
-  return style;
-};
+  const style = document.createElement("style")
+  style.textContent += radixUIText
+  style.textContent += tailwindcssText
+  return style
+}
 
 export default function Content() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [user] = useStorage<User>("user");
-  const [question, setQuestion] = useState("");
-  const { text, rects } = useTextSelection();
-
+  const [isOpen, setIsOpen] = useState(false)
+  const [user] = useStorage<User>("user")
+  const [question, setQuestion] = useState("")
+  const { text, rects } = useTextSelection()
 
   const handleTooltipClick = () => {
-    setIsOpen(true);
+    setIsOpen(true)
     if (text && rects.length > 0) {
-      setQuestion(text);
+      setQuestion(text)
     }
-  };
+  }
 
   return (
     <MixpanelProvider
       token={process.env.PLASMO_PUBLIC_MIXPANEL_TOKEN}
       config={{
         debug: process.env.NODE_ENV !== "production",
-        persistence: "localStorage",
+        persistence: "localStorage"
       }}
-      name={`deskroom-${process.env.NODE_ENV}`}
-    >
+      name={`deskroom-${process.env.NODE_ENV}`}>
       <DeskroomUserProvider>
         <Theme>
           <Sidebar
@@ -85,5 +85,5 @@ export default function Content() {
         </Theme>
       </DeskroomUserProvider>
     </MixpanelProvider>
-  );
+  )
 }

@@ -50,6 +50,9 @@ class Settings(BaseSettings):
 
     AZURE_ACCOUNT_CREDENTIAL: str = Field(..., alias="AZURE_ACCOUNT_CREDENTIAL")
 
+    # redis
+    REDIS_URL: str = Field("redis://localhost:6379/0", alias="REDIS_URL")
+
     model_config = SettingsConfigDict(
         env_prefix="dskrm_",
         env_file_encoding="utf-8",

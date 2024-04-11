@@ -1,13 +1,34 @@
 'use client';
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { Box, Grid, IconButton, Text } from "@radix-ui/themes";
+import { Box, Button, Flex, Grid, Heading, IconButton, Text } from "@radix-ui/themes";
 import { useState } from "react";
 import { SignUpStep } from "./SignUpStep";
+import { useFormState } from "react-dom";
+import { signUp } from "./actions";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 
 
 const steps = ["Email", "Password", "Company", "Misc", "Name"];
 export const SignUpForm = () => {
   const [step, setStep] = useState(0)
+  const [state, formAction] = useFormState(signUp, {
+    errors: null,
+    status: null,
+  })
+
+  if (state.status === 200) {
+    return (
+      <Flex direction={`column`} gap={`4`} my={`4`} align={`center`}>
+        <Image src="/deskroom-icon.png" alt="Deskroom Logo" width={60} height={60} className="my-8" />
+        <Box className="my-2 text-center">
+          <Heading className="title">유저 생성 확인을 위해 메일로 확인 링크를 보내드렸습니다. 💌</Heading>
+          <Text size="2" className="my-[-12px] font-thin">최대 10분 소요됩니다.</Text>
+        </Box>
+      </Flex>
+    )
+  }
 
   return (
     <>
@@ -21,7 +42,7 @@ export const SignUpForm = () => {
       <IconButton className="absolute top-0 left-0 m-4 my-8 bg-white text-gray-900 hover:bg-primary-100" onClick={() => setStep(s => s - 1)} hidden={step === 0}>
         <ArrowLeftIcon />
       </IconButton>
-      <form className="flex-1 flex flex-col align-center justify-center">
+      <form className="flex-1 flex flex-col align-center justify-center" action={formAction}>
         <SignUpStep
           step={step}
           index={0}
@@ -47,7 +68,10 @@ export const SignUpForm = () => {
           numOfSteps={steps.length}
           title="기업 또는 브랜드 이름을 입력해 주세요."
           subtitle="입력한 이름은 이후에 변경할 수 있어요."
-          inputs={[{ label: "org-name", placeholder: "예. 데스크룸", type: "text", showLabel: false, name: "org-name" }]}
+          inputs={[
+            { label: "org-name", placeholder: "예. 데스크룸", type: "text", showLabel: false, name: "org-name" },
+            { label: "org-eng-name", placeholder: "예. deskroom", type: "text", showLabel: false, name: "org-eng-name" }
+          ]}
           onButtonClick={() => setStep(step_ => step_ + 1)}
         />
         <SignUpStep
@@ -70,13 +94,16 @@ export const SignUpForm = () => {
           title="가입하시는 담당자분의 이름을 입력해주세요."
           inputs={[{ label: "name", placeholder: "예. 박경호", type: "text", showLabel: false, name: "name" }]}
           bottomTextOverride={
-            <Text className="my-2 w-64 text-center word-break">
-              가입 완료를 클릭하시면 데스크룸의 {""}
-              <Text color="gray" className="underline">
-                <a href="https://docs.google.com/document/d/1sgYHlhR0Drgtir6HKYH9EGAu_Q3o9r5BGWbPxGNasa4/edit?usp=sharing">Terms of Service 및 Privacy Policy</a>
-              </Text>에
-              동의한 것으로 간주합니다.
-            </Text>
+            <>
+              <Text className="my-2 w-64 text-center word-break">
+                가입 완료를 클릭하시면 데스크룸의 {""}
+                <Text color="gray" className="underline">
+                  <a href="https://docs.google.com/document/d/1sgYHlhR0Drgtir6HKYH9EGAu_Q3o9r5BGWbPxGNasa4/edit?usp=sharing">Terms of Service 및 Privacy Policy</a>
+                </Text>에
+                동의한 것으로 간주합니다.
+              </Text>
+              {state.errors && <Text className="text-red-500">{state.errors}</Text>}
+            </>
           }
         />
       </form></>

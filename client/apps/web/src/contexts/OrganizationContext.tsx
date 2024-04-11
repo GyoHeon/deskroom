@@ -16,7 +16,7 @@ interface OrganizationContextType {
 // Create the organization context
 export const OrganizationContext = createContext<OrganizationContextType>({
   currentOrg: null,
-  setCurrentOrg: () => {},
+  setCurrentOrg: () => { },
   availableOrgs: [],
 });
 
@@ -53,8 +53,9 @@ export const OrganizationContextProvider: React.FC<{
         return;
       }
 
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      mixpanel.identify(session.user.id);
+      if (!session) {
+        return;
+      }
 
       const { data: orgs, error: organizationError } = await supabase
         .from("organizations")
@@ -66,6 +67,13 @@ export const OrganizationContextProvider: React.FC<{
       }
       setOrganizations(orgs);
       setCurrentOrg(orgs.find((org) => org.key === orgFromURL));
+
+      if (!mixpanel) {
+        return
+      }
+
+      mixpanel.identify(session.user.id);
+
       mixpanel.register({
         org: orgFromURL,
         platform: "knowledge_base_admin",

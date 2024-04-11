@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: 20
           cache: "yarn"
+          cache-dependency-path: client/apps/chrome-extension/yarn.lock
       - name: Install
         working-directory: client/apps/chrome-extension
         run: |
@@ -31,10 +32,9 @@ jobs:
         run: |
           yarn build --zip
       - name: Upload & release
-        working-directory: client/apps/chrome-extension
         uses: mnao305/chrome-extension-upload@v5.0.0
         with:
-          file-path: build/*.zip
+          file-path: client/apps/chrome-extension/build/*.zip
           extension-id: ${{ secrets.DSKRM_EXTENSION_ID }}
           client-id: ${{ secrets.DSKRM_CLIENT_ID }}
           client-secret: ${{ secrets.DSKRM_CLIENT_SECRET }}

@@ -340,7 +340,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   );
 };
 
-const StyledColumnHeaderCell = ({ children }) => (
+export const StyledColumnHeaderCell = ({ children }) => (
   <Table.ColumnHeaderCell className="font-semibold">
     {children}
   </Table.ColumnHeaderCell>
