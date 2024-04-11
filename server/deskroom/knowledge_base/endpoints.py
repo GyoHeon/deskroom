@@ -37,13 +37,6 @@ async def get_knowledge_base(
     return response.data
 
 
-@router.post("/create")
-async def create_knowledge_base(
-    item: KnowledgeBaseCreateJobIn,
-) -> None:
-    enqueue_job("knowledge_base.create", item.org_key)
-
-
 @router.post("/upload/{org_key}")
 async def make_knowledge_base(
     org_key: str,
