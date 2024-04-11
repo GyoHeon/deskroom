@@ -1,9 +1,11 @@
 from ast import literal_eval
+from urllib.parse import urlparse
 
 import pandas as pd
+import structlog
 from supabase._async.client import AsyncClient
 
-from deskroom.common.azure import AsyncContainerClient
+from deskroom.common.azure import ContainerClient
 from deskroom.knowledge_base.schema import KnowledgeBaseCreateJob
 
 from .utils import (
@@ -13,6 +15,8 @@ from .utils import (
     generate_qa_string,
     process_raw_file,
 )
+
+logger = structlog.get_logger()
 
 
 async def create_knowledge_base_create_job(
@@ -47,13 +51,21 @@ async def mark_create_job_done(
     return KnowledgeBaseCreateJob.model_validate(response.data[0])
 
 
-async def read_xlsx_from_azure_blob_storage(
-    blob_storage_url: str, client: AsyncContainerClient
+def read_xlsx_from_azure_blob_storage(
+    blob_storage_url: str, client: ContainerClient
 ) -> pd.DataFrame:
-    # raw_df = pd.read_excel(
-    #     file.file.read(), engine="openpyxl", sheet_name="Message data"
-    # )
-    ...
+    obj = urlparse(blob_storage_url)
+    [container, *blob_names] = obj.path[1:].split("/")
+    logger.info(f"{container=}, {blob_names=}")
+
+    blob_name = "/".join(blob_names)
+    logger.info(blob_name)
+
+    if not blob_name.endswith(".xlsx"):
+        raise ValueError("Invalid file format. Please upload an xlsx file.")
+    blob_client = client.get_blob_client(blob_name)
+    download = blob_client.download_blob()
+    return pd.read_excel(download.readall(), engine="openpyxl")
 
 
 async def process_xlsx_for_kb_create(df: pd.DataFrame) -> pd.DataFrame:
@@ -68,7 +80,9 @@ async def process_xlsx_for_kb_create(df: pd.DataFrame) -> pd.DataFrame:
     for chat_id in chat_ids:
         try:
             qa_string = await generate_qa_string(processed_df, chat_id)
-            discovered = await create_qa(company_policy, qa_string)
+            discovered = await create_qa(
+                company_policy, qa_string, ""
+            )  # TODO: replace tone and manner
             discovered_ = literal_eval(discovered)
             for qa in list(discovered_.values()):
                 questions.append(qa["Question"])

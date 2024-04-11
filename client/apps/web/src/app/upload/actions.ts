@@ -1,7 +1,7 @@
 'use server';
 import { UploadStatus } from "./UploadForm";
 
-const fileUpload = async (file: File, orgKey: string): Promise<{ error: string | null, message: string | null }> => {
+const fileUpload = async (file: File, orgKey: string): Promise<{ error?: string | null, message?: string | null, files?: string[], org_key?: string }> => {
   const formData = new FormData();
   formData.append('files', file, file.name);
 
@@ -21,11 +21,12 @@ const fileUpload = async (file: File, orgKey: string): Promise<{ error: string |
     }
   }
 
-  return await response.json();
+  return await response.json() as { files: string[], org_key: string };
 }
 
 
 export default async function upload(prevState: UploadStatus, formData: FormData): Promise<UploadStatus> {
+  const userID = formData.get('user-id') as string;
   const orgKey = formData.get('org-key') as string;
   const channelTalkFiles = formData.getAll('channel-talk-files') as File[];
   const miscFiles = formData.getAll('misc-files') as File[];
@@ -67,6 +68,32 @@ export default async function upload(prevState: UploadStatus, formData: FormData
       message: "Upload failed",
     }
   }
+
+  const files = channelTalkUpload.map(upload => upload.files).flat().concat(miscUpload.map(upload => upload.files).flat());
+  const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/knowledge/upload/${orgKey}`, {
+    method: 'POST',
+    body: JSON.stringify({
+      user_id: userID,
+      file_urls: files,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-cache',
+  })
+
+  if (!uploadResponse.ok) {
+    const data = await uploadResponse.json()
+    return {
+      errors: {
+        channelTalkFiles: data?.detail || 'Upload failed',
+        miscFiles: data?.detail || 'Upload failed',
+      },
+      status: 400,
+      message: "Upload failed",
+    }
+  }
+
 
   return {
     errors: null,
