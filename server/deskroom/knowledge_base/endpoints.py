@@ -48,6 +48,7 @@ async def create_knowledge_base(
 @router.post("/upload/{org_key}")
 async def make_knowledge_base(
     org_key: str,
+    tone_manner: str,
     file: UploadFile = File(...),
     supabase: AsyncClient = Depends(create_supabase_async_client),
 ) -> list[KnowledgeBase]:
@@ -76,7 +77,7 @@ async def make_knowledge_base(
     for chat_id in chat_ids:
         try:
             qa_string = await generate_qa_string(processed_df, chat_id)
-            discovered = await create_qa(company_policy, qa_string)
+            discovered = await create_qa(company_policy, qa_string, tone_manner)
             discovered_ = literal_eval(discovered)
             for qa in list(discovered_.values()):
                 questions.append(qa["Question"])

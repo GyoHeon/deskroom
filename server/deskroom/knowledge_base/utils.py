@@ -1,6 +1,7 @@
 import pandas as pd
 
-from deskroom.common.openai import create_openai_client, read_prompt
+
+from deskroom.common.openai import create_azure_openai_client, read_prompt
 
 
 async def process_raw_file(df: pd.DataFrame) -> pd.DataFrame:
@@ -68,9 +69,10 @@ async def generate_qa_string(df: pd.DataFrame, chatid: str) -> str:
 
 async def create_policy(chat_logs: str) -> str:
     prompt = read_prompt("create_policy.txt")
-    openai_client = create_openai_client(asynchronous=True)
+    openai_client = create_azure_openai_client(asynchronous=True)
+
     response = await openai_client.chat.completions.create(
-        model="gpt-4-turbo-preview",
+        model="gpt-4-1106-preview",
         messages=[
             {
                 "role": "system",
@@ -88,15 +90,16 @@ async def create_policy(chat_logs: str) -> str:
     return response.choices[0].message.content
 
 
-async def create_qa(policy: str, conversation: str) -> str:
+async def create_qa(policy: str, conversation: str, tone_manner: str) -> str:
     prompt = read_prompt("create_qa.txt")
-    openai_client = create_openai_client(asynchronous=True)
+    openai_client = create_azure_openai_client(asynchronous=True)
+
     response = await openai_client.chat.completions.create(
-        model="gpt-4-turbo-preview",
+        model="gpt-4-1106-preview",
         messages=[
             {
                 "role": "system",
-                "content": prompt % (policy, conversation),
+                "content": prompt % (policy, tone_manner, conversation),
             }
         ],  # type: ignore
         temperature=0,
