@@ -13,8 +13,8 @@ router = APIRouter(prefix="/sources", tags=["sources"])
 
 
 @router.get("/")
-async def list_sources():
-    return []
+async def list_sources() -> list[str]:
+    return []  # TODO: implement
 
 
 @router.post("/upload", response_model=UploadSourcesOut)
@@ -24,7 +24,7 @@ async def upload_sources(
     azure_container_client: ContainerClient = Depends(
         create_source_azure_container_client
     ),  # TODO: replace this with async client
-) -> dict:
+) -> dict[str, str | list[str]]:
     if not files:
         raise HTTPException(status_code=400, detail="No files uploaded")
 
