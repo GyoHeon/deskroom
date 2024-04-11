@@ -29,6 +29,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const mixpanel = useMixpanel();
 
   useEffect(() => {
+    if (!user) return;
     mixpanel.identify(user?.id);
     mixpanel.register({
       email: user?.email,
