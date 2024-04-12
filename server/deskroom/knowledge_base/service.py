@@ -2,13 +2,13 @@ from ast import literal_eval
 from urllib.parse import urlparse
 
 import pandas as pd
-import structlog
 import requests
+import structlog
 from supabase._async.client import AsyncClient
 
 from deskroom.common.azure import ContainerClient
-from deskroom.knowledge_base.schema import KnowledgeBaseCreateJob
 from deskroom.config import settings
+from deskroom.knowledge_base.schema import CreateLinearIssueOut, KnowledgeBaseCreateJob
 
 from .utils import (
     create_policy,
@@ -115,7 +115,7 @@ LINEAR_GRAPHQL_API_URL = "https://api.linear.app/graphql"
 
 def create_linear_issue(
     title: str, description: str, team_id=LINEAR_DEFAULT_TEAM_ID
-) -> str:
+) -> CreateLinearIssueOut:
     headers = {
         "Content-Type": "application/json",
         "Authorization": settings.LINEAR_API_KEY,
@@ -138,7 +138,6 @@ def create_linear_issue(
     }
     }
     """ % (title, description, team_id)  # noqa
-    logger.info(mutation)
 
     response = requests.post(
         LINEAR_GRAPHQL_API_URL, headers=headers, json={"query": mutation}

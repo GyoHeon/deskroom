@@ -30,6 +30,7 @@ ruff = "^0.3.4"
 mypy = "^1.9.0"
 pytest = "^8.1.1"
 taskipy = "^1.12.2"
+types-requests = "^2.31.0.20240406"
 
 [tool.taskipy.tasks]
 lint = { cmd = "ruff format . && ruff check --fix .", help = "run linters with autofix" }

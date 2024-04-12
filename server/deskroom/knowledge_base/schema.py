@@ -73,3 +73,8 @@ class KnowledgeBaseCreateJobByUploadIn(Schema):
     tone_manner: str | None
     categories: str | None
     type_: UploadType = Field(alias="type")
+
+
+class CreateLinearIssueOut(Schema):
+    id: str
+    title: str
