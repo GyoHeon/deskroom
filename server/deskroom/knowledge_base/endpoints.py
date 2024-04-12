@@ -88,7 +88,6 @@ async def make_knowledge_base(
 
             discovered_ = literal_eval(discovered)
             for qa in list(discovered_.values()):
-                print(qa)
                 questions.append(qa["Qn"])
                 answers.append(qa["Ans"])
                 qn_categories.append(qa["Category"])
