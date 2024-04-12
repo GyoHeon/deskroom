@@ -96,7 +96,7 @@ async def make_knowledge_base(
                     "question": update_df["Question"].tolist()[row_num],
                     "answer": update_df["Answer"].tolist()[row_num],
                 }
-                for row_num in update_df
+                for row_num in range(len(update_df))
             ]
         )
         .execute()
