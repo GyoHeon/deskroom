@@ -14,7 +14,6 @@ from .utils import (
     create_policy,
     create_qa,
     generate_discovery_string,
-    generate_qa_string,
     process_raw_file,
 )
 
@@ -49,11 +48,13 @@ async def create_knowledge_base(
 async def make_knowledge_base(
     org_key: str,
     tone_manner: str,
+    categories: str,
     file: UploadFile = File(...),
     supabase: AsyncClient = Depends(create_supabase_async_client),
 ) -> list[KnowledgeBase]:
     questions = []
     answers = []
+    qn_categories = []
 
     raw_df = pd.read_excel(
         file.file.read(), engine="openpyxl", sheet_name="Message data"
@@ -72,19 +73,30 @@ async def make_knowledge_base(
     processed_df = await process_raw_file(raw_df)
 
     discovery_str = await generate_discovery_string(processed_df)
+
     company_policy = await create_policy(discovery_str)
     chat_ids = list(processed_df["chatId"].unique())
-    for chat_id in chat_ids:
+    for chat_id in chat_ids[:1]:
         try:
-            qa_string = await generate_qa_string(processed_df, chat_id)
-            discovered = await create_qa(company_policy, qa_string, tone_manner)
+            query_df = processed_df[processed_df["chatId"] == chat_id]
+            discovered = await create_qa(
+                company_policy,
+                tone_manner,
+                categories,
+                query_df,
+            )
+
             discovered_ = literal_eval(discovered)
             for qa in list(discovered_.values()):
-                questions.append(qa["Question"])
-                answers.append(qa["Answer"])
+                print(qa)
+                questions.append(qa["Qn"])
+                answers.append(qa["Ans"])
+                qn_categories.append(qa["Category"])
         except (ValueError, KeyError):
             continue
-    update_df = pd.DataFrame({"Question": questions, "Answer": answers})
+    update_df = pd.DataFrame(
+        {"Question": questions, "Answer": answers, "Category": qn_categories}
+    )
     supabase_update_response = (
         await supabase.table("knowledge_base")
         .insert(
@@ -95,11 +107,11 @@ async def make_knowledge_base(
                     "org_key": org_key,
                     "question": update_df["Question"].tolist()[row_num],
                     "answer": update_df["Answer"].tolist()[row_num],
+                    "category": update_df["Category"].tolist()[row_num],
                 }
                 for row_num in range(len(update_df))
             ]
         )
         .execute()
     )
-
     return supabase_update_response.data

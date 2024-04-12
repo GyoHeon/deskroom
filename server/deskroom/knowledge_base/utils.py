@@ -89,7 +89,12 @@ async def create_policy(chat_logs: str) -> str:
     return response.choices[0].message.content
 
 
-async def create_qa(policy: str, conversation: str, tone_manner: str) -> str:
+async def create_qa(
+    policy: str,
+    tone_manner: str,
+    categories: str,
+    conversation: str,
+) -> str:
     prompt = read_prompt("create_qa.txt")
     openai_client = create_azure_openai_client(asynchronous=True)
 
@@ -98,7 +103,7 @@ async def create_qa(policy: str, conversation: str, tone_manner: str) -> str:
         messages=[
             {
                 "role": "system",
-                "content": prompt % (policy, tone_manner, conversation),
+                "content": prompt % (policy, tone_manner, categories, conversation),
             }
         ],  # type: ignore
         temperature=0,
