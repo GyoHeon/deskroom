@@ -38,11 +38,15 @@ async def create_knowledge_base_by_upload(
     job_in: KnowledgeBaseCreateJobByUploadIn,
 ) -> dict[str, str]:
     enqueue_job(
+<<<<<<< HEAD
         "knowledge_base.create",
         org_key,
         job_in.user_id,
         job_in.file_urls,
         job_in.tone_manner,
         job_in.categories,
+=======
+        "knowledge_base.create", org_key, job_in.user_id, job_in.file_urls, job_in.type_
+>>>>>>> 4ec3435 (feat(server): add upload type)
     )
     return {"message": "job created"}

@@ -52,6 +52,12 @@ class UploadJobStatus(str, Enum):
     DONE = "DONE"
     FAILED = "FAILED"
 
+class UploadType(str, Enum):
+    CHANNELTALK = "CHANNELTALK"
+    NAVER_SMART_STORE = "NAVER_SMART_STORE"
+    KAKAO_CHANNEL = "KAKAO_CHANNEL"
+    UNKNOWN = "UNKNOWN"
+
 
 class KnowledgeBaseCreateJob(ModelSchema):
     job_id: str
@@ -63,5 +69,9 @@ class KnowledgeBaseCreateJob(ModelSchema):
 class KnowledgeBaseCreateJobByUploadIn(Schema):
     user_id: str
     file_urls: list[str]
+<<<<<<< HEAD
     tone_manner: str | None
     categories: str | None
+=======
+    type_: UploadType = Field(alias="type")
+>>>>>>> 4ec3435 (feat(server): add upload type)
