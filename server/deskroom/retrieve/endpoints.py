@@ -1,4 +1,5 @@
 from ast import literal_eval
+from typing import Any
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
@@ -61,6 +62,51 @@ async def retrieve_and_process(
     return retrieved_msgs
 
 
+async def process_extended_components(
+    qn: str, knowledge_base: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    cleansed_question = qn
+    company_policy = ""
+    input_samples = {}
+    db_idx_dict = {}
+
+    for idx in range(len(knowledge_base)):
+        input_samples[f"Q{idx + 1}"] = knowledge_base[idx]["question"]
+        db_items = {
+            "category": knowledge_base[idx]["category"],
+            "answer": knowledge_base[idx]["answer"],
+            "support_manual": knowledge_base[idx]["support_manual"],
+            "frequently_asked": knowledge_base[idx]["frequently_asked"],
+            "caution_required": knowledge_base[idx]["caution_required"],
+            "support_images": [
+                row["image_url"] for row in knowledge_base[idx]["knowledge_images"]
+            ],
+            "question_tags": [
+                row["name"] for row in knowledge_base[idx]["knowledge_tags"]
+            ],
+        }
+
+        db_idx_dict[idx + 1] = db_items
+
+    retrieved = await retrieve_qns(
+        company_policy, str(input_samples), cleansed_question
+    )
+
+    output = literal_eval(str(retrieved))
+    retrieved_msgs = []
+    for retrieve_num in range(1, 4):
+        try:
+            predicted = output[f"Similar {retrieve_num}"]
+            if predicted is not None:
+                predicted_num = int(predicted.replace("Q", ""))
+
+                response_item = db_idx_dict[predicted_num]
+                retrieved_msgs.append(response_item)
+        except (KeyError, ValueError):
+            continue
+    return retrieved_msgs
+
+
 @router.post("/category/")
 async def get_knowledge_with_category_filter(
     knowledge_query_in: KnowledgeQueryInWithCategory,
@@ -69,7 +115,7 @@ async def get_knowledge_with_category_filter(
     supabase_response = (
         await supabase.table("knowledge_base")
         .select("*, organizations(company_info_policy)")
-        .eq("org_key", knowledge_query_in.organization_name)
+        .eq("org_key", knowledge_query_in.organization_key)
         .eq("category", knowledge_query_in.category)
         .execute()
     )
@@ -79,7 +125,7 @@ async def get_knowledge_with_category_filter(
         qn=knowledge_query_in.question, knowledge_base=supabase_response.data
     )
     return KnowledgeQueryOutWithCategory(
-        organization_name=knowledge_query_in.organization_name,
+        organization_key=knowledge_query_in.organization_key,
         question=knowledge_query_in.question,
         cleansed_question=knowledge_query_in.question,
         retrieved_messages=retrieved_msgs,
@@ -96,7 +142,7 @@ async def get_nearest_knowledge_item(
     supabase_response = (
         await supabase.table("knowledge_base")
         .select("*, organizations(company_info_policy)")
-        .eq("org_key", knowledge_query_in.organization_name)
+        .eq("org_key", knowledge_query_in.organization_key)
         .execute()
     )
 
@@ -107,8 +153,40 @@ async def get_nearest_knowledge_item(
         qn=knowledge_query_in.question, knowledge_base=supabase_response.data
     )
     return KnowledgeQueryOut(
-        organization_name=knowledge_query_in.organization_name,
+        organization_key=knowledge_query_in.organization_key,
         question=knowledge_query_in.question,
         cleansed_question=knowledge_query_in.question,
         retrieved_messages=retrieved_msgs,
+    )
+
+
+@router.post("/extended")
+async def get_more_answers(
+    knowledge_query_in: KnowledgeQueryInWithCategory,
+    supabase: AsyncClient = Depends(create_supabase_async_client),
+) -> KnowledgeQueryOutWithCategory:
+    company_policy = ""
+
+    knowledge_base_response = (
+        await supabase.table("knowledge_base")
+        .select(
+            "id, question,category, answer, support_manual, frequently_asked, caution_required, knowledge_tags(name),knowledge_images(image_url)"
+        )
+        .eq("org_key", knowledge_query_in.organization_key)
+        .eq("category", knowledge_query_in.category)
+        .execute()
+    )
+    if not knowledge_base_response.data:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    retrieved_msgs = await process_extended_components(
+        qn=knowledge_query_in.question,
+        knowledge_base=knowledge_base_response.data,
+    )
+    return KnowledgeQueryOutWithCategory(
+        organization_key=knowledge_query_in.organization_key,
+        question=knowledge_query_in.question,
+        cleansed_question=knowledge_query_in.question,
+        retrieved_messages=retrieved_msgs,
+        category=knowledge_query_in.category,
     )
