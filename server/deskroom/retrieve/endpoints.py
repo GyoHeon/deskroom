@@ -175,6 +175,8 @@ async def get_more_answers(
         .eq("org_key", knowledge_query_in.organization_name)
         .execute()
     )
+    if not knowledge_base_response.data:
+        raise HTTPException(status_code=404, detail="Item not found")
 
     retrieved_msgs = await process_extended_components(
         qn=knowledge_query_in.question,
