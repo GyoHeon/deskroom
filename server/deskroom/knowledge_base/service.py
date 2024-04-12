@@ -3,10 +3,12 @@ from urllib.parse import urlparse
 
 import pandas as pd
 import structlog
+import requests
 from supabase._async.client import AsyncClient
 
 from deskroom.common.azure import ContainerClient
 from deskroom.knowledge_base.schema import KnowledgeBaseCreateJob
+from deskroom.config import settings
 
 from .utils import (
     create_policy,
@@ -105,3 +107,47 @@ async def process_xlsx_for_kb_create(
     return pd.DataFrame(
         {"Question": questions, "Answer": answers, "Category": qn_categories}
     )
+
+
+LINEAR_DEFAULT_TEAM_ID = "fbe153f9-16d2-4865-ade6-f7d3471086e7"
+LINEAR_GRAPHQL_API_URL = "https://api.linear.app/graphql"
+
+
+def create_linear_issue(
+    title: str, description: str, team_id=LINEAR_DEFAULT_TEAM_ID
+) -> str:
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": settings.LINEAR_API_KEY,
+    }
+
+    mutation = """ 
+    mutation IssueCreate {
+    issueCreate(
+        input: {
+            title: "%s"
+            description: "%s"
+            teamId: "%s"
+        }
+    ) {
+        success
+        issue {
+            id
+            title
+        }
+    }
+    }
+    """ % (title, description, team_id)  # noqa
+    logger.info(mutation)
+
+    response = requests.post(
+        LINEAR_GRAPHQL_API_URL, headers=headers, json={"query": mutation}
+    )
+    if not response.ok:
+        logger.error(
+            "knowledge_base.service.create_linear_issue",
+            extra={"response": response, "message": response.json()["errors"]},
+        )
+        raise Exception("linear error")
+
+    return response.json()
