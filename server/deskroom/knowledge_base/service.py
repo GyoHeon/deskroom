@@ -114,7 +114,7 @@ LINEAR_GRAPHQL_API_URL = "https://api.linear.app/graphql"
 
 
 def create_linear_issue(
-    title: str, description: str, team_id=LINEAR_DEFAULT_TEAM_ID
+    title: str, description: str, team_id: str = LINEAR_DEFAULT_TEAM_ID
 ) -> CreateLinearIssueOut:
     headers = {
         "Content-Type": "application/json",
