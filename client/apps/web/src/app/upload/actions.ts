@@ -69,12 +69,13 @@ export default async function upload(prevState: UploadStatus, formData: FormData
     }
   }
 
-  const files = channelTalkUpload.map(upload => upload.files).flat().concat(miscUpload.map(upload => upload.files).flat());
+  // TODO: handle other files
   const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/knowledge/upload/${orgKey}`, {
     method: 'POST',
     body: JSON.stringify({
       user_id: userID,
-      file_urls: files,
+      file_urls: channelTalkUpload.map(upload => upload.files).flat(),
+      type: 'CHANNELTALK',
     }),
     headers: {
       'Content-Type': 'application/json',
