@@ -115,7 +115,7 @@ async def get_knowledge_with_category_filter(
     supabase_response = (
         await supabase.table("knowledge_base")
         .select("*, organizations(company_info_policy)")
-        .eq("org_key", knowledge_query_in.organization_name)
+        .eq("org_key", knowledge_query_in.organization_key)
         .eq("category", knowledge_query_in.category)
         .execute()
     )
@@ -125,7 +125,7 @@ async def get_knowledge_with_category_filter(
         qn=knowledge_query_in.question, knowledge_base=supabase_response.data
     )
     return KnowledgeQueryOutWithCategory(
-        organization_name=knowledge_query_in.organization_name,
+        organization_key=knowledge_query_in.organization_key,
         question=knowledge_query_in.question,
         cleansed_question=knowledge_query_in.question,
         retrieved_messages=retrieved_msgs,
@@ -142,7 +142,7 @@ async def get_nearest_knowledge_item(
     supabase_response = (
         await supabase.table("knowledge_base")
         .select("*, organizations(company_info_policy)")
-        .eq("org_key", knowledge_query_in.organization_name)
+        .eq("org_key", knowledge_query_in.organization_key)
         .execute()
     )
 
@@ -153,7 +153,7 @@ async def get_nearest_knowledge_item(
         qn=knowledge_query_in.question, knowledge_base=supabase_response.data
     )
     return KnowledgeQueryOut(
-        organization_name=knowledge_query_in.organization_name,
+        organization_key=knowledge_query_in.organization_key,
         question=knowledge_query_in.question,
         cleansed_question=knowledge_query_in.question,
         retrieved_messages=retrieved_msgs,
@@ -170,9 +170,10 @@ async def get_more_answers(
     knowledge_base_response = (
         await supabase.table("knowledge_base")
         .select(
-            "id, question,category, answer, support_manual, frequently_asked, caution_required, knowledge_tags!inner(name),knowledge_images!inner(image_url)"
+            "id, question,category, answer, support_manual, frequently_asked, caution_required, knowledge_tags(name),knowledge_images(image_url)"
         )
-        .eq("org_key", knowledge_query_in.organization_name)
+        .eq("org_key", knowledge_query_in.organization_key)
+        .eq("category", knowledge_query_in.category)
         .execute()
     )
     if not knowledge_base_response.data:
@@ -183,7 +184,7 @@ async def get_more_answers(
         knowledge_base=knowledge_base_response.data,
     )
     return KnowledgeQueryOutWithCategory(
-        organization_name=knowledge_query_in.organization_name,
+        organization_key=knowledge_query_in.organization_key,
         question=knowledge_query_in.question,
         cleansed_question=knowledge_query_in.question,
         retrieved_messages=retrieved_msgs,

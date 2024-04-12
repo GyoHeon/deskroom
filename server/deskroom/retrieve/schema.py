@@ -4,7 +4,7 @@ from deskroom.common.schema import Schema
 
 
 class KnowledgeQueryIn(Schema):
-    organization_name: str
+    organization_key: str
     question: str
 
 
