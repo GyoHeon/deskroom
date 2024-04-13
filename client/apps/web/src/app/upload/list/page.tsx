@@ -1,9 +1,8 @@
 import { Database } from "@/lib/database.types";
-import { Button, Flex, Grid, Heading, Text } from "@radix-ui/themes";
-import { SupabaseClient, createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Flex, Grid, Heading, Text } from "@radix-ui/themes";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { JobStatusCircle, JobStatus } from "./JobStatusCircle";
-import { revalidatePath } from "next/cache";
 import { JobActions } from "./JobActions";
 
 const convertToReadableDate = (date: string) => {
@@ -17,6 +16,7 @@ export default async function UploadIndex({ searchParams }) {
   return (
     <>
       <Heading>업로드 작업</Heading>
+      <Text>현재 진행 중인 업로드 작업을 확인할 수 있습니다.</Text>
       <Flex direction="column" className="my-4 text-sm" gap="2">
         {uploadJobs.map((job) => (
           <Grid key={job.id} className="p-4 border border-gray-100 rounded-lg shadow-md shadow-secondary-100" columns="10" align="center" justify="center">

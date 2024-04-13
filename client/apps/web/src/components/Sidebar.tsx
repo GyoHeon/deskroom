@@ -87,7 +87,7 @@ export const Sidebar = () => {
     <aside id="default-sidebar" className="w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 xs:hidden" aria-label="Sidebar">
       <Box className="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-gray-800"
       >
-        <Flex className="items-center mb-6 mx-2"
+        <Flex className="items-center mb-6 mx-2 cursor-pointer"
           onClick={() => router.push(`/?org=${searchParams.get("org") ?? ""}`)}
         >
           <Image src="/deskroom-icon.png" alt="Deskroom Logo" width={40} height={40} className="mx-2 self-start" />
