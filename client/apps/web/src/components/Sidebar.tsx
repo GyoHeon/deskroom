@@ -1,10 +1,13 @@
 'use client'
 
-import { CubeIcon, GlobeIcon, UpdateIcon } from "@radix-ui/react-icons";
+import { Database } from "@/lib/database.types";
+import { CubeIcon, GlobeIcon, UpdateIcon, UploadIcon } from "@radix-ui/react-icons";
 import { Box, Flex, Grid, useThemeContext } from "@radix-ui/themes";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type SidebarMenu = {
   title: string
@@ -55,7 +58,12 @@ const sidebarMenus: SidebarMenu[] = [
 
     disabled: true
   },
+]
 
+const secretSidebarMenus: SidebarMenu[] = [
+  {
+    title: "업로드 작업", icon: (<UploadIcon />),
+  }
 ]
 export const Sidebar = () => {
   const theme = useThemeContext();
@@ -63,6 +71,17 @@ export const Sidebar = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const supabase = createClientComponentClient<Database>()
+  const [canReadJobs, setCanReadJobs] = useState(false);
+  useEffect(() => {
+    const checkJobs = async () => {
+      const { data: jobs, error: jobsError } = await supabase.from("uploads").select("*").limit(1).single();
+      if (!!jobs) {
+        setCanReadJobs(true);
+      }
+    }
+    checkJobs();
+  }, [])
 
   return (
     <aside id="default-sidebar" className="w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 xs:hidden" aria-label="Sidebar">
@@ -81,6 +100,21 @@ export const Sidebar = () => {
         </Flex>
         {
           sidebarMenus.map((menu, index) => (
+            <Grid className={`group items-center justify-start p-2 px-4 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer h-12 ${menu.disabled && 'text-gray-300 cursor-not-allowed'} ${menu.url === pathname ? 'bg-primary-900 text-white shadow-lg hover:bg-primary-900 transition-all duration-300' : ''}`} columns="4" key={index}
+              onClick={() => {
+                if (menu.disabled) return;
+                router.push(`${menu.url}?org=${searchParams.get("org") ?? ""}`);
+              }}
+            >
+              <Box className="col-span-1">
+                {menu.icon}
+              </Box>
+              <Box className="col-span-3" >{menu.title}</Box>
+            </Grid>
+          ))
+        }
+        {
+          canReadJobs && secretSidebarMenus.map((menu, index) => (
             <Grid className={`group items-center justify-start p-2 px-4 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer h-12 ${menu.disabled && 'text-gray-300 cursor-not-allowed'} ${menu.url === pathname ? 'bg-primary-900 text-white shadow-lg hover:bg-primary-900 transition-all duration-300' : ''}`} columns="4" key={index}
               onClick={() => {
                 if (menu.disabled) return;
