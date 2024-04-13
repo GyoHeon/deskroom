@@ -9,7 +9,7 @@ export default function UploadLayout({
   return (
     <Flex direction={`column`}>
       <TopNav />
-      <Container className="px-16 py-4 bg-primary-100 min-h-[800px]">
+      <Container className="px-16 py-4 bg-primary-100 min-h-[800px] h-screen">
         <Box className="rounded-xl bg-white p-5">
           {children}
         </Box>

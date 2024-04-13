@@ -62,7 +62,7 @@ const sidebarMenus: SidebarMenu[] = [
 
 const secretSidebarMenus: SidebarMenu[] = [
   {
-    title: "업로드 작업", icon: (<UploadIcon />),
+    title: "업로드 작업", icon: (<UploadIcon />), url: "/upload/list"
   }
 ]
 export const Sidebar = () => {

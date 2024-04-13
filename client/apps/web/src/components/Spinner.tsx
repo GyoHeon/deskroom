@@ -1,11 +1,14 @@
 type SpinnerProps = {
   size?: 4 | 8 | 16 | 32 | 64;
+  shouldSpin?: boolean;
+  done?: boolean;
+  failed?: boolean;
 };
-export default function Spinner({ size = 32 }: SpinnerProps) {
+export default function Spinner({ size = 32, shouldSpin = false, done, failed }: SpinnerProps) {
   return (
     <svg
       aria-hidden="true"
-      className={`w-${size} h-${size} text-gray-400 animate-spin dark:text-gray-600 fill-purple-600`}
+      className={`w-${size} h-${size} text-gray-400 dark:text-gray-600 fill-gray-400 ${shouldSpin && 'animate-spin fill-primary-700'} ${done && 'text-primary-700 fill-primary-700'} ${failed && 'text-red-700 fill-red-700'}`}
       viewBox="0 0 100 101"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
