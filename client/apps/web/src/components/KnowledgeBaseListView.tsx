@@ -265,7 +265,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
               }}
             >
               {filteredItems.map((item) => (
-                <Table.Row key={item.id} className="text-gray-600">
+                <Table.Row key={item.id} className="text-gray-600" align="center">
                   <Table.RowHeaderCell width={300}>
                     <Flex gap="1">
                       {
