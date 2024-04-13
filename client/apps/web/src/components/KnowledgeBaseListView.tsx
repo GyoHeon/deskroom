@@ -23,7 +23,7 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { use, useState } from "react";
+import React, { ReactNode, use, useState } from "react";
 import KnowledgeBaseUpdateForm from "./KnowledgeBaseUpdateForm";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
@@ -249,12 +249,12 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
           </Flex>
           <Table.Root className="border-t-gray-200 border-y">
             <Table.Header>
-              <Table.Row>
+              <Table.Row align="center">
                 <StyledColumnHeaderCell>Question</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Category</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Tag</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Answer</StyledColumnHeaderCell>
-                <StyledColumnHeaderCell>Guide</StyledColumnHeaderCell>
+                <StyledColumnHeaderCell className="text-center">Guide</StyledColumnHeaderCell>
                 <StyledColumnHeaderCell>Action</StyledColumnHeaderCell>
               </Table.Row>
             </Table.Header>
@@ -338,15 +338,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
               </Dialog.Description>
               <KnowledgeBaseUpdateForm
                 organization={organization}
-                categories={filteredItems
-                  .map((item) => item.category)
-                  .filter((item) => item !== "" && !!item)
-                  .reduce((acc, cur) => {
-                    if (acc.includes(cur)) {
-                      return acc;
-                    }
-                    return [...acc, cur];
-                  }, [])}
+                categories={categories.map((category, idx) => category.name)}
                 onSubmit={() => {
                   // TODO: abridge this
                   setOpenDialog(false);
@@ -397,8 +389,8 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   );
 };
 
-export const StyledColumnHeaderCell = ({ children }) => (
-  <Table.ColumnHeaderCell className="font-semibold">
+export const StyledColumnHeaderCell = ({ children, className }: { children: ReactNode, className?: string }) => (
+  <Table.ColumnHeaderCell className={`font-semibold ${className}`}>
     {children}
   </Table.ColumnHeaderCell>
 );

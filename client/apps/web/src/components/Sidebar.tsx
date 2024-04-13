@@ -75,7 +75,7 @@ export const Sidebar = () => {
   const [canReadJobs, setCanReadJobs] = useState(false);
   useEffect(() => {
     const checkJobs = async () => {
-      const { data: jobs, error: jobsError } = await supabase.from("uploads").select("*").limit(1).single();
+      const { data: jobs, error: jobsError } = await supabase.from("uploads").select("*").eq('org_key', searchParams?.get('org')).limit(1).single();
       if (!!jobs) {
         setCanReadJobs(true);
       }
