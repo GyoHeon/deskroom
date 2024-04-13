@@ -38,7 +38,7 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
       console.error("Error logging out:", error)
       return
     }
-    router.refresh()
+    router.push('/v1/login')
 
     // TODO: track logout
   }
