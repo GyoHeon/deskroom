@@ -19,6 +19,16 @@ import { useStorage } from "@plasmohq/storage/hook"
 
 import { supabase } from "~core/supabase"
 import type { OrganizationStorage } from "~options"
+import * as _Sentry from "@sentry/react"
+import { version, name } from '@/package.json'
+
+const Sentry = _Sentry
+
+Sentry.init({
+  dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  release: `${name}@${version}`
+})
 
 // TODO: find why this is not working
 export const getStyle = () => {

@@ -11,6 +11,16 @@ import { useStorage } from "@plasmohq/storage/hook"
 
 import { supabase } from "~core/supabase"
 import type { Database } from "~lib/database.types"
+import * as _Sentry from "@sentry/react"
+import { version, name } from '@/package.json'
+
+const Sentry = _Sentry
+
+Sentry.init({
+  dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  release: `${name}@${version}`
+})
 
 export type Organization = Pick<
   Database["public"]["Tables"]["organizations"]["Row"],
@@ -96,9 +106,9 @@ function IndexOptions() {
       } =
         type === "LOGIN"
           ? await supabase.auth.signInWithPassword({
-              email: username,
-              password
-            })
+            email: username,
+            password
+          })
           : await supabase.auth.signUp({ email: username, password })
 
       if (error) {
