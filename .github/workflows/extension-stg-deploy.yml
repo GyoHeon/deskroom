@@ -45,9 +45,9 @@ jobs:
       - name: Upload zip file to release
         id: upload-artifact
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: extension-prod
+          name: extension-staging
           path: client/apps/chrome-extension/build/*.zip
       - name: Notify Slack channel
         if: always()
