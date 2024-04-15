@@ -10,17 +10,17 @@ import { useStorage } from "@plasmohq/storage/hook"
 import Sidebar from "~components/Sidebar"
 import Tooltip from "~components/Tooltip"
 import { DeskroomUserProvider } from "~contexts/DeskroomUserContext"
-import { MixpanelProvider, useMixpanel } from "~contexts/MixpanelContext"
+import { MixpanelProvider } from "~contexts/MixpanelContext"
 import { useTextSelection } from "~hooks/useTextSelection"
 import * as _Sentry from "@sentry/react"
-import { version, name } from '@/package.json'
+import { name, version, manifest } from "../../package.json"
 
 const Sentry = _Sentry
 
 Sentry.init({
   dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
   environment: process.env.NODE_ENV,
-  release: `${name}@${version}`
+  release: `deskroom-extension@${version}`
 })
 
 export const config: PlasmoCSConfig = {
@@ -62,7 +62,7 @@ export const getStyle = () => {
   return style
 }
 
-export default function Content() {
+function Content() {
   const [isOpen, setIsOpen] = useState(false)
   const [user] = useStorage<User>("user")
   const [question, setQuestion] = useState("")
@@ -97,3 +97,5 @@ export default function Content() {
     </MixpanelProvider>
   )
 }
+
+export default Sentry.withProfiler(Content);

@@ -11,15 +11,15 @@ import { useStorage } from "@plasmohq/storage/hook"
 
 import { supabase } from "~core/supabase"
 import type { Database } from "~lib/database.types"
+import { name, version } from "../package.json"
 import * as _Sentry from "@sentry/react"
-import { version, name } from '@/package.json'
 
 const Sentry = _Sentry
 
 Sentry.init({
   dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
   environment: process.env.NODE_ENV,
-  release: `${name}@${version}`
+  release: `deskroom-extension@v${version}`
 })
 
 export type Organization = Pick<
@@ -80,7 +80,7 @@ function IndexOptions() {
       })
 
       if (!!data.session) {
-        setUser(data.session.user)
+        await setUser(data.session.user)
         sendToBackground({
           name: "init-session",
           body: {
@@ -116,18 +116,19 @@ function IndexOptions() {
       } else if (!user) {
         alert("Signup successful, confirmation mail should be sent soon!")
       } else {
-        setUser(user)
+        await setUser(user)
         const availableOrgs = await getOrgs(user.id)
         if (!availableOrgs) {
           throw new Error("No organizations found for this user")
         }
-        setOrgs({
+        await setOrgs({
           availableOrgs,
-          currentOrg: orgs.currentOrg ?? orgs[0]
+          currentOrg: orgs?.currentOrg || availableOrgs[0]
         })
       }
     } catch (error) {
       alert(error.error_description || error)
+      throw error;
     }
   }
 
@@ -214,4 +215,4 @@ function IndexOptions() {
   )
 }
 
-export default IndexOptions
+export default Sentry.withProfiler(IndexOptions)

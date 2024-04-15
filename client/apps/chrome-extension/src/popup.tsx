@@ -10,8 +10,7 @@ import {
   Button,
   Flex,
   IconButton,
-  Separator,
-  TextField
+  Separator
 } from "@radix-ui/themes"
 import browser from "webextension-polyfill"
 
@@ -19,15 +18,15 @@ import { useStorage } from "@plasmohq/storage/hook"
 
 import { supabase } from "~core/supabase"
 import type { OrganizationStorage } from "~options"
+import { name, version } from "../package.json"
 import * as _Sentry from "@sentry/react"
-import { version, name } from '@/package.json'
 
 const Sentry = _Sentry
 
 Sentry.init({
   dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
   environment: process.env.NODE_ENV,
-  release: `${name}@${version}`
+  release: `deskroom-extension@v${version}`
 })
 
 // TODO: find why this is not working
@@ -109,4 +108,5 @@ function IndexPopup() {
   )
 }
 
-export default IndexPopup
+export default Sentry.withProfiler(IndexPopup);
+
