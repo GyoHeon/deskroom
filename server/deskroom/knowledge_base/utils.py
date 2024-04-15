@@ -91,8 +91,8 @@ async def create_policy(chat_logs: str) -> str:
 
 async def create_qa(
     policy: str,
-    tone_manner: str,
-    categories: str,
+    tone_manner: str | None,
+    categories: str | None,
     conversation: str,
 ) -> str:
     prompt = read_prompt("create_qa.txt")

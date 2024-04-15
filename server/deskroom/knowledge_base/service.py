@@ -68,25 +68,37 @@ def read_xlsx_from_azure_blob_storage(
     return pd.read_excel(download.readall(), engine="openpyxl")
 
 
-async def process_xlsx_for_kb_create(df: pd.DataFrame) -> pd.DataFrame:
+async def process_xlsx_for_kb_create(
+    df: pd.DataFrame, tone_manner: str | None, categories: str | None
+) -> pd.DataFrame:
     questions = []
     answers = []
+    qn_categories = []
 
-    processed_df = await process_raw_file(df)
+    raw_df = df.dropna()
+    processed_df = await process_raw_file(raw_df)
 
     discovery_str = await generate_discovery_string(processed_df)
+
     company_policy = await create_policy(discovery_str)
     chat_ids = list(processed_df["chatId"].unique())
-    for chat_id in chat_ids:
+    for chat_id in chat_ids[:1]:
         try:
-            qa_string = await generate_qa_string(processed_df, chat_id)
+            query_df = processed_df[processed_df["chatId"] == chat_id]
             discovered = await create_qa(
-                company_policy, qa_string, ""
-            )  # TODO: replace tone and manner
+                company_policy,
+                tone_manner,
+                categories,
+                query_df,
+            )
+
             discovered_ = literal_eval(discovered)
             for qa in list(discovered_.values()):
-                questions.append(qa["Question"])
-                answers.append(qa["Answer"])
+                questions.append(qa["Qn"])
+                answers.append(qa["Ans"])
+                qn_categories.append(qa["Category"])
         except (ValueError, KeyError):
             continue
-    return pd.DataFrame({"Question": questions, "Answer": answers})
+    return pd.DataFrame(
+        {"Question": questions, "Answer": answers, "Category": qn_categories}
+    )

@@ -6,12 +6,10 @@ from deskroom.common.supabase import create_supabase_async_client
 from deskroom.logging import Logger
 from deskroom.worker import enqueue_job
 
-from .schema import KnowledgeBase, KnowledgeBaseCreateJobIn, KnowledgeBaseFetch
-from .utils import (
-    create_policy,
-    create_qa,
-    generate_discovery_string,
-    process_raw_file,
+from .schema import (
+    KnowledgeBase,
+    KnowledgeBaseCreateJobByUploadIn,
+    KnowledgeBaseFetch,
 )
 
 logger: Logger = structlog.get_logger()
@@ -39,5 +37,5 @@ async def create_knowledge_base_by_upload(
     org_key: str,
     job_in: KnowledgeBaseCreateJobByUploadIn,
 ) -> dict[str, str]:
-    enqueue_job("knowledge_base.create", org_key, job_in.user_id, job_in.file_urls)
+    enqueue_job("knowledge_base.create", org_key, job_in.user_id, job_in.file_urls, job_in.tone_manner, job_in.categories)
     return {"message": "job created"}

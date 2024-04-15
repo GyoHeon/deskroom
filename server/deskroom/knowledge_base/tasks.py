@@ -10,7 +10,7 @@ logger = structlog.get_logger()
 
 @task("knowledge_base.create")
 async def create_knowledge_base_create_job(
-    ctx: JobContext, org_key: str, user_id: str, file_urls: list[str]
+    ctx: JobContext, org_key: str, user_id: str, file_urls: list[str], tone_manner: str | None, categories: str | None
 ) -> None:
     supabase = await create_supabase_async_client()
     azure_client = create_azure_container_client("deskroom-files")
@@ -30,7 +30,7 @@ async def create_knowledge_base_create_job(
     df = service.read_xlsx_from_azure_blob_storage(
         first_file_url, azure_client
     )  # TODO: convert to async
-    processed_df = await service.process_xlsx_for_kb_create(df)
+    processed_df = await service.process_xlsx_for_kb_create(df, tone_manner, categories)
 
     create_knowledge_base_response = (
         await supabase.table("knowledge_base")
@@ -40,8 +40,9 @@ async def create_knowledge_base_create_job(
                     "org_key": org_key,
                     "question": processed_df["Question"].tolist()[row_num],
                     "answer": processed_df["Answer"].tolist()[row_num],
+                    "category": processed_df["Category"].tolist()[row_num],
                 }
-                for row_num in processed_df
+                for row_num in range(len(processed_df))
             ]
         )
         .execute()

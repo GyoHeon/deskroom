@@ -63,3 +63,5 @@ class KnowledgeBaseCreateJob(ModelSchema):
 class KnowledgeBaseCreateJobByUploadIn(Schema):
     user_id: str
     file_urls: list[str]
+    tone_manner: str | None
+    categories: str | None
