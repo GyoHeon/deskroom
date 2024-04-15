@@ -1,6 +1,6 @@
 "use client";
 import { Database } from "@/lib/database.types";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { User, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useSearchParams } from "next/navigation";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useMixpanel } from "./MixpanelContext";
@@ -8,6 +8,7 @@ import { useMixpanel } from "./MixpanelContext";
 export type Organization = Database["public"]["Tables"]["organizations"]["Row"];
 // Define the shape of the organization context
 interface OrganizationContextType {
+  user: User
   currentOrg: Organization;
   setCurrentOrg: React.Dispatch<React.SetStateAction<Organization>>;
   availableOrgs: Organization[];
@@ -15,6 +16,7 @@ interface OrganizationContextType {
 
 // Create the organization context
 export const OrganizationContext = createContext<OrganizationContextType>({
+  user: null,
   currentOrg: null,
   setCurrentOrg: () => { },
   availableOrgs: [],
@@ -37,6 +39,7 @@ export const OrganizationContextProvider: React.FC<{
   const supabase = createClientComponentClient();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [currentOrg, setCurrentOrg] = useState<Organization>(null);
+  const [user, setUser] = useState<User>(null)
   const mixpanel = useMixpanel();
   useEffect(() => {
     (async () => {
@@ -56,6 +59,8 @@ export const OrganizationContextProvider: React.FC<{
       if (!session) {
         return;
       }
+
+      setUser(session.user)
 
       const { data: orgs, error: organizationError } = await supabase
         .from("organizations")
@@ -91,6 +96,7 @@ export const OrganizationContextProvider: React.FC<{
         currentOrg: currentOrg,
         setCurrentOrg: setCurrentOrg,
         availableOrgs: organizations,
+        user
       }}
     >
       {children}

@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import Field
 
 from deskroom.common.schema import ModelSchema, Schema
@@ -44,7 +46,22 @@ class KnowledgeBaseCreateJobIn(Schema):
     org_key: str
 
 
-class KnowledgeBaseCreateJob(Schema):
-    job_id: int = Field(alias="id")
-    status: int | None = Field(None)
+class UploadJobStatus(str, Enum):
+    CREATED = "CREATED"
+    PENDING = "PENDING"
+    DONE = "DONE"
+    FAILED = "FAILED"
+
+
+class KnowledgeBaseCreateJob(ModelSchema):
+    job_id: str
+    status: UploadJobStatus
+    user_id: str
     org_key: str
+
+
+class KnowledgeBaseCreateJobByUploadIn(Schema):
+    user_id: str
+    file_urls: list[str]
+    tone_manner: str | None
+    categories: str | None

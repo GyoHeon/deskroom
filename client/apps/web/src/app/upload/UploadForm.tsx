@@ -24,7 +24,7 @@ const initialState: UploadStatus = {
 
 export const UploadForm = () => {
   const [state, formAction] = useFormState(upload, initialState)
-  const { currentOrg } = useOrganizationContext();
+  const { currentOrg, user } = useOrganizationContext();
   const router = useRouter();
   useEffect(() => {
     if (state.status === 200) {
@@ -99,6 +99,9 @@ export const UploadForm = () => {
         </Flex>
         <Flex>
           <input type="text" className="sr-only" id="org-key" name="org-key" value={currentOrg?.key} />
+        </Flex>
+        <Flex>
+          <input type="text" className="sr-only" id="user-id" name="user-id" value={user.id} />
         </Flex>
       </Flex>
     </form>
