@@ -64,7 +64,7 @@ def read_xlsx_from_azure_blob_storage(
         raise ValueError("Invalid file format. Please upload an xlsx file.")
     blob_client = client.get_blob_client(blob_name)
     download = blob_client.download_blob()
-    
+
     if sheet_name:
         return pd.read_excel(download.readall(), sheet_name, engine="openpyxl")
 
