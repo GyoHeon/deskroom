@@ -1,4 +1,4 @@
-import { type Config } from "tailwindcss";
+import { type Config } from "tailwindcss"
 
 const config: Config = {
   mode: "jit",
@@ -14,7 +14,7 @@ const config: Config = {
           700: "#778BFE",
           500: "#9EACFF",
           300: "#C5CEFF",
-          100: "#ECEEFF",
+          100: "#ECEEFF"
         },
         secondary: {
           900: "#0d1654",
@@ -22,7 +22,7 @@ const config: Config = {
           700: "#565c88",
           500: "#868aaa",
           300: "#b7b9cc",
-          100: "#b7b9cc",
+          100: "#b7b9cc"
         },
         tertiary: {
           900: "#2c2c2c",
@@ -30,7 +30,7 @@ const config: Config = {
           700: "#6c6c6c",
           500: "#969696",
           300: "#c0c0c0",
-          100: "#eaeaea",
+          100: "#eaeaea"
         },
         accent: {
           900: "#a6ff98",
@@ -38,11 +38,11 @@ const config: Config = {
           700: "#d4fecc",
           500: "#e0ffdb",
           300: "#ebffe9",
-          100: "#f9fff9",
-        },
-      },
-    },
-  },
-};
+          100: "#f9fff9"
+        }
+      }
+    }
+  }
+}
 
-export default config;
+export default config

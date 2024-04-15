@@ -1,43 +1,43 @@
-import { IconButton } from "@radix-ui/themes";
-import deskroomIcon from "data-base64:assets/icon.png";
-import React, { useEffect, useState } from "react";
+import { IconButton } from "@radix-ui/themes"
+import deskroomIcon from "data-base64:assets/icon.png"
+import React, { useEffect, useState } from "react"
 
-import { useMixpanel } from "~contexts/MixpanelContext";
-import { useTextSelection } from "~hooks/useTextSelection";
+import { useMixpanel } from "~contexts/MixpanelContext"
+import { useTextSelection } from "~hooks/useTextSelection"
 
 type TooltipProps = {
-  clickHandler: () => void;
-} & React.HTMLAttributes<HTMLDivElement>;
+  clickHandler: () => void
+} & React.HTMLAttributes<HTMLDivElement>
 
 const Tooltip: React.FC<TooltipProps> = ({ clickHandler }) => {
-  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })
 
-  const { text, rects } = useTextSelection();
-  const mixpanel = useMixpanel();
+  const { text, rects } = useTextSelection()
+  const mixpanel = useMixpanel()
 
   useEffect(() => {
     if (text !== "") {
-      const firstRect = rects[0];
-      const lastRect = rects[rects.length - 1];
+      const firstRect = rects[0]
+      const lastRect = rects[rects.length - 1]
 
-      const top = firstRect.top;
-      const left = firstRect.left;
+      const top = firstRect.top
+      const left = firstRect.left
 
-      const tooltipTop = top + window.scrollY - 50;
-      const tooltipLeft = left + window.scrollX - 50;
+      const tooltipTop = top + window.scrollY - 50
+      const tooltipLeft = left + window.scrollX - 50
 
-      setTooltipPosition({ top: tooltipTop, left: tooltipLeft });
+      setTooltipPosition({ top: tooltipTop, left: tooltipLeft })
     } else {
       setTimeout(() => {
-        setTooltipPosition({ top: 0, left: 0 });
-      }, 100);
+        setTooltipPosition({ top: 0, left: 0 })
+      }, 100)
     }
-  }, [text, rects]);
+  }, [text, rects])
 
   const handleOnClick = () => {
-    clickHandler();
-    mixpanel.track("Answer Panel Triggered"); // TODO: add question in select
-  };
+    clickHandler()
+    mixpanel.track("Answer Panel Triggered") // TODO: add question in select
+  }
 
   return (
     <div
@@ -47,9 +47,8 @@ const Tooltip: React.FC<TooltipProps> = ({ clickHandler }) => {
       onClick={handleOnClick}
       style={{
         top: tooltipPosition.top,
-        left: tooltipPosition.left,
-      }}
-    >
+        left: tooltipPosition.left
+      }}>
       <div className="bg-gray-300 p-1 rounded-lg flex-1 cursor-pointer">
         <IconButton className="cursor-pointer">
           <img src={deskroomIcon} width={45} height={45} />
@@ -59,7 +58,7 @@ const Tooltip: React.FC<TooltipProps> = ({ clickHandler }) => {
         <div className="h-2 bg-gray-300 rotate-45 transform origin-bottom-left rounded-sm"></div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Tooltip;
+export default Tooltip

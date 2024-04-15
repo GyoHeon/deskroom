@@ -1,27 +1,28 @@
-import { Theme } from "@radix-ui/themes";
-import type { User } from "@supabase/supabase-js";
-import radixUIText from "data-text:@radix-ui/themes/styles.css";
-import tailwindcssText from "data-text:~style.css";
-import type { PlasmoCSConfig } from "plasmo";
-import { useState } from "react";
+import { Theme } from "@radix-ui/themes"
+import * as _Sentry from "@sentry/react"
+import type { User } from "@supabase/supabase-js"
+import radixUIText from "data-text:@radix-ui/themes/styles.css"
+import tailwindcssText from "data-text:~style.css"
+import type { PlasmoCSConfig } from "plasmo"
+import { useState } from "react"
 
-import { useStorage } from "@plasmohq/storage/hook";
+import { useStorage } from "@plasmohq/storage/hook"
 
-import Sidebar from "~components/Sidebar";
-import Tooltip from "~components/Tooltip";
-import { DeskroomUserProvider } from "~contexts/DeskroomUserContext";
-import { MixpanelProvider } from "~contexts/MixpanelContext";
-import { useTextSelection } from "~hooks/useTextSelection";
-import * as _Sentry from "@sentry/react";
-import { name, version, manifest } from "../../package.json";
+import Sidebar from "~components/Sidebar"
+import Tooltip from "~components/Tooltip"
+import { DeskroomUserProvider } from "~contexts/DeskroomUserContext"
+import { MixpanelProvider } from "~contexts/MixpanelContext"
+import { useTextSelection } from "~hooks/useTextSelection"
 
-const Sentry = _Sentry;
+import { manifest, name, version } from "../../package.json"
+
+const Sentry = _Sentry
 
 Sentry.init({
   dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
   environment: process.env.NODE_ENV,
-  release: `deskroom-extension@${version}`,
-});
+  release: `deskroom-extension@${version}`
+})
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -49,41 +50,40 @@ export const config: PlasmoCSConfig = {
     "https://admin.dcamp.kr/*",
     "https://*.notion.site/*",
     "https://counselor.happytalk.io/*",
-    "https://wing.coupang.com/*",
+    "https://wing.coupang.com/*"
   ],
   run_at: "document_start",
-  all_frames: true,
-};
+  all_frames: true
+}
 
 export const getStyle = () => {
-  const style = document.createElement("style");
-  style.textContent += radixUIText;
-  style.textContent += tailwindcssText;
-  return style;
-};
+  const style = document.createElement("style")
+  style.textContent += radixUIText
+  style.textContent += tailwindcssText
+  return style
+}
 
 function Content() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [user] = useStorage<User>("user");
-  const [question, setQuestion] = useState("");
-  const { text, rects } = useTextSelection();
+  const [isOpen, setIsOpen] = useState(false)
+  const [user] = useStorage<User>("user")
+  const [question, setQuestion] = useState("")
+  const { text, rects } = useTextSelection()
 
   const handleTooltipClick = () => {
-    setIsOpen(true);
+    setIsOpen(true)
     if (text && rects.length > 0) {
-      setQuestion(text);
+      setQuestion(text)
     }
-  };
+  }
 
   return (
     <MixpanelProvider
       token={process.env.PLASMO_PUBLIC_MIXPANEL_TOKEN}
       config={{
         debug: process.env.NODE_ENV !== "production",
-        persistence: "localStorage",
+        persistence: "localStorage"
       }}
-      name={`deskroom-${process.env.NODE_ENV}`}
-    >
+      name={`deskroom-${process.env.NODE_ENV}`}>
       <DeskroomUserProvider>
         <Theme>
           <Sidebar
@@ -96,7 +96,7 @@ function Content() {
         </Theme>
       </DeskroomUserProvider>
     </MixpanelProvider>
-  );
+  )
 }
 
-export default Sentry.withProfiler(Content);
+export default Sentry.withProfiler(Content)

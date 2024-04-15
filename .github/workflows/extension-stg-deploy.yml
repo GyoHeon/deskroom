@@ -42,3 +42,22 @@ jobs:
           client-secret: ${{ secrets.DSKRM_STG_CLIENT_SECRET }}
           refresh-token: ${{ secrets.DSKRM_STG_REFRESH_TOKEN }}
           glob: true
+      - name: Upload zip file to release
+        id: upload-artifact
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: extension-prod
+          path: client/apps/chrome-extension/build/*.zip
+      - name: Notify Slack channel
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env: 
+          SLACK_WEBHOOK: ${{ secrets.DSKRM_DEPLOY_SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: "#deskroom-deploy"
+          SLACK_USERNAME: "Deskroom"
+          SLACK_ICON: "https://app.deskroom.so/_next/image?url=%2Fdeskroom-icon.png&w=128&q=75"
+          SLACK_TITLE: "Deskroom Extension (Staging)"
+          SLACK_MESSAGE_ON_SUCCESS: "새로운 Extension이 배포되었습니다. Version: ${{ github.event.release.tag }}"
+          SLACK_MESSAGE_ON_FAILURE: "Extension 배포 중 오류가 발생했습니다. Version: ${{ github.event.release.tag }}\nReason: ${{ job.status }}" 
+
