@@ -1,50 +1,44 @@
-import type { User } from "@supabase/supabase-js"
-import deskroomLogo from "data-base64:assets/logo.png"
+import type { User } from "@supabase/supabase-js";
+import deskroomLogo from "data-base64:assets/logo.png";
 
-import "./style.css"
-import "data-text:@radix-ui/themes/styles.css"
+import "./style.css";
+import "data-text:@radix-ui/themes/styles.css";
 
-import { ArrowTopRightIcon, GearIcon } from "@radix-ui/react-icons"
-import {
-  Box,
-  Button,
-  Flex,
-  IconButton,
-  Separator
-} from "@radix-ui/themes"
-import browser from "webextension-polyfill"
+import { ArrowTopRightIcon, GearIcon } from "@radix-ui/react-icons";
+import { Box, Button, Flex, IconButton, Separator } from "@radix-ui/themes";
+import browser from "webextension-polyfill";
 
-import { useStorage } from "@plasmohq/storage/hook"
+import { useStorage } from "@plasmohq/storage/hook";
 
-import { supabase } from "~core/supabase"
-import type { OrganizationStorage } from "~options"
-import { name, version } from "../package.json"
-import * as _Sentry from "@sentry/react"
+import { supabase } from "~core/supabase";
+import type { OrganizationStorage } from "~options";
+import { name, version } from "../package.json";
+import * as _Sentry from "@sentry/react";
 
-const Sentry = _Sentry
+const Sentry = _Sentry;
 
 Sentry.init({
   dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
   environment: process.env.NODE_ENV,
-  release: `deskroom-extension@v${version}`
-})
+  release: `deskroom-extension@v${version}`,
+});
 
 // TODO: find why this is not working
 export const getStyle = () => {
-  const style = document.createElement("style")
-  return style
-}
+  const style = document.createElement("style");
+  return style;
+};
 
 function IndexPopup() {
   // TODO: replace this with DeskroomUserContext
-  const [user, _, { remove: removeUserFromStorage }] = useStorage<User>("user")
+  const [user, _, { remove: removeUserFromStorage }] = useStorage<User>("user");
   const [orgs, __, { remove: removeOrgsFromStorage }] =
-    useStorage<OrganizationStorage | null>("orgs")
+    useStorage<OrganizationStorage | null>("orgs");
 
   const cleanUpStorage = () => {
-    removeUserFromStorage()
-    removeOrgsFromStorage()
-  }
+    removeUserFromStorage();
+    removeOrgsFromStorage();
+  };
 
   return (
     <Flex className="w-60 h-64 px-4 py-2">
@@ -85,11 +79,12 @@ function IndexPopup() {
         <Button
           className="w-full rounded bg-primary-900 py-2 text-white"
           onClick={async () => {
-            cleanUpStorage()
-            await supabase.auth.signOut()
-            const optionsURL = browser.runtime.getURL("options.html")
-            window.open(optionsURL, "_blank", "noopener, noreferrer")
-          }}>
+            cleanUpStorage();
+            await supabase.auth.signOut();
+            const optionsURL = browser.runtime.getURL("options.html");
+            window.open(optionsURL, "_blank", "noopener, noreferrer");
+          }}
+        >
           로그아웃
         </Button>
       </Flex>
@@ -97,16 +92,16 @@ function IndexPopup() {
       <Box
         className="text-center py-4 flex align-center justify-center cursor-pointer"
         onClick={() => {
-          chrome.tabs?.create({ active: true, url: "https://app.deskroom.so" })
-        }}>
+          chrome.tabs?.create({ active: true, url: "https://app.deskroom.so" });
+        }}
+      >
         Knowledge Base로 이동
         <IconButton>
           <ArrowTopRightIcon />
         </IconButton>
       </Box>
     </Flex>
-  )
+  );
 }
 
 export default Sentry.withProfiler(IndexPopup);
-
