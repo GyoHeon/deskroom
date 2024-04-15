@@ -12,17 +12,17 @@ import browser from "webextension-polyfill"
 import { useStorage } from "@plasmohq/storage/hook"
 
 import { supabase } from "~core/supabase"
-import type { OrganizationStorage } from "~options"
 
-import { name, version } from "../package.json"
+import { version } from "../package.json"
+import type { OrganizationStorage } from "~api/organization"
 
 const Sentry = _Sentry
-
 Sentry.init({
   dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
   environment: process.env.NODE_ENV,
   release: `deskroom-extension@v${version}`
 })
+
 
 // TODO: find why this is not working
 export const getStyle = () => {
