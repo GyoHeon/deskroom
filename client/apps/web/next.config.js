@@ -5,7 +5,7 @@ const nextConfig = {}
 // Injected content via Sentry wizard below
 const withSentryConfig = require("@sentry/nextjs");
 
-export default withSentryConfig(
+module.export = withSentryConfig(
   nextConfig,
   {
     // For all available options, see:
