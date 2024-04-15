@@ -44,5 +44,6 @@ async def create_knowledge_base_by_upload(
         job_in.file_urls,
         job_in.tone_manner,
         job_in.categories,
+        job_in.type_,
     )
     return {"message": "job created"}

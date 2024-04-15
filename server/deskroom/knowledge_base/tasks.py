@@ -3,6 +3,7 @@ import structlog
 from deskroom.common.azure import create_azure_container_client
 from deskroom.common.supabase import create_supabase_async_client
 from deskroom.knowledge_base import service
+from deskroom.knowledge_base.schema import UploadType
 from deskroom.worker import JobContext, task
 
 logger = structlog.get_logger()
@@ -16,6 +17,7 @@ async def create_knowledge_base_create_job(
     file_urls: list[str],
     tone_manner: str | None,
     categories: str | None,
+    type_: UploadType,
 ) -> None:
     supabase = await create_supabase_async_client()
     azure_client = create_azure_container_client("deskroom-files")
@@ -32,6 +34,11 @@ async def create_knowledge_base_create_job(
     create_job = await service.create_knowledge_base_create_job(
         supabase, job_id, org_key, user_id
     )
+
+    if type_ != UploadType.CHANNELTALK:
+        # TODO: implement for other types
+        pass
+
     df = service.read_xlsx_from_azure_blob_storage(
         first_file_url, azure_client, sheet_name="Message data"
     )  # TODO: convert to async
