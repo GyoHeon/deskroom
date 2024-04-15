@@ -52,7 +52,7 @@ def create_app() -> FastAPI:
     return app
 
 
-def configure_sentry(app: FastAPI) -> None:
+def configure_sentry(app: FastAPI | None = None) -> None:
     if settings.SENTRY_ENABLED:
         import sentry_sdk  # noqa
 
@@ -66,7 +66,8 @@ def configure_sentry(app: FastAPI) -> None:
             debug=settings.is_development(),
         )
 
-        app.add_middleware(SentryAsgiMiddleware)
+        if app:
+            app.add_middleware(SentryAsgiMiddleware)
 
 
 app = create_app()
