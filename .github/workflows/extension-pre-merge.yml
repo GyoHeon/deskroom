@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Publish webextension
+    name: Check webextension
     runs-on: ubuntu-latest
 
     steps:
