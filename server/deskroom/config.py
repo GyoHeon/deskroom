@@ -4,6 +4,8 @@ from enum import Enum
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from deskroom import __version__
+
 
 class Environment(str, Enum):
     development = "development"
@@ -19,6 +21,7 @@ env_file = ".env.local" if env == Environment.local else ".env"
 
 class Settings(BaseSettings):
     ENV: Environment = env
+    VERSION: str = Field(__version__, alias="VERSION")
 
     # supabase
     SUPABASE_URL: str = ""
@@ -47,6 +50,10 @@ class Settings(BaseSettings):
 
     # linear
     LINEAR_API_KEY: str = ""
+
+    # sentry
+    SENTRY_ENABLED: bool = Field(False, alias="SENTY_ENABLED")
+    SENTRY_DSN: str = Field("", alias="SENTRY_DSN")
 
     model_config = SettingsConfigDict(
         env_prefix="dskrm_",

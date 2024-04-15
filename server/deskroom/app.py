@@ -47,7 +47,26 @@ def create_app() -> FastAPI:
     app.include_router(router)
     app.add_middleware(FlushEnqueuedWorkerJobsMiddleware)
 
+    configure_sentry(app)
+
     return app
+
+
+def configure_sentry(app: FastAPI) -> None:
+    if settings.SENTRY_ENABLED:
+        import sentry_sdk  # noqa
+
+        from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+
+        sentry_sdk.init(
+            dsn=settings.SENTRY_DSN,
+            traces_sample_rate=1.0,
+            environment=settings.ENV,
+            release=settings.VERSION,
+            debug=settings.is_development(),
+        )
+
+        app.add_middleware(SentryAsgiMiddleware)
 
 
 app = create_app()
