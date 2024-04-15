@@ -69,9 +69,6 @@ class KnowledgeBaseCreateJob(ModelSchema):
 class KnowledgeBaseCreateJobByUploadIn(Schema):
     user_id: str
     file_urls: list[str]
-<<<<<<< HEAD
     tone_manner: str | None
     categories: str | None
-=======
     type_: UploadType = Field(alias="type")
->>>>>>> 4ec3435 (feat(server): add upload type)

@@ -51,11 +51,7 @@ async def mark_create_job_done(
 
 
 def read_xlsx_from_azure_blob_storage(
-<<<<<<< HEAD
     blob_storage_url: str, client: ContainerClient, sheet_name: str | None = None
-=======
-    blob_storage_url: str, client: ContainerClient
->>>>>>> c948db8 (feat(web, server): link upload)
 ) -> pd.DataFrame:
     obj = urlparse(blob_storage_url)
     [container, *blob_names] = obj.path[1:].split("/")
@@ -68,13 +64,10 @@ def read_xlsx_from_azure_blob_storage(
         raise ValueError("Invalid file format. Please upload an xlsx file.")
     blob_client = client.get_blob_client(blob_name)
     download = blob_client.download_blob()
-<<<<<<< HEAD
 
     if sheet_name:
         return pd.read_excel(download.readall(), sheet_name, engine="openpyxl")
 
-=======
->>>>>>> c948db8 (feat(web, server): link upload)
     return pd.read_excel(download.readall(), engine="openpyxl")
 
 
