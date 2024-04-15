@@ -35,9 +35,15 @@ async def create_knowledge_base_create_job(
         supabase, job_id, org_key, user_id
     )
 
-    if type_ != UploadType.CHANNELTALK:
-        # TODO: implement for other types
-        pass
+    # if type_ != UploadType.CHANNELTALK:
+    #     # TODO: implement for other types
+    file_url_bullet_points = "".join([f"- `{file_url}`\n" for file_url in file_urls])
+    service.create_linear_issue(
+        title=f"[{org_key}] Knolwedge Base Create Job Requested",
+        description=f"User {user_id} requested to create knowledge base from {type_.value} file\n{file_url_bullet_points}\n\nThis is created by Deskroom server".encode(
+            "unicode_escape"
+        ).decode("utf-8"),
+    )
 
     df = service.read_xlsx_from_azure_blob_storage(
         first_file_url, azure_client, sheet_name="Message data"
