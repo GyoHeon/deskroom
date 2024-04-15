@@ -3,6 +3,7 @@ from enum import Enum
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from deskroom import __version__
 
 
