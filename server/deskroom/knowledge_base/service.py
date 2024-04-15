@@ -12,7 +12,6 @@ from .utils import (
     create_policy,
     create_qa,
     generate_discovery_string,
-    generate_qa_string,
     process_raw_file,
 )
 

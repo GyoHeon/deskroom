@@ -37,5 +37,12 @@ async def create_knowledge_base_by_upload(
     org_key: str,
     job_in: KnowledgeBaseCreateJobByUploadIn,
 ) -> dict[str, str]:
-    enqueue_job("knowledge_base.create", org_key, job_in.user_id, job_in.file_urls, job_in.tone_manner, job_in.categories)
+    enqueue_job(
+        "knowledge_base.create",
+        org_key,
+        job_in.user_id,
+        job_in.file_urls,
+        job_in.tone_manner,
+        job_in.categories,
+    )
     return {"message": "job created"}

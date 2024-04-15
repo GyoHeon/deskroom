@@ -10,7 +10,12 @@ logger = structlog.get_logger()
 
 @task("knowledge_base.create")
 async def create_knowledge_base_create_job(
-    ctx: JobContext, org_key: str, user_id: str, file_urls: list[str], tone_manner: str | None, categories: str | None
+    ctx: JobContext,
+    org_key: str,
+    user_id: str,
+    file_urls: list[str],
+    tone_manner: str | None,
+    categories: str | None,
 ) -> None:
     supabase = await create_supabase_async_client()
     azure_client = create_azure_container_client("deskroom-files")
