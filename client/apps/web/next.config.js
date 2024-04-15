@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  sentry: {}
+}
+const { withSentryConfig } = require("@sentry/nextjs");
 
 
-// Injected content via Sentry wizard below
-const withSentryConfig = require("@sentry/nextjs");
-
-module.export = withSentryConfig(
+module.exports = withSentryConfig(
   nextConfig,
   {
     // For all available options, see:
