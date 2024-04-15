@@ -52,6 +52,7 @@ class UploadJobStatus(str, Enum):
     DONE = "DONE"
     FAILED = "FAILED"
 
+
 class UploadType(str, Enum):
     CHANNELTALK = "CHANNELTALK"
     NAVER_SMART_STORE = "NAVER_SMART_STORE"

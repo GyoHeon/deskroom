@@ -17,7 +17,7 @@ async def create_knowledge_base_create_job(
     file_urls: list[str],
     tone_manner: str | None,
     categories: str | None,
-    type_: UploadType
+    type_: UploadType,
 ) -> None:
     supabase = await create_supabase_async_client()
     azure_client = create_azure_container_client("deskroom-files")
