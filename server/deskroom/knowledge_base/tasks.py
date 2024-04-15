@@ -33,7 +33,7 @@ async def create_knowledge_base_create_job(
         supabase, job_id, org_key, user_id
     )
     df = service.read_xlsx_from_azure_blob_storage(
-        first_file_url, azure_client
+        first_file_url, azure_client, sheet_name="Message data"
     )  # TODO: convert to async
     processed_df = await service.process_xlsx_for_kb_create(df, tone_manner, categories)
 
