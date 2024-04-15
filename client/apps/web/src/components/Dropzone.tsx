@@ -1,6 +1,5 @@
 "use client";
 
-import { Cross1Icon } from "@radix-ui/react-icons";
 import { Box, Flex, Grid, Text } from "@radix-ui/themes";
 
 import { useRef, useState } from "react";
@@ -10,8 +9,9 @@ export type DropzoneProps = {
   id: string;
   name: string;
   multiple?: boolean;
+  accept?: string
 } & React.HTMLAttributes<HTMLDivElement>;
-export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false, className }: DropzoneProps) {
+export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false, className, accept = '.xlsx' }: DropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,8 +78,8 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
               </Text>
               <Text color="gray" size={heading ? "2" : undefined}>
                 {isDragging
-                  ? "Drop the (xlsx, csv) file here"
-                  : "Drag and drop an (xlsx, csv) file here"}
+                  ? `Drop the (${accept.split(',').join(', ')}) file here`
+                  : `Drag and drop an (${accept.split(',').join(', ')}) file here`}
               </Text>
             </>
           )
@@ -99,7 +99,7 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
         type="file"
         style={{ display: "none" }}
         ref={fileInputRef}
-        accept=".xlsx"
+        accept={accept}
         multiple={multiple}
         onChange={handleChange}
       />

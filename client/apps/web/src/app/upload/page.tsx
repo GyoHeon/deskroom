@@ -38,31 +38,25 @@ export default async function UploadPage({ searchParams }) {
 
   if (pendingUploadCount > 0) {
     return (
-      <Flex direction={`column`}>
-        <TopNav />
-        <Container my={`4`}>
-          <Heading my={`2`}>Upload</Heading>
-          <Flex direction={`column`} gap={`4`}>
-            <Box>
-              <Spinner size={16} />
-            </Box>
-            <Text>
-              진행 중인 업로드가 {pendingUploadCount}개 있습니다. 업로드가
-              완료될 때까지 기다려주세요.
-              {/* You have {pendingUploadCount} pending uploads. Please wait for the uploads to be processed. */}
-            </Text>
-            <Text>
-              업로드가 완료되면 이 페이지를 새로고침 해주세요.
-              {/* After the uploads are processed, please refresh this page. */}
-            </Text>
+      <Flex direction={`column`} gap={`2`} align="center" justify="center">
+        <Box className="my-8">
+          <Spinner size={16} shouldSpin />
+        </Box>
+        <Text className="font-bold text-lg">
+          진행 중인 업로드가 {pendingUploadCount}개 있습니다. 업로드가
+          완료될 때까지 기다려주세요.
+          {/* You have {pendingUploadCount} pending uploads. Please wait for the uploads to be processed. */}
+        </Text>
+        <Text>
+          업로드가 완료되면 이 페이지를 새로고침 해주세요.
+          {/* After the uploads are processed, please refresh this page. */}
+        </Text>
 
-            <Text>
-              {Math.ceil(getDuration(pendingUploadData?.[0].created_at))}분 동안
-              대기 중입니다.
-              {/* Pending since {pendingUploadData?.[0].created_at} */}
-            </Text>
-          </Flex>
-        </Container>
+        <Text>
+          {Math.ceil(getDuration(pendingUploadData?.[0].created_at))}분 동안
+          대기 중입니다.
+          {/* Pending since {pendingUploadData?.[0].created_at} */}
+        </Text>
       </Flex>
     );
   }
@@ -79,21 +73,13 @@ export default async function UploadPage({ searchParams }) {
 
   if (completedUploadCount > 0) {
     return (
-      <Flex direction={`column`}>
-        <TopNav />
-        <Container my={`4`}>
-          <Heading my={`2`}>Upload</Heading>
-          <Flex direction={`column`} gap={`4`}>
-            <Box>
-              <Text>
-                업로드가 완료되었습니다. 새로운 업로드를 시작하려면 아래 버튼을
-                클릭하세요.
-                {/* Uploads are completed. Click the button below to start a new upload. */}
-              </Text>
-            </Box>
-          </Flex>
-        </Container>
-      </Flex>
+      <Box>
+        <Text>
+          업로드가 완료되었습니다. 새로운 업로드를 시작하려면 아래 버튼을
+          클릭하세요.
+          {/* Uploads are completed. Click the button below to start a new upload. */}
+        </Text>
+      </Box>
     );
   }
 

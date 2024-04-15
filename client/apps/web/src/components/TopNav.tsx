@@ -1,20 +1,21 @@
 "use client";
-import { useMixpanel } from "@/contexts/MixpanelContext";
-import { Organization, useOrganizationContext } from "@/contexts/OrganizationContext";
-import { Avatar, Box, DropdownMenu, Flex, Select, useThemeContext } from "@radix-ui/themes";
+import { useOrganizationContext } from "@/contexts/OrganizationContext";
+import { Avatar, DropdownMenu, Flex, Select } from "@radix-ui/themes";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export type TopNavProps = {
   // organizations: Organization[];
   // currentOrg: string;
+  shouldShowLogo?: boolean;
 } & React.HTMLProps<HTMLDivElement>;
 
-const TopNav: React.FC<TopNavProps> = () => {
+const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const supabase = createClientComponentClient();
   const { currentOrg, availableOrgs } = useOrganizationContext();
   const [org, setOrg] = useState<string>('');
@@ -37,13 +38,28 @@ const TopNav: React.FC<TopNavProps> = () => {
       console.error("Error logging out:", error)
       return
     }
-    router.refresh()
+    router.push('/v1/login')
 
     // TODO: track logout
   }
 
   return (
-    <Flex className="px-16 py-4" align={`center`}>
+    <Flex className="px-16 py-4" align={`center`} justify="center">
+      {
+        shouldShowLogo && (
+          <Flex className="items-center mx-2 cursor-pointer"
+            onClick={() => router.push(`/?org=${searchParams.get("org") ?? ""}`)}
+          >
+            <Image src="/deskroom-icon.png" alt="Deskroom Logo" width={40} height={40} className="mx-2 self-start" />
+            <Image
+              src="/deskroom-logo.png"
+              width={100}
+              height={30}
+              alt="deskrooom-logo"
+            />
+          </Flex>
+        )
+      }
       <Flex className="ml-auto gap-5">
         <Select.Root
           defaultValue={currentOrg?.name_kor ?? org}
