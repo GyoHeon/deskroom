@@ -1,5 +1,5 @@
-import { supabase } from '~core/supabase';
-import type { Database } from '~lib/database.types';
+import { supabase } from "~core/supabase"
+import type { Database } from "~lib/database.types"
 
 export type Organization = Pick<
   Database["public"]["Tables"]["organizations"]["Row"],
@@ -14,29 +14,28 @@ export async function getOrgs(email: string): Promise<Organization[]> {
   const { data, error } = await supabase
     .from("organizations")
     .select("id, name_eng, name_kor, key, users!inner(*)")
-    .eq("users.email", email);
+    .eq("users.email", email)
 
   if (error != null) {
-    console.error(error);
+    console.error(error)
   }
   for (const org of data) {
-    delete org.users;
+    delete org.users
   }
-  return data;
+  return data
 }
 
-
-export async function getOrganizations(email: string | undefined): Promise<Organization[]> {
+export async function getOrganizations(
+  email: string | undefined
+): Promise<Organization[]> {
   if (!email) {
-    throw new Error("User ID not found");
+    throw new Error("User ID not found")
   }
-  const organizations = await getOrgs(email);
+  const organizations = await getOrgs(email)
 
   if (!organizations) {
-    throw new Error("No organizations found for this user");
+    throw new Error("No organizations found for this user")
   }
 
-  return organizations;
+  return organizations
 }
-
-

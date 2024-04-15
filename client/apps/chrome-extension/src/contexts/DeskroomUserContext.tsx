@@ -3,10 +3,10 @@ import { createContext, useContext, useEffect } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
+import type { OrganizationStorage } from "~api/organization"
 import type { Database } from "~lib/database.types"
 
 import { useMixpanel } from "./MixpanelContext"
-import type { OrganizationStorage } from "~api/organization"
 
 type Organization = Pick<
   Database["public"]["Tables"]["organizations"]["Row"],

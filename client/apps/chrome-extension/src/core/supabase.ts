@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js"
 
 import { Storage } from "@plasmohq/storage"
+
 import type { Database } from "~lib/database.types"
 
 const storage = new Storage({
