@@ -170,7 +170,7 @@ async def get_more_answers(
     knowledge_base_response = (
         await supabase.table("knowledge_base")
         .select(
-            "id, question,category, answer, support_manual, frequently_asked, caution_required, knowledge_tags(name),knowledge_images(image_url)"
+            "id, question,category, answer, support_manual, frequently_asked, caution_required, knowledge_documents(docs_url),knowledge_base_tags(tag_id)"
         )
         .eq("org_key", knowledge_query_in.organization_key)
         .eq("category", knowledge_query_in.category)
