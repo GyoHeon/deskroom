@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
-    "stg-build": "plasmo build --tag stg",
+    "stg-build": "plasmo build --tag=stg",
     "package": "plasmo package",
     "test": "playwright test",
     "lint": "prettier --check ."
