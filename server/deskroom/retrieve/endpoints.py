@@ -82,7 +82,7 @@ async def process_extended_components(
                 row["image_url"] for row in knowledge_base[idx]["knowledge_images"]
             ],
             "question_tags": [
-                row["name"] for row in knowledge_base[idx]["knowledge_tags"]
+                row["tag_name"] for row in knowledge_base[idx]["knowledge_base_tags"]
             ],
         }
 
@@ -170,7 +170,7 @@ async def get_more_answers(
     knowledge_base_response = (
         await supabase.table("knowledge_base")
         .select(
-            "id, question,category, answer, support_manual, frequently_asked, caution_required, knowledge_tags(name),knowledge_images(image_url)"
+            "id, question,category, answer, support_manual, frequently_asked, caution_required, knowledge_images(image_url),knowledge_base_tags(tag_name)"
         )
         .eq("org_key", knowledge_query_in.organization_key)
         .eq("category", knowledge_query_in.category)
