@@ -16,26 +16,35 @@ chrome.action.onClicked.addListener(() => {
 })
 
 browser.tabs.onActivated.addListener(async () => {
-  const cookieName = process.env.PLASMO_PUBLIC_KMS_COOKIE_KEY
-  if (!cookieName) {
+  const cookiePrefix = process.env.PLASMO_PUBLIC_KMS_COOKIE_PREFIX
+  if (!cookiePrefix) {
     console.error("Cookie name not found")
     return
   }
-  const cookieValue = await getCookie(cookieName)
+  const accessToken = await getCookie(`${cookiePrefix}-access-token`)
+  const refreshToken = await getCookie(`${cookiePrefix}-refresh-token`)
 
-  if (!cookieValue) {
-    console.error("Cookie value not found")
-    deskroomUserStorage.remove("user")
+  if (!accessToken || !refreshToken) {
     return
   }
 
-  deskroomUserStorage.set("user", cookieValue)
+  const { data: { session, user }, error } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken
+  })
+
+  if (!session || !user || !!error) {
+    console.error('유저를 찾을 수 없습니다')
+    return
+  }
+
+  deskroomUserStorage.set("user", user)
 
   // TODO: find a way to create or retrieve session from supabase
 
   const organizations = await deskroomUserStorage.get("organizations")
   if (!organizations) {
-    const organizations = await getOrganizations(cookieValue.email)
+    const organizations = await getOrganizations(user.email)
     deskroomUserStorage.set("organizations", organizations)
   }
 })
