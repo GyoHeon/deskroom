@@ -9,6 +9,8 @@ import { useMixpanel } from "~contexts/MixpanelContext"
 import NewKnowledgeBaseForm from "./NewKnowledgeBaseForm"
 import SidebarContent from "./SidebarContent"
 
+import "~/style.css"
+
 type SidebarProps = {
   isOpen: boolean
   setSidebarOpen: (isOpen: boolean) => void
@@ -159,15 +161,15 @@ const Sidebar: React.FC<
       )}
       <Flex
         className="sidebar-footer-area p-2 mt-auto"
-        justify={`center`}
-        align={`center`}>
+        justify="center"
+        align="center">
         {!answers ? (
           <Box>
             <img src={deskroomLogo} alt="deskroom logo" className="w-[66px]" />
           </Box>
         ) : (
           <Box
-            className="text-[#7A7A7A] cursor-pointer text-xs"
+            className="text-[#7A7A7A] cursor-pointer text-base"
             onClick={() => {
               setMode("new")
             }}>

@@ -25,6 +25,14 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   handleSearch,
   answers
 }) => {
+  const [toastOpen, setToastOpen] = React.useState(false)
+  const timerRef = React.useRef(0)
+  const mixpanel = useMixpanel()
+
+  React.useEffect(() => {
+    return () => clearTimeout(timerRef.current)
+  }, [])
+
   if (!hasLoggedIn) {
     return (
       <Flex
@@ -49,12 +57,6 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
       </Flex>
     )
   }
-  const [toastOpen, setToastOpen] = React.useState(false)
-  const timerRef = React.useRef(0)
-  const mixpanel = useMixpanel()
-  React.useEffect(() => {
-    return () => clearTimeout(timerRef.current)
-  }, [])
 
   return (
     <>

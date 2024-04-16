@@ -14,7 +14,9 @@ import { DeskroomUserProvider } from "~contexts/DeskroomUserContext"
 import { MixpanelProvider } from "~contexts/MixpanelContext"
 import { useTextSelection } from "~hooks/useTextSelection"
 
-import { manifest, name, version } from "../../package.json"
+import { version } from "../../package.json"
+
+import "../style.css"
 
 const Sentry = _Sentry
 
@@ -85,7 +87,7 @@ function Content() {
       }}
       name={`deskroom-${process.env.NODE_ENV}`}>
       <DeskroomUserProvider>
-        <Theme>
+        <Theme accentColor="iris">
           <Sidebar
             isOpen={isOpen}
             setSidebarOpen={setIsOpen}
