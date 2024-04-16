@@ -43,8 +43,11 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           <Button
             className="w-full bg-primary-900 rounded-md text-white max-w-xs my-2"
             onClick={() => {
-              const optionsURL = browser.runtime.getURL("options.html")
-              window.open(optionsURL, "_blank", "noopener, noreferrer")
+              window.open(
+                `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/login?from=extension`,
+                "_blank",
+                "noopener, noreferrer"
+              )
             }}>
             로그인 페이지로 이동
           </Button>
