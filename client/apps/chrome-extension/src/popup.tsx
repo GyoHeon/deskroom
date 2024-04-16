@@ -32,8 +32,13 @@ function IndexPopup() {
   const [user] = useStorage<User>("user")
   const [orgs] = useStorage<OrganizationStorage | null>("orgs")
 
-  const cleanUpStorage = () => {
-    browser.runtime.sendMessage({ event: "logout" })
+  const handleAuthButtonClick = () => {
+    if (!!user && !!orgs) {
+      browser.runtime.sendMessage({ event: "logout" })
+      browser.tabs.create({ active: true, url: `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/logout` })
+      return
+    }
+    browser.tabs.create({ active: true, url: `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/login` })
   }
 
   return (
@@ -74,8 +79,8 @@ function IndexPopup() {
         </Flex>
         <Button
           className="w-full rounded bg-primary-900 py-2 text-white"
-          onClick={cleanUpStorage}>
-          로그아웃
+          onClick={handleAuthButtonClick}>
+          {user ? "로그아웃" : "로그인"}
         </Button>
       </Flex>
       <Separator color="gray" size="4" />

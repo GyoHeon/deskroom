@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const supabaseProjectID = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname.split('.')[0]
+export const supabaseProjectID = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname.split('.')[0]
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
@@ -57,6 +57,10 @@ export async function updateSession(request: NextRequest) {
   )
 
   const { data: { session }, error } = await supabase.auth.getSession()
+  if (!session) {
+    response.cookies.delete(`sb-${supabaseProjectID}-access-token`)
+    response.cookies.delete(`sb-${supabaseProjectID}-refresh-token`)
+  }
   if (error) {
     console.error('error', error)
     return response

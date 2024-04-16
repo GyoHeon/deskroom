@@ -1,5 +1,3 @@
-import type { User } from "@supabase/supabase-js"
-import { jwtDecode } from "jwt-decode"
 
 export async function getCookie(name: string) {
   const cookie = await chrome.cookies.get({
