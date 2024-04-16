@@ -68,8 +68,7 @@
       "https://www.thecloudgate.io/*",
       "https://admin.dcamp.kr/*",
       "https://*.notion.site/*",
-      "https://app.deskroom.so/*",
-      "http://localhost:3000/*"
+      "https://app.deskroom.so/*"
     ],
     "permissions": [
       "storage",
