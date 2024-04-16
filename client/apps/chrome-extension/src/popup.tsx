@@ -15,6 +15,7 @@ import type { OrganizationStorage } from "~api/organization"
 import { supabase } from "~core/supabase"
 
 import { version } from "../package.json"
+import { useEffect } from "react"
 
 const Sentry = _Sentry
 Sentry.init({
@@ -23,21 +24,16 @@ Sentry.init({
   release: `deskroom-extension@v${version}`
 })
 
-// TODO: find why this is not working
-export const getStyle = () => {
-  const style = document.createElement("style")
-  return style
-}
-
 function IndexPopup() {
-  // TODO: replace this with DeskroomUserContext
-  const [user, _, { remove: removeUserFromStorage }] = useStorage<User>("user")
-  const [orgs, __, { remove: removeOrgsFromStorage }] =
-    useStorage<OrganizationStorage | null>("orgs")
+  useEffect(() => {
+    browser.runtime.sendMessage({ event: "get-session" })
+  }, [])
+
+  const [user] = useStorage<User>("user")
+  const [orgs] = useStorage<OrganizationStorage | null>("orgs")
 
   const cleanUpStorage = () => {
-    removeUserFromStorage()
-    removeOrgsFromStorage()
+    browser.runtime.sendMessage({ event: "logout" })
   }
 
   return (
@@ -78,12 +74,7 @@ function IndexPopup() {
         </Flex>
         <Button
           className="w-full rounded bg-primary-900 py-2 text-white"
-          onClick={async () => {
-            cleanUpStorage()
-            await supabase.auth.signOut()
-            const optionsURL = browser.runtime.getURL("options.html")
-            window.open(optionsURL, "_blank", "noopener, noreferrer")
-          }}>
+          onClick={cleanUpStorage}>
           로그아웃
         </Button>
       </Flex>

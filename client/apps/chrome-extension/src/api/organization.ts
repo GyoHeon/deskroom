@@ -27,7 +27,7 @@ export async function getOrgs(email: string): Promise<Organization[]> {
 
 export async function getOrganizations(
   email: string | undefined
-): Promise<Organization[]> {
+): Promise<OrganizationStorage> {
   if (!email) {
     throw new Error("User ID not found")
   }
@@ -41,5 +41,8 @@ export async function getOrganizations(
     throw new Error("No organizations found for this user")
   }
 
-  return organizations
+  return {
+    availableOrgs: organizations,
+    currentOrg: organizations[0], // TODO: get from storage
+  }
 }

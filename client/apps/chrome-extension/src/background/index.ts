@@ -11,11 +11,32 @@ export { }
 
 const deskroomUserStorage = new Storage()
 
-chrome.action.onClicked.addListener(() => {
-  chrome.runtime.openOptionsPage()
+browser.action.onClicked.addListener(() => {
+  browser.runtime.openOptionsPage()
 })
 
-browser.tabs.onActivated.addListener(async () => {
+type BrowserRuntimeMessageRequest = {
+  event: "logout" | "get-session"
+}
+
+browser.runtime.onMessage.addListener(async (request: BrowserRuntimeMessageRequest) => {
+  if (request.event === "logout") {
+    browser.storage.sync.set({ user: null, orgs: null })
+    await supabase.auth.signOut()
+    return
+  }
+
+  if (request.event === "get-session") {
+    const isExisting = !!(await deskroomUserStorage.get("user"))
+    if (isExisting) return;
+    await getSessionFromCookie()
+    return
+  }
+
+  console.error("Unknown event")
+})
+
+async function getSessionFromCookie() {
   const cookiePrefix = process.env.PLASMO_PUBLIC_KMS_COOKIE_PREFIX
   if (!cookiePrefix) {
     console.error("Cookie name not found")
@@ -25,6 +46,7 @@ browser.tabs.onActivated.addListener(async () => {
   const refreshToken = await getCookie(`${cookiePrefix}-refresh-token`)
 
   if (!accessToken || !refreshToken) {
+    browser.storage.sync.set({ user: null, orgs: null })
     return
   }
 
@@ -40,11 +62,14 @@ browser.tabs.onActivated.addListener(async () => {
 
   deskroomUserStorage.set("user", user)
 
-  // TODO: find a way to create or retrieve session from supabase
-
   const organizations = await deskroomUserStorage.get("organizations")
   if (!organizations) {
     const organizations = await getOrganizations(user.email)
-    deskroomUserStorage.set("organizations", organizations)
+    deskroomUserStorage.set("orgs", organizations)
   }
-})
+
+  return {
+    user,
+    organizations
+  }
+}
