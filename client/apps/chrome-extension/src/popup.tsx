@@ -7,6 +7,7 @@ import "data-text:@radix-ui/themes/styles.css"
 import { ArrowTopRightIcon, GearIcon } from "@radix-ui/react-icons"
 import { Box, Button, Flex, IconButton, Separator } from "@radix-ui/themes"
 import * as _Sentry from "@sentry/react"
+import { useEffect } from "react"
 import browser from "webextension-polyfill"
 
 import { useStorage } from "@plasmohq/storage/hook"
@@ -15,7 +16,6 @@ import type { OrganizationStorage } from "~api/organization"
 import { supabase } from "~core/supabase"
 
 import { version } from "../package.json"
-import { useEffect } from "react"
 
 const Sentry = _Sentry
 Sentry.init({
@@ -35,10 +35,16 @@ function IndexPopup() {
   const handleAuthButtonClick = () => {
     if (!!user && !!orgs) {
       browser.runtime.sendMessage({ event: "logout" })
-      browser.tabs.create({ active: true, url: `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/logout` })
+      browser.tabs.create({
+        active: true,
+        url: `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/logout`
+      })
       return
     }
-    browser.tabs.create({ active: true, url: `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/login` })
+    browser.tabs.create({
+      active: true,
+      url: `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/login`
+    })
   }
 
   return (

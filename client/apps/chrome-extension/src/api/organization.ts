@@ -43,6 +43,6 @@ export async function getOrganizations(
 
   return {
     availableOrgs: organizations,
-    currentOrg: organizations[0], // TODO: get from storage
+    currentOrg: organizations[0] // TODO: get from storage
   }
 }

@@ -43,7 +43,11 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           <Button
             className="w-full bg-primary-900 rounded-md text-white max-w-xs my-2"
             onClick={() => {
-              window.open(`${process.env.PLASMO_PUBLIC_KMS_URL}/v1/login?from=extension`, "_blank", "noopener, noreferrer")
+              window.open(
+                `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/login?from=extension`,
+                "_blank",
+                "noopener, noreferrer"
+              )
             }}>
             로그인 페이지로 이동
           </Button>
@@ -87,10 +91,11 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
             <Button
               variant="classic"
               className={`w-full transition-all ease-in-out duration-100 text-xs
-                    ${loading
-                  ? "cursor-not-allowed bg-[#4A4A4A] text-[#7A7A7A]"
-                  : "cursor-pointer bg-primary-900"
-                }
+                    ${
+                      loading
+                        ? "cursor-not-allowed bg-[#4A4A4A] text-[#7A7A7A]"
+                        : "cursor-pointer bg-primary-900"
+                    }
                   `}
               disabled={loading}
               onClick={handleSearch}>
