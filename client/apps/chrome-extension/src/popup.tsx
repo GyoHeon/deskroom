@@ -93,7 +93,10 @@ function IndexPopup() {
       <Box
         className="text-center py-4 flex align-center justify-center cursor-pointer"
         onClick={() => {
-          browser.tabs?.create({ active: true, url: process.env.PLASMO_PUBLIC_KMS_URL }); 
+          browser.tabs?.create({
+            active: true,
+            url: process.env.PLASMO_PUBLIC_KMS_URL
+          })
         }}>
         Knowledge Base로 이동
         <IconButton>
