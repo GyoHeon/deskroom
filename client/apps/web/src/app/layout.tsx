@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
-import "@mdxeditor/editor/style.css";
 import { Theme } from "@radix-ui/themes";
 import { OrganizationContextProvider } from "../contexts/OrganizationContext";
 import { MixpanelProvider } from "@/contexts/MixpanelContext";

@@ -1,6 +1,8 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const supabaseProjectID = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname.split('.')[0]
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -54,7 +56,26 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  await supabase.auth.getUser()
+  const { data: { session }, error } = await supabase.auth.getSession()
+  if (error) {
+    console.error('error', error)
+    return response
+  }
+  if (session) {
+    response.cookies.set({
+      name: `sb-${supabaseProjectID}-access-token`,
+      value: session.access_token,
+      maxAge: session.expires_in,
+      path: '/',
+    })
+    response.cookies.set({
+      name: `sb-${supabaseProjectID}-refresh-token`,
+      value: session.refresh_token,
+      maxAge: session.expires_in,
+      path: '/',
+    })
+
+  }
 
   return response
 }

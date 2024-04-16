@@ -41,7 +41,7 @@ const LoginForm = () => {
   }
 
   return (
-    <form action={formAction} method="POST" encType="multipart/form-data">
+    <form action={formAction} method="POST">
       <Flex direction={`column`} gap={`4`} my={`4`} className="w-96">
         <Flex className="form-group" direction={`column`}>
           <label htmlFor="email" className="font-bold">
