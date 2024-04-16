@@ -163,7 +163,7 @@ const Sidebar: React.FC<
         className="sidebar-footer-area p-2 mt-auto"
         justify="center"
         align="center">
-        {!answers ? (
+        {mode === "new" || !answers ? (
           <Box>
             <img src={deskroomLogo} alt="deskroom logo" className="w-[66px]" />
           </Box>
