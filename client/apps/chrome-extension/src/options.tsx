@@ -14,7 +14,7 @@ import { useStorage } from "@plasmohq/storage/hook"
 import { supabase } from "~core/supabase"
 import type { Database } from "~lib/database.types"
 
-import { name, version } from "../package.json"
+import { version } from "../package.json"
 
 const Sentry = _Sentry
 
@@ -136,33 +136,12 @@ function IndexOptions() {
 
   // TODO: remove mixpanel in options
   return (
-    <main
-      className="flex justify-center items-center w-full top-240 relative"
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        top: 240,
-        position: "relative",
-        flexDirection: "column",
-        fontSize: 16,
-        fontFamily:
-          "ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji"
-      }}>
+    <main className="text-base font-sans flex flex-col justify-center items-center w-full top-60 relative">
       <h1 className="deskroom-options-title">Deskroom</h1>
       <div className="deskroom-organization">
         Organization: {orgs?.currentOrg?.name_kor}
       </div>
-      <div
-        className="bg-white p-4 rounded-lg shadow-lg flex flex-col gap-4.2 content-between w-96"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          width: 240,
-          justifyContent: "space-between",
-          gap: 4.2
-        }}>
+      <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col gap-[4.2px] content-between w-60">
         {user && (
           <>
             <h3>

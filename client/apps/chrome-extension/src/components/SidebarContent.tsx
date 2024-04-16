@@ -1,9 +1,9 @@
 import * as Toast from "@radix-ui/react-toast"
 import { Box, Button, Flex, Separator, TextArea } from "@radix-ui/themes"
 import React from "react"
-import browser from "webextension-polyfill"
 
 import { useMixpanel } from "~contexts/MixpanelContext"
+import { openOptions } from "~lib/options"
 
 import CollapsibleCard from "./CollapsibleCard"
 import type { Answer } from "./Sidebar"
@@ -42,10 +42,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           </Flex>
           <Button
             className="w-full bg-primary-900 rounded-md text-white max-w-xs my-2"
-            onClick={() => {
-              const optionsURL = browser.runtime.getURL("options.html")
-              window.open(optionsURL, "_blank", "noopener, noreferrer")
-            }}>
+            onClick={openOptions}>
             로그인 페이지로 이동
           </Button>
         </Flex>
