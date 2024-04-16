@@ -1,12 +1,10 @@
-import { Database } from "@/lib/database.types";
 import { Heading, Text } from "@radix-ui/themes";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import LoginForm from "./LoginForm";
 import { createClient } from "@/utils/supabase/server";
 
-const LoginPage = async ({ sessionParams }) => {
+const LoginPage = async () => {
   const supabase = createClient();
 
   const {
@@ -14,9 +12,6 @@ const LoginPage = async ({ sessionParams }) => {
   } = await supabase.auth.getSession();
 
   if (!!session) {
-    if (sessionParams?.from === "extension") {
-      redirect('/v1/login/success')
-    }
     redirect("/");
   }
 
