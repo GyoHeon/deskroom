@@ -79,7 +79,7 @@
       {
         "resources": [
           "/index.html",
-          "/options.html"
+          "/tabs/login-success.html"
         ],
         "matches": [
           "<all_urls>"

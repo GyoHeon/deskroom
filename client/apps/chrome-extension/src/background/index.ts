@@ -27,19 +27,44 @@ browser.runtime.onMessage.addListener(async (request: BrowserRuntimeMessageReque
   }
 
   if (request.event === "get-session") {
-    const isExisting = !!(await deskroomUserStorage.get("user"))
-    if (isExisting) return;
-    await getSessionFromCookie()
+
+    // if (isExisting) return;
+    // const { user } = await getSessionFromCookie()
+    // if (!!user) {
+    //   chrome.tabs.create({
+    //     url: "./tabs/login-success.html",
+    //     active: true
+    //   })
+    // }
     return
   }
 
   console.error("Unknown event")
 })
 
+setInterval(async () => {
+  const { user, organizations, error } = await getSessionFromCookie()
+  if (!!error) {
+    console.error(error)
+    browser.storage.sync.set({ user: null, orgs: null })
+    await supabase.auth.signOut()
+    return
+  }
+  const isExisting = !!(await deskroomUserStorage.get("user")) && !!user && !!organizations
+  if (!isExisting) {
+    deskroomUserStorage.set("user", user)
+    deskroomUserStorage.set("orgs", organizations)
+    chrome.tabs.create({
+      url: "./tabs/login-success.html",
+    })
+  }
+}, 5000)
+
+
 async function getSessionFromCookie() {
   const cookiePrefix = process.env.PLASMO_PUBLIC_KMS_COOKIE_PREFIX
   if (!cookiePrefix) {
-    console.error("Cookie name not found")
+    console.debug("Cookie name not found")
     return
   }
   const accessToken = await getCookie(`${cookiePrefix}-access-token`)
@@ -47,7 +72,11 @@ async function getSessionFromCookie() {
 
   if (!accessToken || !refreshToken) {
     browser.storage.sync.set({ user: null, orgs: null })
-    return
+    return {
+      user: null,
+      organizations: null,
+      error: "토큰을 찾을 수 없습니다"
+    }
   }
 
   const { data: { session, user }, error } = await supabase.auth.setSession({
@@ -57,19 +86,18 @@ async function getSessionFromCookie() {
 
   if (!session || !user || !!error) {
     console.error('유저를 찾을 수 없습니다')
-    return
+    return {
+      user: null,
+      organizations: null,
+      error: "유저를 찾을 수 없습니다"
+    }
   }
 
-  deskroomUserStorage.set("user", user)
-
-  const organizations = await deskroomUserStorage.get("organizations")
-  if (!organizations) {
-    const organizations = await getOrganizations(user.email)
-    deskroomUserStorage.set("orgs", organizations)
-  }
+  const organizations = await getOrganizations(user.email)
 
   return {
     user,
-    organizations
+    organizations,
+    error: null
   }
 }

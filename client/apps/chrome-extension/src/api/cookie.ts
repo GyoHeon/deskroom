@@ -1,11 +1,12 @@
 
-export async function getCookie(name: string) {
+export async function getCookie(name: string): Promise<string | undefined> {
   const cookie = await chrome.cookies.get({
     url: process.env.PLASMO_PUBLIC_KMS_URL,
     name: name
   })
   if (!cookie) {
-    console.error("Cookie not found")
+    console.debug("Cookie not found")
+    return
   }
   return decodeURIComponent(cookie.value)
 }
