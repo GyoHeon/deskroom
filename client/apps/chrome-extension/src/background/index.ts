@@ -5,8 +5,9 @@ import { Storage } from "@plasmohq/storage"
 import { getOrganizations } from "~api/organization"
 
 import { getCookie } from "../api/cookie"
+import { supabase } from "~core/supabase"
 
-export {}
+export { }
 
 const deskroomUserStorage = new Storage()
 
@@ -30,15 +31,10 @@ browser.tabs.onActivated.addListener(async () => {
 
   deskroomUserStorage.set("user", cookieValue)
 
-  deskroomUserStorage.watch({
-    user: async (c) => {
-      console.log("User changed", c.newValue)
-      const organizations = await getOrganizations(c.newValue.email)
-      console.log("Organizations", organizations)
-    }
-  })
+  // TODO: find a way to create or retrieve session from supabase
 
-  if (!deskroomUserStorage.get("organizations")) {
+  const organizations = await deskroomUserStorage.get("organizations")
+  if (!organizations) {
     const organizations = await getOrganizations(cookieValue.email)
     deskroomUserStorage.set("organizations", organizations)
   }

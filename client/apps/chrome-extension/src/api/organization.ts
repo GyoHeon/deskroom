@@ -14,7 +14,7 @@ export async function getOrgs(email: string): Promise<Organization[]> {
   const { data, error } = await supabase
     .from("organizations")
     .select("id, name_eng, name_kor, key, users!inner(*)")
-    .eq("users.email", email)
+  // .eq("users.email", email)
 
   if (error != null) {
     console.error(error)
@@ -34,6 +34,10 @@ export async function getOrganizations(
   const organizations = await getOrgs(email)
 
   if (!organizations) {
+    throw new Error("No organizations found for this user")
+  }
+
+  if (organizations.length === 0) {
     throw new Error("No organizations found for this user")
   }
 

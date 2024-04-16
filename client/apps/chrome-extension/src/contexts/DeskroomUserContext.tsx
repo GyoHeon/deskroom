@@ -4,14 +4,9 @@ import { createContext, useContext, useEffect } from "react"
 import { useStorage } from "@plasmohq/storage/hook"
 
 import type { OrganizationStorage } from "~api/organization"
-import type { Database } from "~lib/database.types"
 
 import { useMixpanel } from "./MixpanelContext"
 
-type Organization = Pick<
-  Database["public"]["Tables"]["organizations"]["Row"],
-  "id" | "name_eng" | "name_kor" | "key"
->
 type UserContext = {
   user: User | null
   setUser: (user: Setter<User | null>) => Promise<void>
