@@ -28,6 +28,7 @@ import KnowledgeBaseUpdateForm from "./KnowledgeBaseUpdateForm";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { useMixpanel } from "@/contexts/MixpanelContext";
+import { KnowledgeImage } from "@/lib/supabase.types";
 
 export type KnowledgeItem =
   Database["public"]["Tables"]["knowledge_base"]["Row"];
@@ -36,8 +37,7 @@ export type KnowledgeCategory =
 export type QuestionTag = Database["public"]["Tables"]["knowledge_tags"]["Row"];
 type QuestionTagName = Pick<QuestionTag, "name">;
 type KnowledgeCategoryName = Pick<KnowledgeCategory, "name">;
-export type QuestionImage = Database["public"]["Tables"]["knowledge_images"]["Row"];
-type QuestionImageURL = Pick<QuestionImage, "image_url">;
+type QuestionImageURL = Pick<KnowledgeImage, "image_url" | "file_name">;
 export type KnowledgeItemQueryType = KnowledgeItem & { knowledge_categories: KnowledgeCategoryName & { knowledge_tags: QuestionTagName[] } } & { knowledge_images: QuestionImageURL[] };
 
 export type KnowledgeBaseListViewProps = {
@@ -58,7 +58,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredItems, setFilteredItems] =
     useState<KnowledgeItemQueryType[]>(knowledgeItems);
-  const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<KnowledgeItemQueryType | null>(null);
   const [dialogMode, setDialogMode] = useState<"create" | "edit" | "delete">(
     "edit"
   );
@@ -293,7 +293,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                       <Button
                         className="bg-gray-100 text-gray-500"
                         onClick={() => {
-                          setSelectedItem((({ knowledge_images, knowledge_categories, ...o }) => o)(item));
+                          setSelectedItem(item);
                           setDialogMode("edit");
                           setOpenDialog(true);
                         }}
@@ -303,7 +303,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                       <Button
                         className="bg-gray-100 text-gray-500"
                         onClick={() => {
-                          setSelectedItem((({ knowledge_images, knowledge_categories, ...o }) => o)(item));
+                          setSelectedItem(item);
                           setOpenDialog(true);
                           setDialogMode("delete");
                         }}
