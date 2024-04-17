@@ -1,8 +1,6 @@
 'use server';
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { ResetPasswordState } from "./ResetPasswordForm"
-import { Database } from "@/lib/database.types";
-import { cookies } from "next/headers";
+import { ResetPasswordState } from "./ResetPasswordForm";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function sendResetPasswordEmail(prevState: any, formData: FormData): Promise<ResetPasswordState> {
   const email = String(formData.get('email'))
@@ -11,7 +9,7 @@ export default async function sendResetPasswordEmail(prevState: any, formData: F
     return { errors: 'Email is required', status: 400, message: 'Email is required' }
   }
 
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createClient()
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${process.env.NEXT_PUBLIC_URL}/v1/reset-password/new?email=${formData.get('email')}` })
   if (!error) {

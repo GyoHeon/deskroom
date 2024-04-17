@@ -1,7 +1,7 @@
 {
   "name": "@deskroom/extension",
   "displayName": "__MSG_extensionName__",
-  "version": "0.3.6",
+  "version": "0.4.0",
   "description": "__MSG_extensionDescription__",
   "author": "Humphrey <ahnsv@bc.edu>",
   "scripts": {
@@ -20,6 +20,7 @@
     "@radix-ui/themes": "^2.0.3",
     "@sentry/react": "^7.110.0",
     "@supabase/supabase-js": "^2.39.6",
+    "jwt-decode": "^4.0.0",
     "mixpanel-browser": "^2.49.0",
     "plasmo": "0.84.2",
     "react": "18.2.0",
@@ -66,16 +67,18 @@
       "https://play.google.com/*",
       "https://www.thecloudgate.io/*",
       "https://admin.dcamp.kr/*",
-      "https://*.notion.site/*"
+      "https://*.notion.site/*",
+      "https://app.deskroom.so/*"
     ],
     "permissions": [
-      "storage"
+      "storage",
+      "cookies"
     ],
     "web_accessible_resources": [
       {
         "resources": [
           "/index.html",
-          "/options.html"
+          "/tabs/login-success.html"
         ],
         "matches": [
           "<all_urls>"

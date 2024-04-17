@@ -69,6 +69,7 @@ export default async function NewIndex({ searchParams }) {
         )
       ),
       knowledge_images (
+        file_name,
         image_url
       )
     `)

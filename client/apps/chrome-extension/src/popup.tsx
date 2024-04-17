@@ -7,38 +7,44 @@ import "data-text:@radix-ui/themes/styles.css"
 import { ArrowTopRightIcon, GearIcon } from "@radix-ui/react-icons"
 import { Box, Button, Flex, IconButton, Separator } from "@radix-ui/themes"
 import * as _Sentry from "@sentry/react"
+import { useEffect } from "react"
 import browser from "webextension-polyfill"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
+import type { OrganizationStorage } from "~api/organization"
 import { supabase } from "~core/supabase"
-import type { OrganizationStorage } from "~options"
 
-import { name, version } from "../package.json"
+import { version } from "../package.json"
 
 const Sentry = _Sentry
-
 Sentry.init({
   dsn: process.env.PLASMO_PUBLIC_SENTRY_DSN,
   environment: process.env.NODE_ENV,
   release: `deskroom-extension@v${version}`
 })
 
-// TODO: find why this is not working
-export const getStyle = () => {
-  const style = document.createElement("style")
-  return style
-}
-
 function IndexPopup() {
-  // TODO: replace this with DeskroomUserContext
-  const [user, _, { remove: removeUserFromStorage }] = useStorage<User>("user")
-  const [orgs, __, { remove: removeOrgsFromStorage }] =
-    useStorage<OrganizationStorage | null>("orgs")
+  useEffect(() => {
+    browser.runtime.sendMessage({ event: "get-session" })
+  }, [])
 
-  const cleanUpStorage = () => {
-    removeUserFromStorage()
-    removeOrgsFromStorage()
+  const [user] = useStorage<User>("user")
+  const [orgs] = useStorage<OrganizationStorage | null>("orgs")
+
+  const handleAuthButtonClick = () => {
+    if (!!user && !!orgs) {
+      browser.runtime.sendMessage({ event: "logout" })
+      browser.tabs.create({
+        active: true,
+        url: `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/logout`
+      })
+      return
+    }
+    browser.tabs.create({
+      active: true,
+      url: `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/login`
+    })
   }
 
   return (
@@ -79,20 +85,18 @@ function IndexPopup() {
         </Flex>
         <Button
           className="w-full rounded bg-primary-900 py-2 text-white"
-          onClick={async () => {
-            cleanUpStorage()
-            await supabase.auth.signOut()
-            const optionsURL = browser.runtime.getURL("options.html")
-            window.open(optionsURL, "_blank", "noopener, noreferrer")
-          }}>
-          로그아웃
+          onClick={handleAuthButtonClick}>
+          {user ? "로그아웃" : "로그인"}
         </Button>
       </Flex>
       <Separator color="gray" size="4" />
       <Box
         className="text-center py-4 flex align-center justify-center cursor-pointer"
         onClick={() => {
-          chrome.tabs?.create({ active: true, url: "https://app.deskroom.so" })
+          browser.tabs?.create({
+            active: true,
+            url: process.env.PLASMO_PUBLIC_KMS_URL
+          })
         }}>
         Knowledge Base로 이동
         <IconButton>

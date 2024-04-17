@@ -6,6 +6,7 @@ import {
   ClipboardIcon,
   Cross2Icon,
   DownloadIcon,
+  ExternalLinkIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   UploadIcon,
@@ -15,9 +16,11 @@ import {
   Box,
   Button,
   Container,
+  DropdownMenu,
   Flex,
   Heading,
   IconButton,
+  Popover,
   Select,
   Table,
   TextField,
@@ -28,6 +31,7 @@ import KnowledgeBaseUpdateForm from "./KnowledgeBaseUpdateForm";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { useMixpanel } from "@/contexts/MixpanelContext";
+import { KnowledgeImage, PartialKnowledgeImage } from "@/lib/supabase.types";
 
 export type KnowledgeItem =
   Database["public"]["Tables"]["knowledge_base"]["Row"];
@@ -36,8 +40,7 @@ export type KnowledgeCategory =
 export type QuestionTag = Database["public"]["Tables"]["knowledge_tags"]["Row"];
 type QuestionTagName = Pick<QuestionTag, "name">;
 type KnowledgeCategoryName = Pick<KnowledgeCategory, "name">;
-export type QuestionImage = Database["public"]["Tables"]["knowledge_images"]["Row"];
-type QuestionImageURL = Pick<QuestionImage, "image_url">;
+type QuestionImageURL = Pick<KnowledgeImage, "image_url" | "file_name">;
 export type KnowledgeItemQueryType = KnowledgeItem & { knowledge_categories: KnowledgeCategoryName & { knowledge_tags: QuestionTagName[] } } & { knowledge_images: QuestionImageURL[] };
 
 export type KnowledgeBaseListViewProps = {
@@ -46,6 +49,81 @@ export type KnowledgeBaseListViewProps = {
   organization: Organization;
   callback?: () => void;
 } & React.HTMLProps<HTMLDivElement>;
+
+type SupportManualProps = {
+  supportManual?: string
+}
+export const SupportManual: React.FC<SupportManualProps> = ({ supportManual }) => {
+  if (!supportManual) {
+    return null
+  }
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger className="cursor-pointer">
+        <Box className="p-1 hover:bg-secondary-100 rounded duration-300 transition-[background-color]"  >
+          <ClipboardIcon className="text-gray-600 rounded w-fit" width={21} height={21} />
+        </Box>
+      </Popover.Trigger>
+      <Popover.Content>
+        <Box>
+          {supportManual}
+        </Box>
+      </Popover.Content>
+    </Popover.Root>
+  )
+}
+
+export const FilesPopover: React.FC<{ files: PartialKnowledgeImage[] }> = ({ files }) => {
+  if (!files || files.length === 0) {
+    return null
+  }
+  const FileContent = ({ image_url }: { image_url?: string }) => {
+    if (!image_url) {
+      return null
+    }
+    if (image_url.endsWith('.pdf')) {
+      return <iframe src={image_url} className="file-pdf" />
+    }
+    return <img src={image_url} className="file-img" />
+
+  }
+  return (
+    <Popover.Root>
+      <Popover.Trigger className="cursor-pointer">
+        <Box className="p-1 hover:bg-secondary-100 rounded duration-300 transition-[background-color]">
+          <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />
+        </Box>
+      </Popover.Trigger>
+      <Popover.Content className="w-fit">
+        <Flex direction='column' gap="2">
+          {files.map((file, idx) => (
+            <Box key={idx}>
+              <Dialog.Root>
+                <Dialog.Trigger>
+                  <IconButton className="w-fit bg-white p-1 border-dashed border text-black hover:bg-secondary-100 transition-[background-color] duration-300 hover:border-solid hover:border-0 cursor-pointer">
+                    <ExternalLinkIcon className="mr-2" />
+                    {file.file_name}
+                  </IconButton>
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
+                  <Dialog.Content className="min-w-16 w-fit flex items-center justify-center rounded top-2/4 left-2/4 fixed -translate-x-2/4 -translate-y-2/4">
+                    <Flex direction='column' className="bg-white">
+                      <Dialog.Close />
+                      <FileContent image_url={file.image_url} />
+                    </Flex>
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            </Box>
+          ))}
+        </Flex>
+      </Popover.Content>
+    </Popover.Root>
+  )
+}
+
 
 const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   knowledgeItems,
@@ -58,7 +136,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredItems, setFilteredItems] =
     useState<KnowledgeItemQueryType[]>(knowledgeItems);
-  const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<KnowledgeItemQueryType | null>(null);
   const [dialogMode, setDialogMode] = useState<"create" | "edit" | "delete">(
     "edit"
   );
@@ -285,15 +363,15 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                   </Table.Cell>
                   <Table.Cell className="max-w-96">{item.answer}</Table.Cell>
                   <Table.Cell className="max-w-96"><Flex gap="2" align="center" justify="center">
-                    {item.support_manual && <ClipboardIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
-                    {item?.knowledge_images?.length !== 0 && <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
+                    <SupportManual supportManual={item?.support_manual} />
+                    <FilesPopover files={item?.knowledge_images} />
                   </Flex></Table.Cell>
                   <Table.Cell className="w-52">
                     <Flex align={`center`} height={`100%`} gap={`2`}>
                       <Button
                         className="bg-gray-100 text-gray-500"
                         onClick={() => {
-                          setSelectedItem((({ knowledge_images, knowledge_categories, ...o }) => o)(item));
+                          setSelectedItem(item);
                           setDialogMode("edit");
                           setOpenDialog(true);
                         }}
@@ -303,7 +381,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                       <Button
                         className="bg-gray-100 text-gray-500"
                         onClick={() => {
-                          setSelectedItem((({ knowledge_images, knowledge_categories, ...o }) => o)(item));
+                          setSelectedItem(item);
                           setOpenDialog(true);
                           setDialogMode("delete");
                         }}

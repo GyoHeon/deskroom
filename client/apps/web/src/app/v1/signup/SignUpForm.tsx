@@ -1,12 +1,11 @@
 'use client';
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { Box, Button, Flex, Grid, Heading, IconButton, Text } from "@radix-ui/themes";
+import { Box, Flex, Grid, Heading, IconButton, Text } from "@radix-ui/themes";
 import { useState } from "react";
 import { SignUpStep } from "./SignUpStep";
 import { useFormState } from "react-dom";
 import { signUp } from "./actions";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 
 

@@ -4,6 +4,7 @@ from typing import TypedDict
 
 from arq.connections import ArqRedis
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from structlog import get_logger
 
 from deskroom.api import router
@@ -45,6 +46,13 @@ def create_app() -> FastAPI:
 
     # TODO: Add routes, middlewares here
     app.include_router(router)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.add_middleware(FlushEnqueuedWorkerJobsMiddleware)
 
     configure_sentry(app)

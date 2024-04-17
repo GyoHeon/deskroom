@@ -1,12 +1,11 @@
 'use client';
 
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
-import { Database } from "@/lib/database.types";
 import { Flex, IconButton, Text } from "@radix-ui/themes";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { useFormState } from "react-dom";
 import signIn from "./actions/signIn";
+import { createClient } from "@/utils/supabase/client";
 
 export type LoginState = {
   errors: string | null;
@@ -21,7 +20,7 @@ const initialState: LoginState = {
 
 const LoginForm = () => {
   const [state, formAction] = useFormState(signIn, initialState)
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClient();
   const handleGoogleSignIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -41,7 +40,7 @@ const LoginForm = () => {
   }
 
   return (
-    <form action={formAction} method="POST" encType="multipart/form-data">
+    <form action={formAction} method="POST">
       <Flex direction={`column`} gap={`4`} my={`4`} className="w-96">
         <Flex className="form-group" direction={`column`}>
           <label htmlFor="email" className="font-bold">
