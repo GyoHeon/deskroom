@@ -5,9 +5,9 @@ import { Storage } from "@plasmohq/storage"
 import { getOrganizations } from "~api/organization"
 import { supabase } from "~core/supabase"
 
-import { getCookie } from "../api/cookie"
+import { getCookie } from "~api/cookie"
 
-export {}
+export { }
 
 const deskroomUserStorage = new Storage()
 

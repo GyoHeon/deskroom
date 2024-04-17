@@ -28,6 +28,8 @@ jobs:
           echo "PLASMO_PUBLIC_SUPABASE_KEY=${{ secrets.DSKRM_SUPABASE_ANON_KEY }}" >> .env
           echo "PLASMO_PUBLIC_MIXPANEL_TOKEN=${{ secrets.DSKRM_MIXPANEL_TOKEN }}" >> .env
           echo "PLASMO_PUBLIC_SENTRY_DSN=${{ secrets.DSKRM_EXTENSION_SENTRY_DSN }}" >> .env
+          echo "PLASMO_PUBLIC_KMS_URL=https://app.deskroom.so" >> .env
+          echo "PLASMO_PUBLIC_KMS_COOKIE_PREFIX=${{ secrets.DSKRM_KMS_COOKIE_PREFIX }}" >> .env
       - name: Build
         working-directory: client/apps/chrome-extension
         run: |
@@ -41,13 +43,10 @@ jobs:
           client-secret: ${{ secrets.DSKRM_CLIENT_SECRET }}
           refresh-token: ${{ secrets.DSKRM_REFRESH_TOKEN }}
           glob: true
-      - name: Upload zip file to release
-        id: upload-artifact
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
         with:
-          name: extension-prod
-          path: client/apps/chrome-extension/build/*.zip
+          files: client/apps/chrome-extension/build/*.zip
       - name: Notify Slack channel
         if: always()
         uses: rtCamp/action-slack-notify@v2
