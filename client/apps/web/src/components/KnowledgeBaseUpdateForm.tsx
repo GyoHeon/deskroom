@@ -4,12 +4,12 @@ import { Organization } from "@/contexts/OrganizationContext";
 import { Box, Button, Flex, Select, TextArea } from "@radix-ui/themes";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React, { useState } from "react";
-import { KnowledgeItem } from "./KnowledgeBaseListView";
+import { KnowledgeItem, KnowledgeItemQueryType } from "./KnowledgeBaseListView";
 import Dropzone from "./Dropzone";
 
 interface KnowledgeBaseUpdateFormProps {
-  onSubmit: (data: KnowledgeItem) => void;
-  selectedKnowledgeItem: KnowledgeItem | null;
+  onSubmit: (data: KnowledgeItemQueryType) => void;
+  selectedKnowledgeItem: KnowledgeItemQueryType | null;
   mode: "create" | "edit" | "delete";
   organization: Organization;
   categories: string[];
@@ -23,7 +23,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
   categories,
 }) => {
   const supabase = createClientComponentClient();
-  const [formData, setFormData] = useState<KnowledgeItem | null>(
+  const [formData, setFormData] = useState<KnowledgeItemQueryType | null>(
     selectedKnowledgeItem
   );
   const mixpanel = useMixpanel();
@@ -183,6 +183,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
               multiple
               accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.jpeg,.png"
               questionId={formData?.id}
+              existingFiles={formData?.knowledge_images}
             />
           </Flex>
           <Flex gap="2" className="gap-2">

@@ -1,12 +1,11 @@
 "use client";
 
-import { Box, Flex, Grid, Text } from "@radix-ui/themes";
+import { Flex, Grid, Text } from "@radix-ui/themes";
 
 import { useEffect, useRef, useState } from "react";
 import Spinner from "./Spinner";
-import { fileUpload } from "@/app/upload/actions";
 import { useOrganizationContext } from "@/contexts/OrganizationContext";
-import { createClient } from "@/utils/supabase/client";
+import { PartialKnowledgeImage } from "@/lib/supabase.types";
 
 export type DropzoneProps = {
   heading?: string;
@@ -15,6 +14,7 @@ export type DropzoneProps = {
   multiple?: boolean;
   accept?: string
   questionId?: number;
+  existingFiles?: PartialKnowledgeImage[];
 } & React.HTMLAttributes<HTMLDivElement>;
 
 type UploadStatus = 'CREATED' | 'PENDING' | 'DONE' | 'FAILED';
@@ -51,7 +51,48 @@ async function fileUploadByClient(file: File, orgKey: string, questionId: number
   }
 }
 
-export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false, className, accept = '.xlsx', questionId }: DropzoneProps) {
+const DropzoneContent = ({ heading, isDragging, files, accept, existingFiles, fileStatus }: { heading: string, isDragging: boolean, files: FileList | null, accept: string, existingFiles: PartialKnowledgeImage[], fileStatus: { file: File, status: 'CREATED' | 'PENDING' | 'DONE' | 'FAILED' }[] }) => {
+  if (existingFiles && existingFiles.length > 0) {
+    return <>
+      <Flex gap="2">
+        {existingFiles.map((file, index) => (
+          <Flex key={index} className="rounded border p-2 bg-primary-700 text-white items-center justify-center gap-2">
+            <Text className="text-xs">{file.file_name}</Text>
+          </Flex>
+        ))}</Flex>
+
+    </>
+  }
+  return (
+    <>
+      {
+        !files ? (
+          <>
+            <Text weight="bold" size="2">
+              {heading}
+            </Text>
+            <Text color="gray" size={heading ? "2" : undefined}>
+              {isDragging
+                ? `Drop the (${accept.split(',').join(', ')}) file here`
+                : `Drag and drop an (${accept.split(',').join(', ')}) file here`}
+            </Text>
+          </>
+        )
+          :
+          <Flex gap="2">
+            {Array.from(files).map((file, index) => (
+              <Flex key={index} className="rounded border p-2 bg-primary-700 text-white items-center justify-center gap-2">
+                <DropzoneFileSpinner status={fileStatus[index]?.status} />
+                <Text className="text-xs">{file.name}</Text>
+              </Flex>
+            ))}</Flex>
+
+      }
+    </>
+  )
+}
+
+export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false, className, accept = '.xlsx', questionId, existingFiles }: DropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -127,30 +168,8 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
       onDrop={handleDrop}
       onClick={handleClick}
     >
-      <Flex direction="column" align="center">
-        {
-          !files ? (
-            <>
-              <Text weight="bold" size="2">
-                {heading}
-              </Text>
-              <Text color="gray" size={heading ? "2" : undefined}>
-                {isDragging
-                  ? `Drop the (${accept.split(',').join(', ')}) file here`
-                  : `Drag and drop an (${accept.split(',').join(', ')}) file here`}
-              </Text>
-            </>
-          )
-            :
-            <Flex gap="2">
-              {Array.from(files).map((file, index) => (
-                <Flex key={index} className="rounded border p-2 bg-primary-700 text-white items-center justify-center gap-2">
-                  <DropzoneFileSpinner status={filesStatus[index]?.status} />
-                  <Text className="text-xs">{file.name}</Text>
-                </Flex>
-              ))}</Flex>
-
-        }
+      <Flex direction="column" align="center" className="flex-wrap">
+        <DropzoneContent heading={heading} isDragging={isDragging} files={files} accept={accept} existingFiles={existingFiles} fileStatus={filesStatus} />
       </Flex>
       <input
         id={id}
@@ -161,6 +180,7 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
         accept={accept}
         multiple={multiple}
         onChange={handleChange}
+        disabled={existingFiles?.length > 0}
       />
     </Grid>
   );
