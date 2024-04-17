@@ -50,6 +50,7 @@ const NewKnowledgeBaseForm: React.FC<NewKnowledgeBaseFormProps> = ({
           setNewAnswerLoading(false)
           alert("답변이 성공적으로 등록되었습니다.")
           setMode("search")
+          setNewAnswer("")
           mixpanel.track("Knowledge Item Added", {
             question: message,
             answer: newAnswer
