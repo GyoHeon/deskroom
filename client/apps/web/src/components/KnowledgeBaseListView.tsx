@@ -6,6 +6,7 @@ import {
   ClipboardIcon,
   Cross2Icon,
   DownloadIcon,
+  ExternalLinkIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   UploadIcon,
@@ -30,7 +31,7 @@ import KnowledgeBaseUpdateForm from "./KnowledgeBaseUpdateForm";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { useMixpanel } from "@/contexts/MixpanelContext";
-import { KnowledgeImage } from "@/lib/supabase.types";
+import { KnowledgeImage, PartialKnowledgeImage } from "@/lib/supabase.types";
 
 export type KnowledgeItem =
   Database["public"]["Tables"]["knowledge_base"]["Row"];
@@ -60,7 +61,7 @@ export const SupportManual: React.FC<SupportManualProps> = ({ supportManual }) =
   return (
     <Popover.Root>
       <Popover.Trigger className="cursor-pointer">
-        <Box className="p-1 hover:bg-secondary-100 rounded duration-300 transition-[background-color]">
+        <Box className="p-1 hover:bg-secondary-100 rounded duration-300 transition-[background-color]"  >
           <ClipboardIcon className="text-gray-600 rounded w-fit" width={21} height={21} />
         </Box>
       </Popover.Trigger>
@@ -68,6 +69,56 @@ export const SupportManual: React.FC<SupportManualProps> = ({ supportManual }) =
         <Box>
           {supportManual}
         </Box>
+      </Popover.Content>
+    </Popover.Root>
+  )
+}
+
+export const FilesPopover: React.FC<{ files: PartialKnowledgeImage[] }> = ({ files }) => {
+  if (!files || files.length === 0) {
+    return null
+  }
+  const FileContent = ({ image_url }: { image_url?: string }) => {
+    if (!image_url) {
+      return null
+    }
+    if (image_url.endsWith('.pdf')) {
+      return <iframe src={image_url} className="file-pdf" />
+    }
+    return <img src={image_url} className="file-img" />
+
+  }
+  return (
+    <Popover.Root>
+      <Popover.Trigger className="cursor-pointer">
+        <Box className="p-1 hover:bg-secondary-100 rounded duration-300 transition-[background-color]">
+          <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />
+        </Box>
+      </Popover.Trigger>
+      <Popover.Content className="w-fit">
+        <Flex direction='column' gap="2">
+          {files.map((file, idx) => (
+            <Box key={idx}>
+              <Dialog.Root>
+                <Dialog.Trigger>
+                  <IconButton className="w-fit bg-white p-1 border-dashed border text-black hover:bg-secondary-100 transition-[background-color] duration-300 hover:border-solid hover:border-0 cursor-pointer">
+                    <ExternalLinkIcon className="mr-2" />
+                    {file.file_name}
+                  </IconButton>
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
+                  <Dialog.Content className="min-w-16 w-fit flex items-center justify-center rounded top-2/4 left-2/4 fixed -translate-x-2/4 -translate-y-2/4">
+                    <Flex direction='column' className="bg-white">
+                      <Dialog.Close />
+                      <FileContent image_url={file.image_url} />
+                    </Flex>
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            </Box>
+          ))}
+        </Flex>
       </Popover.Content>
     </Popover.Root>
   )
@@ -313,7 +364,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                   <Table.Cell className="max-w-96">{item.answer}</Table.Cell>
                   <Table.Cell className="max-w-96"><Flex gap="2" align="center" justify="center">
                     <SupportManual supportManual={item?.support_manual} />
-                    {item?.knowledge_images?.length !== 0 && <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
+                    <FilesPopover files={item?.knowledge_images} />
                   </Flex></Table.Cell>
                   <Table.Cell className="w-52">
                     <Flex align={`center`} height={`100%`} gap={`2`}>
