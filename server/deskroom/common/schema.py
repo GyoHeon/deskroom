@@ -8,6 +8,6 @@ class Schema(BaseModel):
 
 
 class ModelSchema(Schema):
-    id: int
-    created_at: datetime
-    updated_at: datetime
+    id: int | None
+    created_at: datetime | None
+    updated_at: datetime | None
