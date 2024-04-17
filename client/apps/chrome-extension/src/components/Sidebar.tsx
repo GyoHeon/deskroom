@@ -9,8 +9,6 @@ import { useMixpanel } from "~contexts/MixpanelContext"
 import NewKnowledgeBaseForm from "./NewKnowledgeBaseForm"
 import SidebarContent from "./SidebarContent"
 
-import "~/style.css"
-
 type SidebarProps = {
   isOpen: boolean
   setSidebarOpen: (isOpen: boolean) => void
