@@ -182,6 +182,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
               name="files"
               multiple
               accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.jpeg,.png"
+              questionId={formData?.id}
             />
           </Flex>
           <Flex gap="2" className="gap-2">

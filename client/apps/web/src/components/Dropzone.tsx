@@ -14,6 +14,7 @@ export type DropzoneProps = {
   name: string;
   multiple?: boolean;
   accept?: string
+  questionId?: number;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 type UploadStatus = 'CREATED' | 'PENDING' | 'DONE' | 'FAILED';
@@ -31,23 +32,10 @@ const DropzoneFileSpinner = ({ status }: { status?: UploadStatus }) => {
   }
 }
 
-async function fileUploadByClient(file: File, orgKey: string) {
-  const supabase = createClient();
-  const { count, error } = await supabase.from('knowlege_images').select('*', { count: 'exact', head: true }).eq('org_key', orgKey).eq('file_name', file.name);
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  if (count > 0) {
-    const { data: { status } } = await supabase.from('knowlege_images').select('status').eq('org_key', orgKey).eq('file_name', file.name).single();
-    return { error: null, status };
-  }
-
+async function fileUploadByClient(file: File, orgKey: string, questionId: number) {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("orgKey", orgKey);
-  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/images/upload?org_key=${orgKey}`, { // TODO: add server endpoint
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/images/upload?org_key=${orgKey}&question_id=${questionId}`, { // TODO: add server endpoint
     method: "POST",
     body: formData,
   });
@@ -63,7 +51,7 @@ async function fileUploadByClient(file: File, orgKey: string) {
   }
 }
 
-export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false, className, accept = '.xlsx' }: DropzoneProps) {
+export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false, className, accept = '.xlsx', questionId }: DropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -75,7 +63,7 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
       if (!!files) {
         const filesArray = Array.from(files);
         for (const file of filesArray) {
-          const { error, status } = await fileUploadByClient(file, currentOrg?.key);
+          const { error, status } = await fileUploadByClient(file, currentOrg?.key, questionId);
           if (error) {
             setFilesStatus((prev) => [...prev, { file, status: 'FAILED' }]);
           }
