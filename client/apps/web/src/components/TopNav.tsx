@@ -5,6 +5,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { createClient } from "@/utils/supabase/client";
 
 export type TopNavProps = {
   // organizations: Organization[];
@@ -16,7 +17,7 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const { currentOrg, availableOrgs } = useOrganizationContext();
   const [org, setOrg] = useState<string>('');
 

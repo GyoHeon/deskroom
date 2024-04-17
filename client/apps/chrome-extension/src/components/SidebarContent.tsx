@@ -3,7 +3,6 @@ import { Box, Button, Flex, Separator, TextArea } from "@radix-ui/themes"
 import React from "react"
 
 import { useMixpanel } from "~contexts/MixpanelContext"
-import { openOptions } from "~lib/options"
 
 import CollapsibleCard from "./CollapsibleCard"
 import type { Answer } from "./Sidebar"
@@ -50,7 +49,13 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           </Flex>
           <Button
             className="w-full bg-primary-900 rounded-md text-white max-w-xs my-2"
-            onClick={openOptions}>
+            onClick={() => {
+              window.open(
+                `${process.env.PLASMO_PUBLIC_KMS_URL}/v1/login?from=extension`,
+                "_blank",
+                "noopener, noreferrer"
+              )
+            }}>
             로그인 페이지로 이동
           </Button>
         </Flex>

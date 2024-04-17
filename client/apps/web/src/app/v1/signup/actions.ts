@@ -1,8 +1,6 @@
 'use server';
 
-import { Database } from "@/lib/database.types";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 
 type SignUpState = {
   errors: string | null;
@@ -10,9 +8,7 @@ type SignUpState = {
 }
 
 export async function signUp(prevState: SignUpState, formData: FormData) {
-  const supabase = createRouteHandlerClient<Database>({
-    cookies: () => cookies(),
-  });
+  const supabase = createClient()
   const { data, error } = await supabase.auth.signUp(
     {
       email: formData.get('email') as string,

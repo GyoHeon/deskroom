@@ -1,15 +1,11 @@
-import { Database } from "@/lib/database.types";
 import { Heading, Text } from "@radix-ui/themes";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import LoginForm from "./LoginForm";
+import { createClient } from "@/utils/supabase/server";
 
 const LoginPage = async () => {
-  const supabase = createServerComponentClient<Database>({
-    cookies,
-  });
+  const supabase = createClient();
 
   const {
     data: { session },

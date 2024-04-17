@@ -1,15 +1,10 @@
 'use server'
 
-import { LoginState } from '@/app/v1/login/LoginForm'
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { Database } from "@/lib/database.types";
+import { LoginState } from '@/app/v1/login/LoginForm';
+import { createClient } from '@/utils/supabase/server';
 
 export default async function signIn(prevState: LoginState, formData: FormData) {
-  const cookieStore = cookies();
-  const supabase = createRouteHandlerClient<Database>({
-    cookies: () => cookieStore,
-  });
+  const supabase = createClient()
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -24,6 +19,7 @@ export default async function signIn(prevState: LoginState, formData: FormData) 
       status: 400,
     };
   }
+
 
   // Mutate data
   return {
