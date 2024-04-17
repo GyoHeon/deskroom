@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import Spinner from "./Spinner";
 import { useOrganizationContext } from "@/contexts/OrganizationContext";
 import { PartialKnowledgeImage } from "@/lib/supabase.types";
+import { Cross1Icon } from "@radix-ui/react-icons";
+import { createClient } from "@/utils/supabase/client";
 
 export type DropzoneProps = {
   heading?: string;
@@ -26,7 +28,7 @@ const DropzoneFileSpinner = ({ status }: { status?: UploadStatus }) => {
     case 'PENDING':
       return <Spinner size={4} shouldSpin />
     case 'DONE':
-      return <Spinner size={4} done />
+      return null
     case 'FAILED':
       return <Spinner size={4} failed />
   }
@@ -51,13 +53,24 @@ async function fileUploadByClient(file: File, orgKey: string, questionId: number
   }
 }
 
-const DropzoneContent = ({ heading, isDragging, files, accept, existingFiles, fileStatus }: { heading: string, isDragging: boolean, files: FileList | null, accept: string, existingFiles: PartialKnowledgeImage[], fileStatus: { file: File, status: 'CREATED' | 'PENDING' | 'DONE' | 'FAILED' }[] }) => {
+const DropzoneContent = ({ heading, isDragging, files, accept, existingFiles, fileStatus, questionId }: { heading: string, isDragging: boolean, files: FileList | null, accept: string, existingFiles: PartialKnowledgeImage[], fileStatus: { file: File, status: 'CREATED' | 'PENDING' | 'DONE' | 'FAILED' }[], questionId: number }) => {
+  const handleCrossClick = async (name: string) => {
+    const supabase = createClient();
+    const { error } = await supabase.from('knowledge_images').delete().eq('file_name', name).eq('question_id', questionId);
+    if (error) {
+      console.error('Failed to delete the file');
+      throw error
+    }
+  }
+
+
   if (existingFiles && existingFiles.length > 0) {
     return <>
       <Flex gap="2">
         {existingFiles.map((file, index) => (
-          <Flex key={index} className="rounded border p-2 bg-primary-700 text-white items-center justify-center gap-2">
+          <Flex key={index} className="rounded border p-2 bg-white text-black items-center justify-center gap-2">
             <Text className="text-xs">{file.file_name}</Text>
+            <Cross1Icon className="w-2 h-2 cursor-pointer" onClick={() => handleCrossClick(file.file_name)} />
           </Flex>
         ))}</Flex>
 
@@ -81,9 +94,12 @@ const DropzoneContent = ({ heading, isDragging, files, accept, existingFiles, fi
           :
           <Flex gap="2">
             {Array.from(files).map((file, index) => (
-              <Flex key={index} className="rounded border p-2 bg-primary-700 text-white items-center justify-center gap-2">
+              <Flex key={index} className="rounded border p-2 bg-white text-black items-center justify-center gap-2">
                 <DropzoneFileSpinner status={fileStatus[index]?.status} />
                 <Text className="text-xs">{file.name}</Text>
+                {
+                  fileStatus[index]?.status === 'DONE' && <Cross1Icon className="w-4 h-4 text-red-500 cursor-pointer" onClick={() => { handleCrossClick(file.name); }} />
+                }
               </Flex>
             ))}</Flex>
 
@@ -153,15 +169,7 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
 
   return (
     <Grid
-      className={`dropzone my-2 h-[100px] place-items-center border-2 border-dashed border-violet3 bg-violet1 rounded-[12px] cursor-pointer transition-all ease-linear duration-75`}
-      style={{
-        border: isDragging
-          ? "2px dashed var(--accent-a8)"
-          : (!!files ? "1px solid var(--accent-a6)"
-            : "1px dashed var(--accent-a6)"),
-        backgroundColor: !!files ? "var(--accent-a6)" : "var(--gray-a1)",
-        borderRadius: "var(--radius-3)",
-      }}
+      className={`dropzone text-sm mb-2 h-[100px] place-items-center border-2 border-dashed border-violet3 bg-violet1 rounded-[12px] cursor-pointer transition-all ease-linear duration-75 ${isDragging ? 'border-2 border-dashed' : (!!files ? 'border-solid' : 'border-dashed')} ${!!files ? 'bg-primary-300' : 'bg-gray-100'}`}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -169,7 +177,7 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
       onClick={handleClick}
     >
       <Flex direction="column" align="center" className="flex-wrap">
-        <DropzoneContent heading={heading} isDragging={isDragging} files={files} accept={accept} existingFiles={existingFiles} fileStatus={filesStatus} />
+        <DropzoneContent heading={heading} isDragging={isDragging} files={files} accept={accept} existingFiles={existingFiles} fileStatus={filesStatus} questionId={questionId} />
       </Flex>
       <input
         id={id}
