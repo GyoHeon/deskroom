@@ -1,7 +1,7 @@
 'use server';
 import { UploadStatus } from "./UploadForm";
 
-const fileUpload = async (file: File, orgKey: string): Promise<{ error?: string | null, message?: string | null, files?: string[], org_key?: string }> => {
+export const fileUpload = async (file: File, orgKey: string): Promise<{ error?: string | null, message?: string | null, files?: string[], org_key?: string }> => {
   const formData = new FormData();
   formData.append('files', file, file.name);
 

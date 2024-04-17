@@ -65,44 +65,6 @@ export type Database = {
           },
         ]
       }
-      jobs: {
-        Row: {
-          created_at: string
-          id: number
-          name: string
-          org_key: string
-          status: number
-          type: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          name: string
-          org_key: string
-          status?: number
-          type?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          name?: string
-          org_key?: string
-          status?: number
-          type?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_jobs_org_key_fkey"
-            columns: ["org_key"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["key"]
-          },
-        ]
-      }
       knowledge_base: {
         Row: {
           answer: string | null
@@ -172,6 +134,61 @@ export type Database = {
           },
         ]
       }
+      knowledge_base_tags: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: number
+          knowledge_base_id: number
+          org_key: string
+          tag_id: number
+          tag_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: number
+          knowledge_base_id: number
+          org_key: string
+          tag_id: number
+          tag_name?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: number
+          knowledge_base_id?: number
+          org_key?: string
+          tag_id?: number
+          tag_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_knowledge_base_tags_knowledge_base_id_fkey"
+            columns: ["knowledge_base_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_base"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_knowledge_base_tags_org_key_fkey"
+            columns: ["org_key"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "public_knowledge_base_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       knowledge_categories: {
         Row: {
           created_at: string
@@ -207,24 +224,30 @@ export type Database = {
       knowledge_images: {
         Row: {
           created_at: string
+          file_name: string | null
           id: number
-          image_url: string | null
+          image_url: string
           question_id: number
-          updated_at: string | null
+          status: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
+          file_name?: string | null
           id?: number
-          image_url?: string | null
+          image_url: string
           question_id: number
-          updated_at?: string | null
+          status?: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
+          file_name?: string | null
           id?: number
-          image_url?: string | null
+          image_url?: string
           question_id?: number
-          updated_at?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -242,6 +265,7 @@ export type Database = {
           created_at: string
           id: number
           name: string | null
+          question_id: number | null
           updated_at: string | null
         }
         Insert: {
@@ -249,6 +273,7 @@ export type Database = {
           created_at?: string
           id?: number
           name?: string | null
+          question_id?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -256,9 +281,17 @@ export type Database = {
           created_at?: string
           id?: number
           name?: string | null
+          question_id?: number | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "public_knowledge_tags_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_base"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "public_question_tag_category_id_fkey"
             columns: ["category_id"]
@@ -391,6 +424,7 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          job_id: string
           org_key: string
           status: string
           updated_at: string
@@ -399,6 +433,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: number
+          job_id: string
           org_key: string
           status?: string
           updated_at?: string
@@ -407,6 +442,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: number
+          job_id?: string
           org_key?: string
           status?: string
           updated_at?: string
@@ -597,7 +633,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      JobStatus: "CREATED" | "PENDING" | "DONE" | "FAILED"
     }
     CompositeTypes: {
       [_ in never]: never

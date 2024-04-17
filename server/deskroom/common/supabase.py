@@ -34,3 +34,11 @@ async def create_supabase_async_client() -> AsyncClient:
     return await _create_supabase_async_client(
         url=settings.SUPABASE_URL, key=settings.SUPABASE_ANON_KEY
     )
+
+
+__all__ = [
+    "create_supabase_client",
+    "create_supabase_async_client",
+    "Client",
+    "AsyncClient",
+]
