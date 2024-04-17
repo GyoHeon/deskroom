@@ -15,9 +15,11 @@ import {
   Box,
   Button,
   Container,
+  DropdownMenu,
   Flex,
   Heading,
   IconButton,
+  Popover,
   Select,
   Table,
   TextField,
@@ -46,6 +48,31 @@ export type KnowledgeBaseListViewProps = {
   organization: Organization;
   callback?: () => void;
 } & React.HTMLProps<HTMLDivElement>;
+
+type SupportManualProps = {
+  supportManual?: string
+}
+export const SupportManual: React.FC<SupportManualProps> = ({ supportManual }) => {
+  if (!supportManual) {
+    return null
+  }
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger className="cursor-pointer">
+        <Box className="p-1 hover:bg-secondary-100 rounded duration-300 transition-[background-color]">
+          <ClipboardIcon className="text-gray-600 rounded w-fit" width={21} height={21} />
+        </Box>
+      </Popover.Trigger>
+      <Popover.Content>
+        <Box>
+          {supportManual}
+        </Box>
+      </Popover.Content>
+    </Popover.Root>
+  )
+}
+
 
 const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   knowledgeItems,
@@ -285,7 +312,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                   </Table.Cell>
                   <Table.Cell className="max-w-96">{item.answer}</Table.Cell>
                   <Table.Cell className="max-w-96"><Flex gap="2" align="center" justify="center">
-                    {item.support_manual && <ClipboardIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
+                    <SupportManual supportManual={item?.support_manual} />
                     {item?.knowledge_images?.length !== 0 && <DownloadIcon className="text-gray-600 rounded w-fit" width={21} height={21} />}
                   </Flex></Table.Cell>
                   <Table.Cell className="w-52">
