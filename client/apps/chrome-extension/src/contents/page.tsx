@@ -87,7 +87,7 @@ function Content() {
       }}
       name={`deskroom-${process.env.NODE_ENV}`}>
       <DeskroomUserProvider>
-        <Theme accentColor="iris">
+        <Theme>
           <Sidebar
             isOpen={isOpen}
             setSidebarOpen={setIsOpen}
