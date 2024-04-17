@@ -88,7 +88,7 @@ const Sidebar: React.FC<
   return (
     <Flex
       id="sidebar"
-      direction={`column`}
+      direction="column"
       className="fixed w-2/6 bg-white h-screen transition-all right-0 content-between border-1 border container shadow-md">
       <Flex className="sidebar-title-area flex items-center p-2">
         <img src={deskroomLogo} alt="deskroom logo" className="w-24" />
