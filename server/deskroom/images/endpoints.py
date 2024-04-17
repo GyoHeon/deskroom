@@ -27,7 +27,7 @@ async def upload_image(
         create_source_azure_container_client
     ),  # TODO: replace this with async client
     supabase: AsyncClient = Depends(create_supabase_async_client),
-):
+) -> UploadImageOut | JSONResponse:
     if not file:
         raise HTTPException(status_code=400, detail="No file uploaded")
 
@@ -101,9 +101,4 @@ async def upload_image(
         .execute()
     )
 
-    return {
-        "file_url": update_image_response.data[0]["image_url"],
-        "file_name": update_image_response.data[0]["file_name"],
-        "org_key": org_key,
-        "status": update_image_response.data[0]["status"],
-    }
+    return update_image_response.data[0]
