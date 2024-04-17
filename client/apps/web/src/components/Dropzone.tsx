@@ -2,7 +2,8 @@
 
 import { Box, Flex, Grid, Text } from "@radix-ui/themes";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Spinner from "./Spinner";
 
 export type DropzoneProps = {
   heading?: string;
@@ -11,10 +12,34 @@ export type DropzoneProps = {
   multiple?: boolean;
   accept?: string
 } & React.HTMLAttributes<HTMLDivElement>;
+
+type UploadStatus = 'CREATED' | 'PENDING' | 'DONE' | 'FAILED';
+const DropzoneFileSpinner = ({ status }: { status?: UploadStatus }) => {
+  if (!status) return null;
+  switch (status) {
+    case 'CREATED':
+      return <Spinner size={4} />
+    case 'PENDING':
+      return <Spinner size={4} shouldSpin />
+    case 'DONE':
+      return <Spinner size={4} done />
+    case 'FAILED':
+      return <Spinner size={4} failed />
+  }
+}
+
 export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false, className, accept = '.xlsx' }: DropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [filesStatus, setFilesStatus] = useState<{ file: File, status: 'CREATED' | 'PENDING' | 'DONE' | 'FAILED' }[]>([]);
+
+  useEffect(() => {
+    if (!!files) {
+      const filesArray = Array.from(files);
+      setFilesStatus(filesArray.map(file => ({ file, status: 'CREATED' })));
+    }
+  }, [files]);
 
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -86,9 +111,10 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
             :
             <Flex gap="2">
               {Array.from(files).map((file, index) => (
-                <Box key={index} className="rounded border p-2 bg-primary-700 text-white">
-                  {file.name}
-                </Box>
+                <Flex key={index} className="rounded border p-2 bg-primary-700 text-white items-center justify-center gap-2">
+                  <DropzoneFileSpinner status={filesStatus[index]?.status} />
+                  <Text className="text-xs">{file.name}</Text>
+                </Flex>
               ))}</Flex>
 
         }
