@@ -4,6 +4,9 @@ import { Box, Flex, Grid, Text } from "@radix-ui/themes";
 
 import { useEffect, useRef, useState } from "react";
 import Spinner from "./Spinner";
+import { fileUpload } from "@/app/upload/actions";
+import { useOrganizationContext } from "@/contexts/OrganizationContext";
+import { createClient } from "@/utils/supabase/client";
 
 export type DropzoneProps = {
   heading?: string;
@@ -28,17 +31,59 @@ const DropzoneFileSpinner = ({ status }: { status?: UploadStatus }) => {
   }
 }
 
+async function fileUploadByClient(file: File, orgKey: string) {
+  const supabase = createClient();
+  const { count, error } = await supabase.from('knowlege_images').select('*', { count: 'exact', head: true }).eq('org_key', orgKey).eq('file_name', file.name);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  if (count > 0) {
+    const { data: { status } } = await supabase.from('knowlege_images').select('status').eq('org_key', orgKey).eq('file_name', file.name).single();
+    return { error: null, status };
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("orgKey", orgKey);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/images/upload?org_key=${orgKey}`, { // TODO: add server endpoint
+    method: "POST",
+    body: formData,
+  });
+  const responseData = await response.json();
+  if (!response.ok) {
+    return { error: responseData.error };
+  }
+  return {
+    error: null,
+    status: responseData.status,
+    filename: responseData.filename,
+    fileUrl: responseData.fileUrl,
+  }
+}
+
 export default function Dropzone({ heading = "파일을 업로드 해주세요.", id, name, multiple = false, className, accept = '.xlsx' }: DropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [filesStatus, setFilesStatus] = useState<{ file: File, status: 'CREATED' | 'PENDING' | 'DONE' | 'FAILED' }[]>([]);
+  const { currentOrg } = useOrganizationContext();
 
   useEffect(() => {
-    if (!!files) {
-      const filesArray = Array.from(files);
-      setFilesStatus(filesArray.map(file => ({ file, status: 'CREATED' })));
+    const startUploadFiles = async () => {
+      if (!!files) {
+        const filesArray = Array.from(files);
+        for (const file of filesArray) {
+          const { error, status } = await fileUploadByClient(file, currentOrg?.key);
+          if (error) {
+            setFilesStatus((prev) => [...prev, { file, status: 'FAILED' }]);
+          }
+          setFilesStatus((prev) => [...prev, { file, status }]);
+        }
+      }
     }
+    startUploadFiles();
   }, [files]);
 
 
