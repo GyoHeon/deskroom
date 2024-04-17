@@ -13,7 +13,6 @@ import browser from "webextension-polyfill"
 import { useStorage } from "@plasmohq/storage/hook"
 
 import type { OrganizationStorage } from "~api/organization"
-import { openOptions } from "~lib/options"
 
 import { version } from "../package.json"
 
@@ -52,9 +51,8 @@ function IndexPopup() {
       <Flex className="container" direction="column">
         <Flex className="flex">
           <img src={deskroomLogo} alt="deskroom logo" className="w-20 my-2" />
-          <IconButton
-            onClick={openOptions}
-            className="ml-auto hover:bg-gray-100 px-2">
+          {/* Todo: 버튼에 아무 기능이 없습니다.(option이 사라져서 동작 유추 불가) */}
+          <IconButton className="ml-auto hover:bg-gray-100 px-2">
             <GearIcon />
           </IconButton>
         </Flex>
