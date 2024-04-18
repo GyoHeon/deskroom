@@ -67,6 +67,7 @@ export const getStyle = () => {
 
 function Content() {
   const [isOpen, setIsOpen] = useState(false)
+  const [savedWidth, setSavedWidth] = useStorage<number>("sidebar-width")
   const [user] = useStorage<User>("user")
   const [question, setQuestion] = useState("")
   const { text, rects } = useTextSelection()
@@ -93,6 +94,8 @@ function Content() {
             setSidebarOpen={setIsOpen}
             question={question}
             setMessage={setQuestion}
+            savedWidth={savedWidth}
+            setSavedWidth={setSavedWidth}
           />
           <Tooltip clickHandler={handleTooltipClick} />
         </Theme>

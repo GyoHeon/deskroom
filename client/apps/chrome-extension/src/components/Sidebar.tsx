@@ -15,8 +15,11 @@ type SidebarProps = {
   setSidebarOpen: (isOpen: boolean) => void
   question: string
   setMessage: (message: string) => void
+  savedWidth?: number
+  setSavedWidth: (number) => void
   // orgs: OrganizationStorage | null
 }
+
 export type Answer = {
   category: string
   answer: string
@@ -24,7 +27,14 @@ export type Answer = {
 
 const Sidebar: React.FC<
   SidebarProps & React.HTMLAttributes<HTMLDivElement>
-> = ({ isOpen, setSidebarOpen, question: message, setMessage }) => {
+> = ({
+  isOpen,
+  setSidebarOpen,
+  question: message,
+  setMessage,
+  savedWidth,
+  setSavedWidth
+}) => {
   const [answers, setAnswers] = useState<Answer[] | null | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
   // TODO: set org by select
@@ -87,7 +97,7 @@ const Sidebar: React.FC<
   }
 
   return (
-    <ResizableWrapper>
+    <ResizableWrapper savedWidth={savedWidth} setSavedWidth={setSavedWidth}>
       <Flex
         id="sidebar"
         direction="column"
