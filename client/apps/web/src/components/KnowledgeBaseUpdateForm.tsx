@@ -105,14 +105,15 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
             </label>
             <Select.Root
               size="3"
-              defaultValue="apple"
-              value={formData?.category}
+              defaultValue="카테고리"
+              value={formData?.category ?? null}
               onValueChange={(value) =>
                 setFormData({ ...formData, category: value })
               }
             >
               <Select.Trigger className="w-[125px] h-[35px] px-2 rounded-lg bg-[#EFF1F999] border-2 text-sm" />
               <Select.Content>
+                <Select.Item value={null}>카테고리</Select.Item>
                 {categories.map((category, categoryIdx) => (
                   <Select.Item key={categoryIdx} value={category}>
                     {category}
