@@ -45,7 +45,6 @@ export const OrganizationContextProvider: React.FC<{
   const mixpanel = useMixpanel();
 
   useEffect(() => {
-    debugger
     if (!currentOrg && !searchParams.get("org")) {
       return;
     }
@@ -93,6 +92,10 @@ export const OrganizationContextProvider: React.FC<{
         console.log(organizationError);
       }
       setOrganizations(orgs);
+
+      if (searchParams.get("org") && currentOrg === null) {
+        setCurrentOrg(orgs.find((o) => o.key === searchParams.get("org")));
+      }
 
       if (!mixpanel) {
         return
