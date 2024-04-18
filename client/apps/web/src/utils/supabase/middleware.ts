@@ -60,6 +60,8 @@ export async function updateSession(request: NextRequest) {
   if (!session) {
     response.cookies.delete(`sb-${supabaseProjectID}-access-token`)
     response.cookies.delete(`sb-${supabaseProjectID}-refresh-token`)
+
+    return NextResponse.redirect(new URL("/v1/login", request.url))
   }
   if (error) {
     console.error('error', error)

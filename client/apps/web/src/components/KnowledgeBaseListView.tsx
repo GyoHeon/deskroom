@@ -190,10 +190,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "knowledge_base" },
-        (payload) => {
-          console.log("Change received!", payload);
-          handleKnowledgeBaseDataChange(payload);
-        }
+        handleKnowledgeBaseDataChange
       )
       .subscribe();
 
@@ -222,6 +219,10 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
       setOpen(true);
     }, 100);
   };
+
+  React.useEffect(() => {
+    // console.debug({ filteredItems })
+  }, [filteredItems])
 
   return (
     <>
