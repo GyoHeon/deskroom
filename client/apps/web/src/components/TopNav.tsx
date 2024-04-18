@@ -61,11 +61,12 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
       }
       <Flex className="ml-auto gap-5">
         <Select.Root
-          defaultValue={currentOrg?.name_kor ?? org}
+          defaultValue={'조직'}
+          value={currentOrg?.name_kor ?? org}
           onValueChange={handleOrgChange}
           size="2"
         >
-          <Select.Trigger className="font-semibold w-24" />
+          <Select.Trigger className="font-semibold w-fit min-w-24" />
           <Select.Content>
             <Select.Group>
               <Select.Label>조직</Select.Label>
