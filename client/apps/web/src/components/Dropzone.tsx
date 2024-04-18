@@ -84,7 +84,7 @@ const DropzoneContent = ({ heading, isDragging, files, accept, existingFiles, fi
             <Text weight="bold" size="2">
               {heading}
             </Text>
-            <Text color="gray" size={heading ? "2" : undefined}>
+            <Text color="gray" size={heading ? "1" : undefined}>
               {isDragging
                 ? `Drop the (${accept.split(',').join(', ')}) file here`
                 : `Drag and drop an (${accept.split(',').join(', ')}) file here`}
@@ -169,7 +169,7 @@ export default function Dropzone({ heading = "파일을 업로드 해주세요."
 
   return (
     <Grid
-      className={`dropzone text-sm mb-2 h-[100px] place-items-center border-2 border-dashed border-violet3 bg-violet1 rounded-[12px] cursor-pointer transition-all ease-linear duration-75 ${isDragging ? 'border-2 border-dashed' : (!!files ? 'border-solid' : 'border-dashed')} ${!!files ? 'bg-primary-300' : 'bg-gray-100'}`}
+      className={`dropzone text-sm mb-2 h-[100px] place-items-center border-2 border-dashed border-violet3 rounded-[12px] cursor-pointer transition-all ease-linear duration-75 ${isDragging ? 'border-2 border-dashed' : (!!files ? 'border-solid' : 'border-dashed')} ${!!files ? 'bg-primary-300' : 'bg-[#EFF1F999] '}`}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
