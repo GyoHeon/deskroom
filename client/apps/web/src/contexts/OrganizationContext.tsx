@@ -1,7 +1,7 @@
 "use client";
 import { Database } from "@/lib/database.types";
 import { User, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useMixpanel } from "./MixpanelContext";
 
@@ -36,17 +36,39 @@ export const OrganizationContextProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const supabase = createClientComponentClient();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [currentOrg, setCurrentOrg] = useState<Organization>(null);
   const [user, setUser] = useState<User>(null)
   const mixpanel = useMixpanel();
+
+  useEffect(() => {
+    debugger
+    if (!currentOrg && !searchParams.get("org")) {
+      return;
+    }
+
+    if (!currentOrg && searchParams.get("org")) {
+      const selectedOrg = organizations.find((o) => o.key === searchParams.get("org"));
+      setCurrentOrg(selectedOrg);
+      return;
+    }
+
+    if (searchParams.get("org") === currentOrg.key) {
+      return;
+    }
+
+    mixpanel.register({
+      org: searchParams.get("org"),
+      platform: "knowledge_base_admin",
+    });
+    router.push(`${pathname}?org=${currentOrg.key}`);
+  }, [currentOrg?.key])
+
   useEffect(() => {
     (async () => {
-      const orgFromURL = searchParams.get("org");
-      if (!orgFromURL) {
-        return;
-      }
       const {
         data: { session },
         error: loginError,
@@ -71,24 +93,19 @@ export const OrganizationContextProvider: React.FC<{
         console.log(organizationError);
       }
       setOrganizations(orgs);
-      setCurrentOrg(orgs.find((org) => org.key === orgFromURL));
 
       if (!mixpanel) {
         return
       }
 
       mixpanel.identify(session.user.id);
-
-      mixpanel.register({
-        org: orgFromURL,
-        platform: "knowledge_base_admin",
-      });
       mixpanel.people.set({
         $name: session.user.user_metadata.full_name,
         $email: session.user.email,
       });
+
     })();
-  }, [searchParams, supabase]);
+  }, []);
 
   return (
     <OrganizationContext.Provider
