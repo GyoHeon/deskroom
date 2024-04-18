@@ -111,7 +111,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
                 setFormData({ ...formData, category: value })
               }
             >
-              <Select.Trigger className="w-[125px] h-[35px] px-2 rounded-lg bg-[#EFF1F999] text-sm shadow-none" />
+              <Select.Trigger className="w-[125px] h-[35px] px-2 rounded-lg bg-[#EFF1F999] text-sm border" />
               <Select.Content>
                 <Select.Item value={null}>카테고리</Select.Item>
                 {categories.map((category, categoryIdx) => (
@@ -132,7 +132,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
             <input
               id="question"
               name="question"
-              className="h-[35px] pl-2 rounded-md bg-[#EFF1F999] border-gray-300 text-sm"
+              className="h-[35px] pl-2 rounded-md bg-[#EFF1F999] border-gray-300 text-sm border"
               value={formData?.question}
               onChange={handleChange}
             />
@@ -148,7 +148,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
               contentEditable
               rows={5}
               size={`3`}
-              className="block p-2.5 w-full h-fit text-sm text-gray-900 rounded-lg border-gray-300 bg-[#EFF1F999] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500 ring-0 static"
+              className="block p-2.5 w-full h-fit text-sm text-gray-900 rounded-lg border-gray-300 bg-[#EFF1F999] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500 ring-0"
               placeholder="Write Answer..."
               id="answer"
               name="answer"
@@ -166,7 +166,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
             <input
               id="support_manual"
               name="support_manual"
-              className="h-[35px] pl-2 rounded-md bg-[#EFF1F999] border-gray-300 text-sm"
+              className="h-[35px] pl-2 rounded-md bg-[#EFF1F999] border-gray-300 text-sm border"
               value={formData?.support_manual}
               onChange={handleChange}
             />
