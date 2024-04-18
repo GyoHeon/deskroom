@@ -1,6 +1,6 @@
 "use client";
 
-import { Organization, useOrganizationContext } from "@/contexts/OrganizationContext";
+import { useOrganizationContext } from "@/contexts/OrganizationContext";
 import { Database } from "@/lib/database.types";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
@@ -16,18 +16,16 @@ import * as Toast from "@radix-ui/react-toast";
 import {
   Box,
   Button,
-  Container,
-  DropdownMenu,
-  Flex,
+  Container, Flex,
   Heading,
   IconButton,
   Popover,
   Select,
   Table,
-  TextField,
+  TextField
 } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { ReactNode, use, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import KnowledgeBaseUpdateForm from "./KnowledgeBaseUpdateForm";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
@@ -215,6 +213,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
     );
     setFilteredItems(filtered);
   }, [searchQuery, knowledgeItems]);
+
 
   const openToast = () => {
     setOpen(false);
