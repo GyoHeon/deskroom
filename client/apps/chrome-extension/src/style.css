@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.radix-themes {
+  --accent-a5: rgba(45, 54, 255, 0.44);
+}

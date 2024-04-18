@@ -1,8 +1,8 @@
 import type { User } from "@supabase/supabase-js"
 import deskroomLogo from "data-base64:assets/logo.png"
 
-import "./style.css"
 import "data-text:@radix-ui/themes/styles.css"
+import "./style.css"
 
 import { ArrowTopRightIcon, GearIcon } from "@radix-ui/react-icons"
 import { Box, Button, Flex, IconButton, Separator } from "@radix-ui/themes"
@@ -13,7 +13,6 @@ import browser from "webextension-polyfill"
 import { useStorage } from "@plasmohq/storage/hook"
 
 import type { OrganizationStorage } from "~api/organization"
-import { supabase } from "~core/supabase"
 
 import { version } from "../package.json"
 
@@ -50,8 +49,9 @@ function IndexPopup() {
   return (
     <Flex className="w-60 h-64 px-4 py-2">
       <Flex className="container" direction="column">
-        <Flex direction="row" style={{ display: "flex" }}>
+        <Flex className="flex">
           <img src={deskroomLogo} alt="deskroom logo" className="w-20 my-2" />
+          {/* Todo: 버튼에 아무 기능이 없습니다.(option이 사라져서 동작 유추 불가) */}
           <IconButton className="ml-auto hover:bg-gray-100 px-2">
             <GearIcon />
           </IconButton>

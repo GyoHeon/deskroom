@@ -2,12 +2,11 @@ import browser from "webextension-polyfill"
 
 import { Storage } from "@plasmohq/storage"
 
+import { getCookie } from "~api/cookie"
 import { getOrganizations } from "~api/organization"
 import { supabase } from "~core/supabase"
 
-import { getCookie } from "~api/cookie"
-
-export { }
+export {}
 
 const deskroomUserStorage = new Storage()
 

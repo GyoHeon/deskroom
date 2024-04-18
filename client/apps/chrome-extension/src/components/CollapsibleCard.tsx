@@ -33,7 +33,7 @@ const CollapsibleCard: React.FC<CardProps> = ({
   }
   return (
     <Box
-      className="card w-full h-fit rounded-md shadow-md p-4 bg-white hover:border hover:border-1 hover:border-[#2C2C2C] transition-all ease-in-out duration-75 hover:h-fit"
+      className="card w-full h-fit rounded-md shadow-md p-4 bg-white border border-1 border-white hover:border-[#2C2C2C] transition-all ease-in-out duration-75 hover:h-fit"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => {
         setIsCollapsed(true)
@@ -45,11 +45,12 @@ const CollapsibleCard: React.FC<CardProps> = ({
         <Box
           className="copy ml-auto text-[#C4C4C4] cursor-pointer"
           onClick={handleCopyClick}>
-          <CopyIcon />
+          <CopyIcon color={isCollapsed ? "#C4C4C4" : "black"} />
         </Box>
       </Flex>
-      <Flex className={`card-content py-2`}>
-        <p className={`${isCollapsed ? "line-clamp-3" : "line-clamp-none"}`}>
+      <Flex className="card-content py-2">
+        <p
+          className={`select-text ${isCollapsed ? "line-clamp-3" : "line-clamp-none"}`}>
           {content}
         </p>
       </Flex>

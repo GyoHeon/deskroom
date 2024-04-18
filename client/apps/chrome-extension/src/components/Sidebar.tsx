@@ -88,7 +88,7 @@ const Sidebar: React.FC<
   return (
     <Flex
       id="sidebar"
-      direction={`column`}
+      direction="column"
       className="fixed w-2/6 bg-white h-screen transition-all right-0 content-between border-1 border container shadow-md">
       <Flex className="sidebar-title-area flex items-center p-2">
         <img src={deskroomLogo} alt="deskroom logo" className="w-24" />
@@ -159,15 +159,15 @@ const Sidebar: React.FC<
       )}
       <Flex
         className="sidebar-footer-area p-2 mt-auto"
-        justify={`center`}
-        align={`center`}>
-        {!answers ? (
+        justify="center"
+        align="center">
+        {mode === "new" || !answers ? (
           <Box>
             <img src={deskroomLogo} alt="deskroom logo" className="w-[66px]" />
           </Box>
         ) : (
           <Box
-            className="text-[#7A7A7A] cursor-pointer text-xs"
+            className="text-[#7A7A7A] cursor-pointer text-base"
             onClick={() => {
               setMode("new")
             }}>

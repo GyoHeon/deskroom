@@ -31,6 +31,38 @@ const NewKnowledgeBaseForm: React.FC<NewKnowledgeBaseFormProps> = ({
   useEffect(() => {
     mixpanel.track("Knowledge Item Add Page Viewed", {})
   }, [])
+
+  const makeNewAnswer = async () => {
+    setNewAnswerLoading(true)
+    fetch(`https://api.deskroom.so/v1/knowledge/new`, {
+      method: "POST",
+      body: JSON.stringify({
+        org_key: currentOrg.key,
+        question: message,
+        answer: newAnswer
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then((res) => {
+        if (res.ok) {
+          setNewAnswerLoading(false)
+          alert("답변이 성공적으로 등록되었습니다.")
+          setMode("search")
+          setNewAnswer("")
+          mixpanel.track("Knowledge Item Added", {
+            question: message,
+            answer: newAnswer
+          })
+        }
+      })
+      .catch((err) => {
+        setNewAnswerLoading(false)
+        alert("답변 등록에 실패했습니다. Error: " + err)
+      })
+  }
+
   return (
     <Box className="container px-2 py-4">
       <Flex width={`100%`} direction={`column`}>
@@ -58,43 +90,14 @@ const NewKnowledgeBaseForm: React.FC<NewKnowledgeBaseFormProps> = ({
       </Box>
       <Box className="text-end">
         <Button
-          className={`w-16 h-8 rounded-md text-sm transiation-all ease-in-out duration-100
+          className={`w-16 h-8 rounded-md text-sm transiation-all ease-in-out duration-100  
                 ${
                   newAnswer.length === 0
                     ? "cursor-not-allowed bg-[#ECECEC] text-[#C4C4C4]"
                     : "cursor-pointer bg-[#2C2C2C] text-white"
                 }
               `}
-          onClick={async () => {
-            setNewAnswerLoading(true)
-            fetch(`https://api.deskroom.so/v1/knowledge/new`, {
-              method: "POST",
-              body: JSON.stringify({
-                org_key: currentOrg.key,
-                question: message,
-                answer: newAnswer
-              }),
-              headers: {
-                "Content-Type": "application/json"
-              }
-            })
-              .then((res) => {
-                if (res.ok) {
-                  setNewAnswerLoading(false)
-                  alert("답변이 성공적으로 등록되었습니다.")
-                  setMode("search")
-                  setNewAnswer("")
-                  mixpanel.track("Knowledge Item Added", {
-                    question: message,
-                    answer: newAnswer
-                  })
-                }
-              })
-              .catch((err) => {
-                setNewAnswerLoading(false)
-                alert("답변 등록에 실패했습니다. Error: " + err)
-              })
-          }}>
+          onClick={makeNewAnswer}>
           {newAnswerLoading ? (
             <svg
               aria-hidden="true"
@@ -112,7 +115,7 @@ const NewKnowledgeBaseForm: React.FC<NewKnowledgeBaseFormProps> = ({
               />
             </svg>
           ) : (
-            <span>업로드</span>
+            <span className="text-nowrap">업로드</span>
           )}
         </Button>
       </Box>

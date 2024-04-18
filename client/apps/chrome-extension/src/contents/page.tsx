@@ -14,7 +14,9 @@ import { DeskroomUserProvider } from "~contexts/DeskroomUserContext"
 import { MixpanelProvider } from "~contexts/MixpanelContext"
 import { useTextSelection } from "~hooks/useTextSelection"
 
-import { manifest, name, version } from "../../package.json"
+import { version } from "../../package.json"
+
+import "../style.css"
 
 const Sentry = _Sentry
 
