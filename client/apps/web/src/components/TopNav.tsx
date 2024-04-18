@@ -1,24 +1,20 @@
 "use client";
 import { useOrganizationContext } from "@/contexts/OrganizationContext";
 import { Avatar, DropdownMenu, Flex, Select } from "@radix-ui/themes";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 
 export type TopNavProps = {
-  // organizations: Organization[];
-  // currentOrg: string;
   shouldShowLogo?: boolean;
 } & React.HTMLProps<HTMLDivElement>;
 
 const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const supabase = createClient();
-  const { currentOrg, availableOrgs } = useOrganizationContext();
+  const { currentOrg, availableOrgs, setCurrentOrg } = useOrganizationContext();
   const [org, setOrg] = useState<string>('');
 
   useEffect(() => {
@@ -30,8 +26,10 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
   }, []);
 
   const handleOrgChange = (org: string) => {
+    if (!availableOrgs) return;
+    if (org === currentOrg?.name_kor) return;
     const selectedOrg = availableOrgs.find((o) => o.name_kor === org);
-    router.push(`${pathname}?org=${selectedOrg.key}`);
+    setCurrentOrg(selectedOrg)
   };
   const handleLogoutButtonClick = async () => {
     const { error } = await supabase.auth.signOut()

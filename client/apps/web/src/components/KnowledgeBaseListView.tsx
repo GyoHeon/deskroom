@@ -1,5 +1,6 @@
 "use client";
-import { Organization } from "@/contexts/OrganizationContext";
+
+import { useOrganizationContext } from "@/contexts/OrganizationContext";
 import { Database } from "@/lib/database.types";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
@@ -15,18 +16,16 @@ import * as Toast from "@radix-ui/react-toast";
 import {
   Box,
   Button,
-  Container,
-  DropdownMenu,
-  Flex,
+  Container, Flex,
   Heading,
   IconButton,
   Popover,
   Select,
   Table,
-  TextField,
+  TextField
 } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { ReactNode, use, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import KnowledgeBaseUpdateForm from "./KnowledgeBaseUpdateForm";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
@@ -46,7 +45,7 @@ export type KnowledgeItemQueryType = KnowledgeItem & { knowledge_categories: Kno
 export type KnowledgeBaseListViewProps = {
   knowledgeItems: KnowledgeItemQueryType[];
   categories: KnowledgeCategory[];
-  organization: Organization;
+  // organization: Organization;
   callback?: () => void;
 } & React.HTMLProps<HTMLDivElement>;
 
@@ -127,11 +126,12 @@ export const FilesPopover: React.FC<{ files: PartialKnowledgeImage[] }> = ({ fil
 
 const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   knowledgeItems,
-  organization,
   categories,
   callback,
 }) => {
   const supabase = createClientComponentClient();
+
+
   const [openDialog, setOpenDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredItems, setFilteredItems] =
@@ -142,6 +142,8 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   );
   const [selectedCategory, setSelectedCategory] = useState<string>(null)
   const [selectedTag, setSelectedTag] = useState<string>(null)
+
+  const { currentOrg: organization } = useOrganizationContext()
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.currentTarget.value);
@@ -188,10 +190,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "knowledge_base" },
-        (payload) => {
-          console.log("Change received!", payload);
-          handleKnowledgeBaseDataChange(payload);
-        }
+        handleKnowledgeBaseDataChange
       )
       .subscribe();
 
@@ -212,6 +211,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
     setFilteredItems(filtered);
   }, [searchQuery, knowledgeItems]);
 
+
   const openToast = () => {
     setOpen(false);
     window.clearTimeout(timerRef.current);
@@ -219,6 +219,10 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
       setOpen(true);
     }, 100);
   };
+
+  React.useEffect(() => {
+    // console.debug({ filteredItems })
+  }, [filteredItems])
 
   return (
     <>
