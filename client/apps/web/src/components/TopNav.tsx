@@ -18,7 +18,7 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const supabase = createClient();
-  const { currentOrg, availableOrgs } = useOrganizationContext();
+  const { currentOrg, availableOrgs, setCurrentOrg } = useOrganizationContext();
   const [org, setOrg] = useState<string>('');
 
   useEffect(() => {

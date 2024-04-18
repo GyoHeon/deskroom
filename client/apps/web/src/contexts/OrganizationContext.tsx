@@ -64,7 +64,7 @@ export const OrganizationContextProvider: React.FC<{
 
       const { data: orgs, error: organizationError } = await supabase
         .from("organizations")
-        .select("*, users!inner(*)")
+        .select("*, users!inner(id, email)")
         .eq("users.id", session?.user.id);
 
       if (organizationError != null) {
