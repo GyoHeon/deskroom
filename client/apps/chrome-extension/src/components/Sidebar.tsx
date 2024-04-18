@@ -7,6 +7,7 @@ import { useDeskroomUser } from "~contexts/DeskroomUserContext"
 import { useMixpanel } from "~contexts/MixpanelContext"
 
 import NewKnowledgeBaseForm from "./NewKnowledgeBaseForm"
+import ResizableWrapper from "./ResizeWrapper"
 import SidebarContent from "./SidebarContent"
 
 type SidebarProps = {
@@ -86,97 +87,103 @@ const Sidebar: React.FC<
   }
 
   return (
-    <Flex
-      id="sidebar"
-      direction="column"
-      className="fixed w-2/6 bg-white h-screen transition-all right-0 content-between border-1 border container shadow-md">
-      <Flex className="sidebar-title-area flex items-center p-2">
-        <img src={deskroomLogo} alt="deskroom logo" className="w-24" />
-        {org?.availableOrgs.length >= 1 && (
-          <Flex className="sidebar-organization-select">
-            <select
-              name="organization"
-              id="organization"
-              value={org?.currentOrg.name_kor}
-              onChange={(e) => {
-                setOrg({
-                  availableOrgs: org?.availableOrgs ?? [],
-                  currentOrg: org?.availableOrgs.find(
-                    (o) => o.name_kor === e.target.value
-                  )
-                }).catch((err) => {
-                  console.error(err) // NOTE: QUOTA_BYTES_PER_ITEM Error
-                })
+    <ResizableWrapper>
+      <Flex
+        id="sidebar"
+        direction="column"
+        className="w-full bg-white h-screen transition-all right-0 content-between border-1 border container shadow-md">
+        <Flex className="sidebar-title-area flex items-center p-2">
+          <img src={deskroomLogo} alt="deskroom logo" className="w-24" />
+          {org?.availableOrgs.length >= 1 && (
+            <Flex className="sidebar-organization-select">
+              <select
+                name="organization"
+                id="organization"
+                value={org?.currentOrg.name_kor}
+                onChange={(e) => {
+                  setOrg({
+                    availableOrgs: org?.availableOrgs ?? [],
+                    currentOrg: org?.availableOrgs.find(
+                      (o) => o.name_kor === e.target.value
+                    )
+                  }).catch((err) => {
+                    console.error(err) // NOTE: QUOTA_BYTES_PER_ITEM Error
+                  })
+                }}
+                className="mx-2 w-fit rounded-md border border-1 text-xs border-gray-900 px-[2px] py-[0.5px] h-fit">
+                {org?.availableOrgs.map((org, orgIndex) => (
+                  <option value={org.name_kor} key={orgIndex}>
+                    {org.name_kor}
+                  </option>
+                ))}
+              </select>
+            </Flex>
+          )}
+          <Flex className="ml-auto">
+            <IconButton
+              hidden={mode === "search"}
+              onClick={() => {
+                setMode("search")
               }}
-              className="mx-2 w-fit rounded-md border border-1 text-xs border-gray-900 px-[2px] py-[0.5px] h-fit">
-              {org?.availableOrgs.map((org, orgIndex) => (
-                <option value={org.name_kor} key={orgIndex}>
-                  {org.name_kor}
-                </option>
-              ))}
-            </select>
+              className="hover:bg-gray-200 rounded-sm transition-all ease-in-out duration-100">
+              <ArrowLeftIcon width={`14`} height={`15`} />
+            </IconButton>
+            <IconButton
+              onClick={() => {
+                setSidebarOpen(false)
+              }}
+              className="hover:bg-gray-200 rounded-sm transition-all ease-in-out duration-100">
+              <Cross1Icon width={`14`} height={`15`} />
+            </IconButton>
           </Flex>
+        </Flex>
+        <Separator size={`4`} style={{ backgroundColor: "#eee" }} />
+        {mode === "search" && (
+          <SidebarContent
+            hasLoggedIn={!!user}
+            message={message}
+            setMessage={setMessage}
+            loading={loading}
+            handleSearch={handleSearch}
+            answers={answers}
+          />
         )}
-        <Flex className="ml-auto">
-          <IconButton
-            hidden={mode === "search"}
-            onClick={() => {
-              setMode("search")
-            }}
-            className="hover:bg-gray-200 rounded-sm transition-all ease-in-out duration-100">
-            <ArrowLeftIcon width={`14`} height={`15`} />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              setSidebarOpen(false)
-            }}
-            className="hover:bg-gray-200 rounded-sm transition-all ease-in-out duration-100">
-            <Cross1Icon width={`14`} height={`15`} />
-          </IconButton>
+        {mode === "new" && (
+          <NewKnowledgeBaseForm
+            message={message} // TODO: reduce props
+            newAnswer={newAnswer}
+            newAnswerLoading={newAnswerLoading}
+            setMessage={setMessage}
+            setNewAnswer={setNewAnswer}
+            setNewAnswerLoading={setNewAnswerLoading}
+            setMode={setMode}
+          />
+        )}
+        <Flex
+          className="sidebar-footer-area p-2 mt-auto"
+          justify="center"
+          align="center">
+          {mode === "new" || !answers ? (
+            <Box>
+              <img
+                src={deskroomLogo}
+                alt="deskroom logo"
+                className="w-[66px]"
+              />
+            </Box>
+          ) : (
+            <Box
+              className="text-[#7A7A7A] cursor-pointer text-base"
+              onClick={() => {
+                setMode("new")
+              }}>
+              적절한 답변을 찾지 못하셨다면 <u>여기</u>를 눌러 새 답변을
+              작성해주세요.
+            </Box>
+          )}
         </Flex>
       </Flex>
-      <Separator size={`4`} style={{ backgroundColor: "#eee" }} />
-      {mode === "search" && (
-        <SidebarContent
-          hasLoggedIn={!!user}
-          message={message}
-          setMessage={setMessage}
-          loading={loading}
-          handleSearch={handleSearch}
-          answers={answers}
-        />
-      )}
-      {mode === "new" && (
-        <NewKnowledgeBaseForm
-          message={message} // TODO: reduce props
-          newAnswer={newAnswer}
-          newAnswerLoading={newAnswerLoading}
-          setMessage={setMessage}
-          setNewAnswer={setNewAnswer}
-          setNewAnswerLoading={setNewAnswerLoading}
-          setMode={setMode}
-        />
-      )}
-      <Flex
-        className="sidebar-footer-area p-2 mt-auto"
-        justify="center"
-        align="center">
-        {mode === "new" || !answers ? (
-          <Box>
-            <img src={deskroomLogo} alt="deskroom logo" className="w-[66px]" />
-          </Box>
-        ) : (
-          <Box
-            className="text-[#7A7A7A] cursor-pointer text-base"
-            onClick={() => {
-              setMode("new")
-            }}>
-            적절한 답변을 찾지 못하셨다면 <u>여기</u>를 눌러 새 답변을
-            작성해주세요.
-          </Box>
-        )}
-      </Flex>
-    </Flex>
+    </ResizableWrapper>
   )
 }
 
