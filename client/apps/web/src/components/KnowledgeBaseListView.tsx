@@ -1,5 +1,6 @@
 "use client";
-import { Organization } from "@/contexts/OrganizationContext";
+
+import { Organization, useOrganizationContext } from "@/contexts/OrganizationContext";
 import { Database } from "@/lib/database.types";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
@@ -46,7 +47,7 @@ export type KnowledgeItemQueryType = KnowledgeItem & { knowledge_categories: Kno
 export type KnowledgeBaseListViewProps = {
   knowledgeItems: KnowledgeItemQueryType[];
   categories: KnowledgeCategory[];
-  organization: Organization;
+  // organization: Organization;
   callback?: () => void;
 } & React.HTMLProps<HTMLDivElement>;
 
@@ -127,11 +128,12 @@ export const FilesPopover: React.FC<{ files: PartialKnowledgeImage[] }> = ({ fil
 
 const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   knowledgeItems,
-  organization,
   categories,
   callback,
 }) => {
   const supabase = createClientComponentClient();
+
+
   const [openDialog, setOpenDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredItems, setFilteredItems] =
@@ -142,6 +144,8 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   );
   const [selectedCategory, setSelectedCategory] = useState<string>(null)
   const [selectedTag, setSelectedTag] = useState<string>(null)
+
+  const { currentOrg: organization } = useOrganizationContext()
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.currentTarget.value);

@@ -66,7 +66,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
 
     const { data: updatedKnowledgeItem, error } = await supabase
       .from("knowledge_base")
-      .upsert([formData])
+      .upsert([(({ knowledge_images, knowledge_categories, ...kb }) => (kb))(formData)])
       .select();
     if (error) {
       console.error("Error updating knowledge item:", error);

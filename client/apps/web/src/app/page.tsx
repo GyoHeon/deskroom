@@ -1,62 +1,16 @@
-import { Database } from "@/lib/database.types";
-import { Box, Container, Flex, Heading } from "@radix-ui/themes";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Box, Container, Flex } from "@radix-ui/themes";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import KnowledgeBaseListView, { KnowledgeItemQueryType } from "../components/KnowledgeBaseListView";
+import KnowledgeBaseListView from "../components/KnowledgeBaseListView";
 import TopNav from "../components/TopNav";
 import { getCategories } from "./api/categories";
 import { HotkeyProvider } from "@/contexts/HotkeyContext";
 import { Sidebar } from "@/components/Sidebar";
+import { createClient } from "@/utils/supabase/server";
 
 export const revalidate = 0;
 
 export default async function NewIndex({ searchParams }) {
-  const supabase = createServerComponentClient<Database>({
-    cookies,
-  });
-
-  // TODO: https://supabase.com/blog/react-query-nextjs-app-router-cache-helpers
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) {
-    // this is a protected route - only users who are signed in can view this route
-    redirect("/v1/login");
-  }
-
-  const { data: organizations, error: organizationError } = await supabase
-    .from("organizations")
-    .select("*, users!inner(*)")
-    .eq("users.id", session?.user.id);
-
-  if (organizationError != null) {
-    console.log(organizationError);
-  }
-
-  // TODO: handle when org key changed in query param
-  // TODO: handle case where user is not part of any organizations
-  const orgKey = searchParams?.org;
-  if (!orgKey) {
-    console.error("No org key found");
-    redirect(`/?org=${organizations[0].key}`);
-  }
-  const { data: organization, error } = await supabase
-    .from("organizations")
-    .select("*")
-    .eq("key", orgKey)
-    .single();
-
-  if (error) {
-    console.error("Error fetching organization:", error);
-    return;
-  }
-  if (!organization) {
-    console.error("Organization not found");
-    return;
-  }
+  const supabase = createClient();
 
   const { data: knowledgeBase, error: kbError } = await supabase
     .from("knowledge_base")
@@ -73,7 +27,7 @@ export default async function NewIndex({ searchParams }) {
         image_url
       )
     `)
-    .eq("org_key", organization.key);
+    .eq("org_key", searchParams.org);
 
 
   if (kbError) {
@@ -86,7 +40,7 @@ export default async function NewIndex({ searchParams }) {
     revalidatePath("/", "page"); // NOTE: NOT WORKING
   };
 
-  const categories = await getCategories(supabase, organization.key);
+  const categories = await getCategories(supabase, searchParams.org);
 
   return (
     <HotkeyProvider categories={categories}>
@@ -98,7 +52,6 @@ export default async function NewIndex({ searchParams }) {
             <KnowledgeBaseListView
               categories={categories}
               knowledgeItems={knowledgeBase as any[]} // TODO: fix type
-              organization={organization}
               callback={handleDataChange}
             />
           </Box>
