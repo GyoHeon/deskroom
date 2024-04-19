@@ -6,7 +6,7 @@ import { Theme } from "@radix-ui/themes";
 import { OrganizationContextProvider } from "../contexts/OrganizationContext";
 import { MixpanelProvider } from "@/contexts/MixpanelContext";
 import { createClient } from "@/utils/supabase/server";
-import { Organization } from "@/lib/supabase.types";
+import { getAvailableOrganizations } from "./lib/organizations";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,27 +37,6 @@ export const metadata: Metadata = {
   },
 };
 
-export async function getAvailableOrganizations(userID: string | undefined): Promise<Organization[]> {
-  if (!userID) {
-    return [];
-  }
-  const supabase = createClient();
-  const { data: organizations, error: organizationError } = await supabase
-    .from("organizations")
-    .select("*, users!inner(id, email)")
-    .eq("users.id", userID);
-
-  if (organizationError != null) {
-    throw organizationError;
-  }
-
-  if (!organizations || organizations.length === 0) {
-    return [];
-  }
-
-  return organizations;
-}
-
 export default async function RootLayout({
   children,
 }: {
@@ -65,7 +44,7 @@ export default async function RootLayout({
 }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const organizations = await getAvailableOrganizations(user?.id);
+  const organizations = await getAvailableOrganizations(supabase, user?.id);
   return (
     <html lang="en">
       <body className={inter.className}>
