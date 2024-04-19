@@ -1,7 +1,7 @@
 import { Sidebar } from "@/components/Sidebar";
 import { HotkeyProvider } from "@/contexts/HotkeyContext";
 import { Container, Flex } from "@radix-ui/themes";
-import { getCategories } from "../api/categories";
+import { getCategories } from "@/app/lib/categories";
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/lib/database.types";
