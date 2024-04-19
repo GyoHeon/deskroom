@@ -2,7 +2,7 @@ import { Box, Container, Flex } from "@radix-ui/themes";
 import { revalidatePath } from "next/cache";
 import KnowledgeBaseListView from "../components/KnowledgeBaseListView";
 import TopNav from "../components/TopNav";
-import { getCategories } from "./api/categories";
+import { getCategories } from "./lib/categories";
 import { HotkeyProvider } from "@/contexts/HotkeyContext";
 import { Sidebar } from "@/components/Sidebar";
 import { createClient } from "@/utils/supabase/server";

@@ -34,12 +34,12 @@ export const useOrganizationContext = (): OrganizationContextType => {
 // Create the OrganizationContextProvider component
 export const OrganizationContextProvider: React.FC<{
   children: ReactNode;
-}> = ({ children }) => {
+  availableOrgs: Organization[];
+}> = ({ children, availableOrgs }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClientComponentClient();
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [currentOrg, setCurrentOrg] = useState<Organization>(null);
   const [user, setUser] = useState<User>(null)
   const mixpanel = useMixpanel();
@@ -50,7 +50,7 @@ export const OrganizationContextProvider: React.FC<{
     }
 
     if (!currentOrg && searchParams.get("org")) {
-      const selectedOrg = organizations.find((o) => o.key === searchParams.get("org"));
+      const selectedOrg = availableOrgs.find((o) => o.key === searchParams.get("org"));
       setCurrentOrg(selectedOrg);
       return;
     }
@@ -83,18 +83,8 @@ export const OrganizationContextProvider: React.FC<{
 
       setUser(session.user)
 
-      const { data: orgs, error: organizationError } = await supabase
-        .from("organizations")
-        .select("*, users!inner(id, email)")
-        .eq("users.id", session?.user.id);
-
-      if (organizationError != null) {
-        console.log(organizationError);
-      }
-      setOrganizations(orgs);
-
       if (searchParams.get("org") && currentOrg === null) {
-        setCurrentOrg(orgs.find((o) => o.key === searchParams.get("org")));
+        setCurrentOrg(availableOrgs.find((o) => o.key === searchParams.get("org")));
       }
 
       if (!mixpanel) {
@@ -115,11 +105,11 @@ export const OrganizationContextProvider: React.FC<{
       value={{
         currentOrg: currentOrg,
         setCurrentOrg: setCurrentOrg,
-        availableOrgs: organizations,
+        availableOrgs,
         user
       }}
     >
       {children}
     </OrganizationContext.Provider>
   );
-};
+}
