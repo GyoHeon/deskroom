@@ -59,7 +59,7 @@ export const OrganizationContextProvider: React.FC<{
     }
 
     if (!currentOrg) {
-      return;
+      throw Error("No organization found");
     }
 
     setCurrentOrgInStorage(currentOrg.key);
@@ -68,7 +68,7 @@ export const OrganizationContextProvider: React.FC<{
       platform: "knowledge_base_admin",
     });
     router.push(`${pathname}?org=${currentOrg.key}`);
-  }, [currentOrg, pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentOrg, pathname, availableOrgs.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     (async () => {
