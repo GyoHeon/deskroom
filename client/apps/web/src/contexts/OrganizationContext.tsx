@@ -54,7 +54,7 @@ export const OrganizationContextProvider: React.FC<{
       setCurrentOrg(availableOrgs.find((o) => o.key === orgFromSearchParams));
     } else if (!orgFromSearchParams && currentOrg === null && currentOrgInStorage) {
       setCurrentOrg(availableOrgs.find((o) => o.key === currentOrgInStorage));
-    } else if (currentOrg === null) {
+    } else if (!orgFromSearchParams && currentOrg === null && !currentOrgInStorage) {
       setCurrentOrg(availableOrgs[0]);
     }
 
