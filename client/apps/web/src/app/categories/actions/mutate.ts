@@ -1,6 +1,6 @@
 'use server';
 
-import { createCategory, deleteCategory, updateCategory } from "@/app/api/categories";
+import { createCategory, deleteCategory, updateCategory } from "@/app/lib/categories";
 import { Database } from "@/lib/database.types";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
