@@ -57,7 +57,7 @@ export default async function RootLayout({
             }}
             name={`deskroom-${process.env.NODE_ENV}`}
           >
-            <OrganizationContextProvider availableOrgs={organizations}>
+            <OrganizationContextProvider availableOrgs={organizations} user={user}>
               {children}
             </OrganizationContextProvider>
           </MixpanelProvider>
