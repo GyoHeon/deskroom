@@ -38,7 +38,7 @@ const Sidebar: React.FC<
   const [answers, setAnswers] = useState<Answer[] | null | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
   // TODO: set org by select
-  const { org, setOrg, user } = useDeskroomUser()
+  const { org, setOrg, user, categories, setCategory } = useDeskroomUser()
 
   const [mode, setMode] = useState<"search" | "new">("search")
   const [newAnswer, setNewAnswer] = useState<string>("")

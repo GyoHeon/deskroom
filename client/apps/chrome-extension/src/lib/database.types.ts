@@ -6,6 +6,14 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export interface Category {
+  id: number
+  created_at: string
+  org_key: string
+  name: string
+  description?: string | null
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -111,6 +119,11 @@ export type Database = {
             referencedColumns: ["id"]
           }
         ]
+      }
+      knowledge_categories: {
+        Row: Category
+        Insert: Category
+        Update: Category
       }
       organizations: {
         Row: {

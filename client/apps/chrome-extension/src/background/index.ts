@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill"
 
+import { getCategories } from "~api/categories"
 import { getCookie } from "~api/cookie"
 import { getOrganizations } from "~api/organization"
 import { supabase } from "~core/supabase"
@@ -40,18 +41,24 @@ browser.runtime.onMessage.addListener(
 )
 
 setInterval(async () => {
-  const { user, organizations, error } = await getSessionFromCookie()
+  const { user, organizations, categories, error } =
+    await getSessionFromCookie()
+
   if (!!error) {
     console.error(error)
-    browser.storage.sync.set({ user: null, orgs: null })
+    browser.storage.sync.set({ user: null, orgs: null, cate: null })
     await supabase.auth.signOut()
     return
   }
   const isExisting =
-    !!(await deskroomUserStorage.get("user")) && !!user && !!organizations
+    !!(await deskroomUserStorage.get("user")) &&
+    !!user &&
+    !!organizations &&
+    !!categories
   if (!isExisting) {
     deskroomUserStorage.set("user", user)
     deskroomUserStorage.set("orgs", organizations)
+    deskroomUserStorage.set("cate", categories)
     chrome.tabs.create({
       url: "./tabs/login-success.html"
     })
@@ -68,10 +75,11 @@ async function getSessionFromCookie() {
   const refreshToken = await getCookie(`${cookiePrefix}-refresh-token`)
 
   if (!accessToken || !refreshToken) {
-    browser.storage.sync.set({ user: null, orgs: null })
+    browser.storage.sync.set({ user: null, orgs: null, cate: null })
     return {
       user: null,
       organizations: null,
+      categories: null,
       error: "토큰을 찾을 수 없습니다"
     }
   }
@@ -89,15 +97,22 @@ async function getSessionFromCookie() {
     return {
       user: null,
       organizations: null,
+      categories: null,
       error: "유저를 찾을 수 없습니다"
     }
   }
 
   const organizations = await getOrganizations(user.email)
+  console.log(organizations.currentOrg.key)
+  // const categories = await getCategories(organizations.currentOrg.key)
+  const categories = await getCategories("demo")
+
+  console.log("getSessionFromCookie", { categories })
 
   return {
     user,
     organizations,
+    categories,
     error: null
   }
 }

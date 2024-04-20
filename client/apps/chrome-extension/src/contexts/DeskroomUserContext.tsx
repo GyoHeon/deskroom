@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
+import type { CategoryStorage } from "~api/categories"
 import type { OrganizationStorage } from "~api/organization"
 
 import { useMixpanel } from "./MixpanelContext"
@@ -12,6 +13,8 @@ type UserContext = {
   setUser: (user: Setter<User | null>) => Promise<void>
   org: OrganizationStorage | null
   setOrg: (org: Setter<OrganizationStorage | null>) => Promise<void>
+  category: CategoryStorage | null
+  setCategory: (org: Setter<CategoryStorage | null>) => Promise<void>
 }
 type Setter<T> = ((v?: T, isHydrated?: boolean) => T) | T
 
@@ -23,6 +26,9 @@ interface UserProviderProps {
 
 const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [orgs, setOrg] = useStorage<OrganizationStorage | null>("orgs")
+  const [categories, setCategory] = useStorage<CategoryStorage | null>(
+    "categories"
+  )
   const [user, setUser] = useStorage<User | null>("user")
   const mixpanel = useMixpanel()
 
@@ -46,7 +52,9 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     user,
     setUser,
     org: orgs,
-    setOrg
+    setOrg,
+    category: categories,
+    setCategory
   }
 
   return <userContext.Provider value={value}>{children}</userContext.Provider>
