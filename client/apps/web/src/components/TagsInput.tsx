@@ -1,7 +1,7 @@
 "use client";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { Box, Flex, IconButton } from "@radix-ui/themes";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface TagsInputProps {
   tags?: string[] | undefined;
@@ -11,13 +11,21 @@ interface TagsInputProps {
 const TagsInput: React.FC<TagsInputProps> = ({ tags, onTagsChange }) => {
   const [newTags, setNewTags] = useState<string[]>(tags ?? []);
   const [inputValue, setInputValue] = useState("");
+  const [similarTags, setSimilarTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    // TODO: find similar tags from tags props based on inputValue
+    const similarTagsCandidate =
+      tags?.filter((tag) => tag.includes(inputValue)) ?? [];
+    setSimilarTags(similarTagsCandidate);
+  }, [inputValue]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.nativeEvent.isComposing || event.keyCode === 229)  return;  // NOTE: https://github.com/vuejs/vue/issues/10277
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return; // NOTE: https://github.com/vuejs/vue/issues/10277
 
     if (event.key === "Enter" && inputValue.trim() !== "") {
       event.preventDefault();
@@ -32,7 +40,7 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, onTagsChange }) => {
 
   return (
     <Box className="bg-gray-100 min-h-16 h-fit rounded border border-gray-300">
-      <Flex className="p-2 flex-wrap" >
+      <Flex className="p-2 flex-wrap">
         {newTags.map((tag, tagIdx) => (
           <Flex
             key={tagIdx}
@@ -44,16 +52,29 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, onTagsChange }) => {
             </IconButton>
           </Flex>
         ))}
-        <input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyDown={handleInputKeyDown}
-          className="bg-transparent p-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        />
+        <Flex direction={`column`}>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
+            className="bg-transparent p-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          />
+          <Flex gap={"2"}>
+            {similarTags.map((tag, tagIdx) => (
+              <Box
+                key={tagIdx}
+                className="p-2 bg-white absolute w-fit rounded shadow-md border border-gray-300 text-sm"
+                onClick={() => setInputValue(tag)}
+              >
+                {tag}
+              </Box>
+            ))}
+          </Flex>
+        </Flex>
       </Flex>
     </Box>
   );
