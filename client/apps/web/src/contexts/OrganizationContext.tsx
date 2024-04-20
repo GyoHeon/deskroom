@@ -1,6 +1,9 @@
 "use client";
+import useLocalStorage from "@/app/_hooks/useLocalStorage";
 import { Database } from "@/lib/database.types";
-import { User, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import {
+  User
+} from "@supabase/auth-helpers-nextjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useMixpanel } from "./MixpanelContext";
@@ -8,7 +11,7 @@ import { useMixpanel } from "./MixpanelContext";
 export type Organization = Database["public"]["Tables"]["organizations"]["Row"];
 // Define the shape of the organization context
 interface OrganizationContextType {
-  user: User
+  user: User;
   currentOrg: Organization;
   setCurrentOrg: React.Dispatch<React.SetStateAction<Organization>>;
   availableOrgs: Organization[];
@@ -18,7 +21,7 @@ interface OrganizationContextType {
 export const OrganizationContext = createContext<OrganizationContextType>({
   user: null,
   currentOrg: null,
-  setCurrentOrg: () => { },
+  setCurrentOrg: () => {},
   availableOrgs: [],
 });
 
@@ -34,89 +37,86 @@ export const useOrganizationContext = (): OrganizationContextType => {
 // Create the OrganizationContextProvider component
 export const OrganizationContextProvider: React.FC<{
   children: ReactNode;
-}> = ({ children }) => {
+  availableOrgs: Organization[];
+  user?: User;
+}> = ({ children, availableOrgs, user }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClientComponentClient();
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [currentOrg, setCurrentOrg] = useState<Organization>(null);
-  const [user, setUser] = useState<User>(null)
+  const [currentOrgInStorage, setCurrentOrgInStorage] = useLocalStorage<string>(
+    "currentOrg",
+    null
+  );
   const mixpanel = useMixpanel();
+  const getOrgFromSearchParams = () => {
+    const orgFromSearchParams = searchParams.get("org");
+    return availableOrgs.find((o) => o.key === orgFromSearchParams);
+  };
+
+  const getOrgFromStorage = () => {
+    return availableOrgs.find((o) => o.key === currentOrgInStorage);
+  };
+  const getDefaultOrg = () => {
+    return availableOrgs[0];
+  };
 
   useEffect(() => {
-    if (!currentOrg && !searchParams.get("org")) {
+    if (!availableOrgs || currentOrg) {
       return;
     }
 
-    if (!currentOrg && searchParams.get("org")) {
-      const selectedOrg = organizations.find((o) => o.key === searchParams.get("org"));
-      setCurrentOrg(selectedOrg);
+    const orgFromSearchParams = getOrgFromSearchParams();
+    const orgFromStorage = getOrgFromStorage();
+    const defaultOrg = getDefaultOrg();
+
+    if (orgFromSearchParams) {
+      setCurrentOrg(orgFromSearchParams);
+    } else if (orgFromStorage) {
+      setCurrentOrg(orgFromStorage);
+    } else {
+      setCurrentOrg(defaultOrg);
+    }
+  }, [availableOrgs, currentOrg, pathname, currentOrgInStorage]);
+
+  useEffect(() => {
+    if (!currentOrg) {
       return;
     }
 
-    if (searchParams.get("org") === currentOrg.key) {
-      return;
-    }
-
+    setCurrentOrgInStorage(currentOrg.key);
     mixpanel.register({
-      org: searchParams.get("org"),
+      org: currentOrg.key,
       platform: "knowledge_base_admin",
     });
     router.push(`${pathname}?org=${currentOrg.key}`);
-  }, [currentOrg?.key])
+  }, [currentOrg]);
 
   useEffect(() => {
     (async () => {
-      const {
-        data: { session },
-        error: loginError,
-      } = await supabase.auth.getSession();
-
-      if (!!loginError) {
+      if (!user) {
         return;
-      }
-
-      if (!session) {
-        return;
-      }
-
-      setUser(session.user)
-
-      const { data: orgs, error: organizationError } = await supabase
-        .from("organizations")
-        .select("*, users!inner(id, email)")
-        .eq("users.id", session?.user.id);
-
-      if (organizationError != null) {
-        console.log(organizationError);
-      }
-      setOrganizations(orgs);
-
-      if (searchParams.get("org") && currentOrg === null) {
-        setCurrentOrg(orgs.find((o) => o.key === searchParams.get("org")));
       }
 
       if (!mixpanel) {
-        return
+        return;
       }
 
-      mixpanel.identify(session.user.id);
+      mixpanel.identify(user.id);
       mixpanel.people.set({
-        $name: session.user.user_metadata.full_name,
-        $email: session.user.email,
+        $name: user.user_metadata.full_name,
+        $email: user.email,
       });
-
     })();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <OrganizationContext.Provider
       value={{
         currentOrg: currentOrg,
         setCurrentOrg: setCurrentOrg,
-        availableOrgs: organizations,
-        user
+        availableOrgs,
+        user,
       }}
     >
       {children}

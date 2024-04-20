@@ -2,6 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs";
 import NextError from "next/error";
+import Image from "next/image";
 import { useEffect } from "react";
 
 export default function GlobalError({
@@ -16,6 +17,8 @@ export default function GlobalError({
   return (
     <html>
       <body>
+        <Image src={"/deskroom-deactivated.png"} alt="Error" width={40} height={40} />
+        <h2>Something went wrong!</h2>
         <NextError statusCode={undefined as any} />
       </body>
     </html>

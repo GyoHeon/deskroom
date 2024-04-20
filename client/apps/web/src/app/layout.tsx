@@ -5,6 +5,8 @@ import "./globals.css";
 import { Theme } from "@radix-ui/themes";
 import { OrganizationContextProvider } from "../contexts/OrganizationContext";
 import { MixpanelProvider } from "@/contexts/MixpanelContext";
+import { createClient } from "@/utils/supabase/server";
+import { getAvailableOrganizations } from "./lib/organizations";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,11 +37,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const organizations = await getAvailableOrganizations(supabase, user?.id);
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -52,7 +57,7 @@ export default function RootLayout({
             }}
             name={`deskroom-${process.env.NODE_ENV}`}
           >
-            <OrganizationContextProvider>
+            <OrganizationContextProvider availableOrgs={organizations} user={user}>
               {children}
             </OrganizationContextProvider>
           </MixpanelProvider>
