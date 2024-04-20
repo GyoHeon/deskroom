@@ -1,10 +1,9 @@
 "use client";
 import { useOrganizationContext } from "@/contexts/OrganizationContext";
-import { Avatar, DropdownMenu, Flex, Select } from "@radix-ui/themes";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
+import { Avatar, DropdownMenu, Flex, Select } from "@radix-ui/themes";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export type TopNavProps = {
   shouldShowLogo?: boolean;
@@ -15,15 +14,7 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
   const searchParams = useSearchParams();
   const supabase = createClient();
   const { currentOrg, availableOrgs, setCurrentOrg } = useOrganizationContext();
-  const [org, setOrg] = useState<string>('');
 
-  useEffect(() => {
-    setInterval(() => {
-      if (!currentOrg) return;
-      if (org === currentOrg?.name_kor) return;
-      setOrg(currentOrg?.name_kor);
-    }, 100);
-  }, []);
 
   const handleOrgChange = (org: string) => {
     if (!availableOrgs) return;
@@ -62,7 +53,7 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
       <Flex className="ml-auto gap-5">
         <Select.Root
           defaultValue={'조직'}
-          value={currentOrg?.name_kor ?? org}
+          value={currentOrg?.name_kor}
           onValueChange={handleOrgChange}
           size="2"
         >
