@@ -51,10 +51,8 @@ setInterval(async () => {
     return
   }
   const isExisting =
-    !!(await deskroomUserStorage.get("user")) &&
-    !!user &&
-    !!organizations &&
-    !!categories
+    !!(await deskroomUserStorage.get("user")) && !!user && !!organizations
+
   if (!isExisting) {
     deskroomUserStorage.set("user", user)
     deskroomUserStorage.set("orgs", organizations)
@@ -103,11 +101,8 @@ async function getSessionFromCookie() {
   }
 
   const organizations = await getOrganizations(user.email)
-  console.log(organizations.currentOrg.key)
   // const categories = await getCategories(organizations.currentOrg.key)
   const categories = await getCategories("demo")
-
-  console.log("getSessionFromCookie", { categories })
 
   return {
     user,

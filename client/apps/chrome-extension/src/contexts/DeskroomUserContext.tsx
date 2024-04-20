@@ -26,9 +26,7 @@ interface UserProviderProps {
 
 const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [orgs, setOrg] = useStorage<OrganizationStorage | null>("orgs")
-  const [categories, setCategory] = useStorage<CategoryStorage | null>(
-    "categories"
-  )
+  const [categories, setCategory] = useStorage<CategoryStorage | null>("cate")
   const [user, setUser] = useStorage<User | null>("user")
   const mixpanel = useMixpanel()
 

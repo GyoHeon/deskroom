@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { useDeskroomUser } from "~contexts/DeskroomUserContext"
 import { useMixpanel } from "~contexts/MixpanelContext"
 
+import CategorySelect from "./CategorySelect"
 import NewKnowledgeBaseForm from "./NewKnowledgeBaseForm"
 import ResizableWrapper from "./ResizeWrapper"
 import SidebarContent from "./SidebarContent"
@@ -37,8 +38,8 @@ const Sidebar: React.FC<
 }) => {
   const [answers, setAnswers] = useState<Answer[] | null | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
-  // TODO: set org by select
-  const { org, setOrg, user, categories, setCategory } = useDeskroomUser()
+  // TODO: set org and category by select
+  const { org, setOrg, user, category, setCategory } = useDeskroomUser()
 
   const [mode, setMode] = useState<"search" | "new">("search")
   const [newAnswer, setNewAnswer] = useState<string>("")
@@ -129,6 +130,7 @@ const Sidebar: React.FC<
               </select>
             </Flex>
           )}
+          <CategorySelect />
           <Flex className="ml-auto">
             <IconButton
               hidden={mode === "search"}
