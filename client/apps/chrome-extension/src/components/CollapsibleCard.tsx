@@ -1,6 +1,8 @@
-import { ClipboardIcon, CopyIcon, ImageIcon } from "@radix-ui/react-icons"
+import { CopyIcon, ImageIcon } from "@radix-ui/react-icons"
 import { Box, Flex } from "@radix-ui/themes"
 import React, { useState } from "react"
+
+import Manual from "./dialog/Manual"
 
 function copyToClipboard(content: string) {
   let copyFrom = document.createElement("textarea")
@@ -51,21 +53,21 @@ const CollapsibleCard: React.FC<CardProps> = ({
           <Box className="category w-fit py-1 px-2 bg-primary-100 text-primary-700 font-bold rounded-sm text-sm">
             {title}
           </Box>
-          {cautionRequired&& 
-         <Box className="category w-fit py-1 px-2 bg-primary-900 text-primary-700 font-bold rounded-sm text-sm">
-          답변 주의
-          </Box> }
-          {frequentlyAsked && 
-         <Box className="category w-fit py-1 px-2 bg-primary-100 text-primary-900 border border-primary-900 font-bold rounded-sm text-sm">
-          자주 쓰는 답변
-          </Box> }
+          {cautionRequired && (
+            <Box className="category w-fit py-1 px-2 bg-primary-900 text-primary-100 font-bold rounded-sm text-sm">
+              답변 주의
+            </Box>
+          )}
+          {frequentlyAsked && (
+            <Box className="category w-fit py-1 px-2 bg-primary-100 text-primary-900 border border-primary-900 font-bold rounded-sm text-sm">
+              자주 쓰는 답변
+            </Box>
+          )}
         </Flex>
 
-        <Flex className="flex gap-2">
+        <Flex className="flex items-center gap-2">
           {supportManual && (
-            <Box className="cursor-pointer" onClick={handleCopyClick}>
-              <ClipboardIcon color={isCollapsed ? "#C4C4C4" : "black"} />
-            </Box>
+            <Manual manual={supportManual} isCollapsed={isCollapsed} />
           )}
           {supportImages.length > 0 && (
             <Box className="cursor-pointer" onClick={handleCopyClick}>
