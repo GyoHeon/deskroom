@@ -8,6 +8,7 @@ import { useMixpanel } from "~contexts/MixpanelContext"
 
 import CategorySelect from "./CategorySelect"
 import NewKnowledgeBaseForm from "./NewKnowledgeBaseForm"
+import OrgSelect from "./OrgSelect"
 import ResizableWrapper from "./ResizeWrapper"
 import SidebarContent from "./SidebarContent"
 
@@ -38,8 +39,7 @@ const Sidebar: React.FC<
 }) => {
   const [answers, setAnswers] = useState<Answer[] | null | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
-  // TODO: set org and category by select
-  const { org, setOrg, user, category, setCategory } = useDeskroomUser()
+  const { org, user } = useDeskroomUser()
 
   const [mode, setMode] = useState<"search" | "new">("search")
   const [newAnswer, setNewAnswer] = useState<string>("")
@@ -105,31 +105,7 @@ const Sidebar: React.FC<
         className="w-full bg-white h-screen transition-all right-0 content-between border-1 border container shadow-md">
         <Flex className="sidebar-title-area flex items-center p-2">
           <img src={deskroomLogo} alt="deskroom logo" className="w-24" />
-          {org?.availableOrgs.length >= 1 && (
-            <Flex className="sidebar-organization-select">
-              <select
-                name="organization"
-                id="organization"
-                value={org?.currentOrg.name_kor}
-                onChange={(e) => {
-                  setOrg({
-                    availableOrgs: org?.availableOrgs ?? [],
-                    currentOrg: org?.availableOrgs.find(
-                      (o) => o.name_kor === e.target.value
-                    )
-                  }).catch((err) => {
-                    console.error(err) // NOTE: QUOTA_BYTES_PER_ITEM Error
-                  })
-                }}
-                className="mx-2 w-fit rounded-md border border-1 text-xs border-gray-900 px-[2px] py-[0.5px] h-fit">
-                {org?.availableOrgs.map((org, orgIndex) => (
-                  <option value={org.name_kor} key={orgIndex}>
-                    {org.name_kor}
-                  </option>
-                ))}
-              </select>
-            </Flex>
-          )}
+          <OrgSelect />
           <CategorySelect />
           <Flex className="ml-auto">
             <IconButton
