@@ -15,15 +15,7 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
   const searchParams = useSearchParams();
   const supabase = createClient();
   const { currentOrg, availableOrgs, setCurrentOrg } = useOrganizationContext();
-  const [org, setOrg] = useState<string>('');
 
-  useEffect(() => {
-    setInterval(() => {
-      if (!currentOrg) return;
-      if (org === currentOrg?.name_kor) return;
-      setOrg(currentOrg?.name_kor);
-    }, 100);
-  }, []);
 
   const handleOrgChange = (org: string) => {
     if (!availableOrgs) return;
@@ -62,7 +54,7 @@ const TopNav: React.FC<TopNavProps> = ({ shouldShowLogo }) => {
       <Flex className="ml-auto gap-5">
         <Select.Root
           defaultValue={'조직'}
-          value={currentOrg?.name_kor ?? org}
+          value={currentOrg?.name_kor}
           onValueChange={handleOrgChange}
           size="2"
         >

@@ -1,15 +1,17 @@
 "use client";
+import useLocalStorage from "@/app/_hooks/useLocalStorage";
 import { Database } from "@/lib/database.types";
-import { User, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import {
+  User
+} from "@supabase/auth-helpers-nextjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useMixpanel } from "./MixpanelContext";
-import useLocalStorage from "@/app/_hooks/useLocalStorage";
 
 export type Organization = Database["public"]["Tables"]["organizations"]["Row"];
 // Define the shape of the organization context
 interface OrganizationContextType {
-  user: User
+  user: User;
   currentOrg: Organization;
   setCurrentOrg: React.Dispatch<React.SetStateAction<Organization>>;
   availableOrgs: Organization[];
@@ -19,7 +21,7 @@ interface OrganizationContextType {
 export const OrganizationContext = createContext<OrganizationContextType>({
   user: null,
   currentOrg: null,
-  setCurrentOrg: () => { },
+  setCurrentOrg: () => {},
   availableOrgs: [],
 });
 
@@ -42,33 +44,53 @@ export const OrganizationContextProvider: React.FC<{
   const pathname = usePathname();
   const router = useRouter();
   const [currentOrg, setCurrentOrg] = useState<Organization>(null);
-  const [currentOrgInStorage, setCurrentOrgInStorage] = useLocalStorage<string>("currentOrg", null)
+  const [currentOrgInStorage, setCurrentOrgInStorage] = useLocalStorage<string>(
+    "currentOrg",
+    null
+  );
   const mixpanel = useMixpanel();
+  const getOrgFromSearchParams = () => {
+    const orgFromSearchParams = searchParams.get("org");
+    return availableOrgs.find((o) => o.key === orgFromSearchParams);
+  };
+
+  const getOrgFromStorage = () => {
+    return availableOrgs.find((o) => o.key === currentOrgInStorage);
+  };
+  const getDefaultOrg = () => {
+    return availableOrgs[0];
+  };
 
   useEffect(() => {
-    const orgFromSearchParams = searchParams.get("org");
-    // if org is set in search params and currentOrg is null, set currentOrg
-    // if org is not set in search params and currentOrg is null and currentOrgInStorage is set, set currentOrg
-    // if none of the above, set currentOrg to the first available org
-    if (orgFromSearchParams && currentOrg === null) {
-      setCurrentOrg(availableOrgs.find((o) => o.key === orgFromSearchParams));
-    } else if (!orgFromSearchParams && currentOrg === null && currentOrgInStorage) {
-      setCurrentOrg(availableOrgs.find((o) => o.key === currentOrgInStorage));
-    } else if (!orgFromSearchParams && currentOrg === null && !currentOrgInStorage) {
-      setCurrentOrg(availableOrgs[0]);
+    if (!availableOrgs || currentOrg) {
+      return;
     }
 
+    const orgFromSearchParams = getOrgFromSearchParams();
+    const orgFromStorage = getOrgFromStorage();
+    const defaultOrg = getDefaultOrg();
+
+    if (orgFromSearchParams) {
+      setCurrentOrg(orgFromSearchParams);
+    } else if (orgFromStorage) {
+      setCurrentOrg(orgFromStorage);
+    } else {
+      setCurrentOrg(defaultOrg);
+    }
+  }, [availableOrgs, currentOrg, pathname, currentOrgInStorage]);
+
+  useEffect(() => {
     if (!currentOrg) {
-      throw Error("No organization found");
+      return;
     }
 
     setCurrentOrgInStorage(currentOrg.key);
     mixpanel.register({
-      org: orgFromSearchParams,
+      org: currentOrg.key,
       platform: "knowledge_base_admin",
     });
     router.push(`${pathname}?org=${currentOrg.key}`);
-  }, [currentOrg, pathname, availableOrgs.length]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentOrg]);
 
   useEffect(() => {
     (async () => {
@@ -77,7 +99,7 @@ export const OrganizationContextProvider: React.FC<{
       }
 
       if (!mixpanel) {
-        return
+        return;
       }
 
       mixpanel.identify(user.id);
@@ -85,7 +107,6 @@ export const OrganizationContextProvider: React.FC<{
         $name: user.user_metadata.full_name,
         $email: user.email,
       });
-
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -95,10 +116,10 @@ export const OrganizationContextProvider: React.FC<{
         currentOrg: currentOrg,
         setCurrentOrg: setCurrentOrg,
         availableOrgs,
-        user
+        user,
       }}
     >
       {children}
     </OrganizationContext.Provider>
   );
-}
+};
