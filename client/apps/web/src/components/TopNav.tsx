@@ -1,10 +1,9 @@
 "use client";
 import { useOrganizationContext } from "@/contexts/OrganizationContext";
-import { Avatar, DropdownMenu, Flex, Select } from "@radix-ui/themes";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
+import { Avatar, DropdownMenu, Flex, Select } from "@radix-ui/themes";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export type TopNavProps = {
   shouldShowLogo?: boolean;
