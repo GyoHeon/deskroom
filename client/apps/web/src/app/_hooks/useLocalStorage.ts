@@ -9,6 +9,10 @@ function useLocalStorage<T>(
 ): [T, SetValue<T>] {
   // Get initial value from local storage or use provided initial value
   const [storedValue, setStoredValue] = useState<T>(() => {
+    // check if window is defined (for SSR)
+    if (typeof window === 'undefined') {
+      return initialValue;
+    }
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;

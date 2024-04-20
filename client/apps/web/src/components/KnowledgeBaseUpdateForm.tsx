@@ -6,6 +6,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React, { useState } from "react";
 import { KnowledgeItem, KnowledgeItemQueryType } from "./KnowledgeBaseListView";
 import Dropzone from "./Dropzone";
+import TagsInput from "./TagsInput";
 
 interface KnowledgeBaseUpdateFormProps {
   onSubmit: (data: KnowledgeItemQueryType) => void;
@@ -13,6 +14,7 @@ interface KnowledgeBaseUpdateFormProps {
   mode: "create" | "edit" | "delete";
   organization: Organization;
   categories: string[];
+  tags?: string[];
 }
 
 const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
@@ -21,6 +23,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
   mode,
   organization,
   categories,
+  tags
 }) => {
   const supabase = createClientComponentClient();
   const [formData, setFormData] = useState<KnowledgeItemQueryType | null>(
@@ -121,6 +124,18 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
                 ))}
               </Select.Content>
             </Select.Root>
+          </Flex>
+          <Flex direction={`column`}>
+            <label
+              htmlFor="tags"
+              className="text-violet11 font-bold text-[11px] leading-[18px] pb-[5px]"
+            >
+              소분류
+            </label>
+            <TagsInput
+              tags={tags}
+              onTagsChange={console.log}
+              />
           </Flex>
           <Flex direction={`column`} className="my-2">
             <label
