@@ -25,6 +25,11 @@ type SidebarProps = {
 export type Answer = {
   category: string
   answer: string
+  support_manual: string | null
+  frequently_asked: boolean | null
+  caution_required: boolean | null
+  support_images: string[]
+  question_tags: string[]
 }
 
 const Sidebar: React.FC<
@@ -39,7 +44,7 @@ const Sidebar: React.FC<
 }) => {
   const [answers, setAnswers] = useState<Answer[] | null | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
-  const { org, user } = useDeskroomUser()
+  const { org, user, category } = useDeskroomUser()
 
   const [mode, setMode] = useState<"search" | "new">("search")
   const [newAnswer, setNewAnswer] = useState<string>("")
@@ -70,16 +75,21 @@ const Sidebar: React.FC<
     setLoading(true)
     setAnswers(undefined) // reset
     mixpanel.track("Answer Search Started", { question: message })
-    const res = await fetch(`https://api.closer.so/v1/retrieve/`, {
-      body: JSON.stringify({
-        organization_key: org?.currentOrg.key,
-        question: message
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      },
-      method: "POST"
-    })
+    // TODO: make url with node_env
+    const res = await fetch(
+      "https://api-dev.deskroom.so/v1/retrieve/extended",
+      {
+        body: JSON.stringify({
+          organization_key: org?.currentOrg.key,
+          question: message,
+          category: category.currentCategory.name
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      }
+    )
       .then((res) => {
         setLoading(false)
         return res.json()

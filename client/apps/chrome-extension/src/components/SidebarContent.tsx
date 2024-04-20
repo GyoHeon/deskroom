@@ -171,6 +171,10 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                       title={answer?.category || "일반"}
                       key={answerIdx}
                       content={answer?.answer}
+                      cautionRequired={answer?.caution_required}
+                      frequentlyAsked={answer?.frequently_asked}
+                      supportImages={answer?.support_images}
+                      supportManual={answer?.support_manual}
                       onCopyClicked={() => {
                         setToastOpen(false)
                         window.clearTimeout(timerRef.current)

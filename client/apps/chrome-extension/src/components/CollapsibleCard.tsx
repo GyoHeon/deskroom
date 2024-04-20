@@ -1,4 +1,4 @@
-import { CopyIcon } from "@radix-ui/react-icons"
+import { ClipboardIcon, CopyIcon, ImageIcon } from "@radix-ui/react-icons"
 import { Box, Flex } from "@radix-ui/themes"
 import React, { useState } from "react"
 
@@ -15,12 +15,20 @@ function copyToClipboard(content: string) {
 type CardProps = {
   title: string
   content: string
+  supportManual: string | null
+  frequentlyAsked: boolean | null
+  cautionRequired: boolean | null
+  supportImages: string[]
   onCopyClicked?: () => void
 } & React.HTMLAttributes<HTMLDivElement>
 const CollapsibleCard: React.FC<CardProps> = ({
   title,
   content,
   onCopyClicked,
+  supportManual,
+  frequentlyAsked,
+  cautionRequired,
+  supportImages,
   ...props
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(true)
@@ -39,14 +47,35 @@ const CollapsibleCard: React.FC<CardProps> = ({
         setIsCollapsed(true)
       }}>
       <Flex className="card-header">
-        <Box className="category w-fit py-1 px-2 bg-primary-100 text-primary-700 font-bold rounded-sm text-sm">
-          {title}
-        </Box>
-        <Box
-          className="copy ml-auto text-[#C4C4C4] cursor-pointer"
-          onClick={handleCopyClick}>
-          <CopyIcon color={isCollapsed ? "#C4C4C4" : "black"} />
-        </Box>
+        <Flex className="flex gap-2 mr-auto">
+          <Box className="category w-fit py-1 px-2 bg-primary-100 text-primary-700 font-bold rounded-sm text-sm">
+            {title}
+          </Box>
+          {cautionRequired&& 
+         <Box className="category w-fit py-1 px-2 bg-primary-900 text-primary-700 font-bold rounded-sm text-sm">
+          답변 주의
+          </Box> }
+          {frequentlyAsked && 
+         <Box className="category w-fit py-1 px-2 bg-primary-100 text-primary-900 border border-primary-900 font-bold rounded-sm text-sm">
+          자주 쓰는 답변
+          </Box> }
+        </Flex>
+
+        <Flex className="flex gap-2">
+          {supportManual && (
+            <Box className="cursor-pointer" onClick={handleCopyClick}>
+              <ClipboardIcon color={isCollapsed ? "#C4C4C4" : "black"} />
+            </Box>
+          )}
+          {supportImages.length > 0 && (
+            <Box className="cursor-pointer" onClick={handleCopyClick}>
+              <ImageIcon color={isCollapsed ? "#C4C4C4" : "black"} />
+            </Box>
+          )}
+          <Box className="cursor-pointer" onClick={handleCopyClick}>
+            <CopyIcon color={isCollapsed ? "#C4C4C4" : "black"} />
+          </Box>
+        </Flex>
       </Flex>
       <Flex className="card-content py-2">
         <p
