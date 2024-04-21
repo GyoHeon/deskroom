@@ -1,18 +1,29 @@
 "use client";
 import { useMixpanel } from "@/contexts/MixpanelContext";
 import { Organization } from "@/contexts/OrganizationContext";
+import { createClient } from "@/utils/supabase/client";
 import { Box, Button, Flex, Select, TextArea } from "@radix-ui/themes";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React, { useState } from "react";
-import { KnowledgeItem, KnowledgeItemQueryType } from "./KnowledgeBaseListView";
 import Dropzone from "./Dropzone";
+import {
+  KnowledgeCategory,
+  KnowledgeItemQueryType,
+} from "./KnowledgeBaseListView";
+import TagsInput from "./TagsInput";
+import {
+  createKnowledgeBase,
+  updateKnowledgeBase,
+  updateTags,
+} from "@/app/actions";
+import { KnowledgeBase } from "@/lib/supabase.types";
 
 interface KnowledgeBaseUpdateFormProps {
   onSubmit: (data: KnowledgeItemQueryType) => void;
   selectedKnowledgeItem: KnowledgeItemQueryType | null;
   mode: "create" | "edit" | "delete";
   organization: Organization;
-  categories: string[];
+  categories: Partial<KnowledgeCategory>[];
+  tags?: string[];
 }
 
 const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
@@ -21,8 +32,9 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
   mode,
   organization,
   categories,
+  tags,
 }) => {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [formData, setFormData] = useState<KnowledgeItemQueryType | null>(
     selectedKnowledgeItem
   );
@@ -30,11 +42,22 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const knowledgeBaseData: KnowledgeBase = (({
+      knowledge_categories,
+      knowledge_tags,
+      knowledge_images,
+      ...data
+    }) => ({
+      ...data,
+      org_id: organization.id,
+      org_key: organization.key,
+      org_name: organization.key,
+    }))(formData);
     if (mode === "delete") {
       const { error } = await supabase
         .from("knowledge_base")
         .delete()
-        .match({ id: formData?.id })
+        .match({ id: knowledgeBaseData?.id })
         .returns();
       if (error) {
         console.error("Error deleting knowledge item:", error);
@@ -44,34 +67,40 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
       return;
     }
     if (mode === "create") {
-      const { data: newKnowledgeItem, error } = await supabase
-        .from("knowledge_base")
-        .insert([
-          {
-            ...formData,
-            org_id: organization.id,
-            org_name: organization.key,
-            org_key: organization.key,
-          },
-        ])
-        .select();
-      if (error) {
-        alert(`Error creating knowledge item: ${error}`);
-        return;
-      }
-      setFormData(newKnowledgeItem[0]);
+      await createKnowledgeBase(knowledgeBaseData);
       onSubmit(formData);
       return;
     }
 
-    const { data: updatedKnowledgeItem, error } = await supabase
-      .from("knowledge_base")
-      .upsert([(({ knowledge_images, knowledge_categories, ...kb }) => (kb))(formData)])
-      .select();
-    if (error) {
-      console.error("Error updating knowledge item:", error);
-      return;
+    // if knowledge tags exists, create new tags
+    // TODO: make it look easier to understand
+    if (mode === "edit") {
+      const knowledgeItemToUpdate = {
+        ...knowledgeBaseData,
+        category_id: formData.knowledge_categories?.id,
+      };
+      if (formData.knowledge_tags) {
+        await updateTags(
+          formData.knowledge_tags,
+          formData.knowledge_categories?.id,
+          formData.id,
+          organization.key
+        );
+      }
+      if (
+        selectedKnowledgeItem.category_id != formData.knowledge_categories?.id
+      ) {
+        await updateTags(
+          formData.knowledge_tags,
+          formData.knowledge_categories?.id,
+          formData.id,
+          organization.key
+        );
+      }
+
+      updateKnowledgeBase(knowledgeItemToUpdate);
     }
+
     onSubmit(formData);
   };
 
@@ -106,21 +135,51 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
             <Select.Root
               size="3"
               defaultValue="카테고리"
-              value={formData?.category ?? null}
+              value={formData?.knowledge_categories?.name ?? "카테고리"}
               onValueChange={(value) =>
-                setFormData({ ...formData, category: value })
+                setFormData({
+                  ...formData,
+                  knowledge_categories: categories
+                    .filter((category) => category.name === value)
+                    .map((category) => ({
+                      id: category.id,
+                      name: category.name,
+                      knowledge_tags: formData?.knowledge_tags,
+                    }))[0],
+                })
               }
             >
               <Select.Trigger className="w-[125px] h-[35px] px-2 rounded-lg bg-[#EFF1F999] text-sm border" />
               <Select.Content>
                 <Select.Item value={null}>카테고리</Select.Item>
                 {categories.map((category, categoryIdx) => (
-                  <Select.Item key={categoryIdx} value={category}>
-                    {category}
+                  <Select.Item key={categoryIdx} value={category.name}>
+                    {category.name}
                   </Select.Item>
                 ))}
               </Select.Content>
             </Select.Root>
+          </Flex>
+          <Flex direction={`column`}>
+            <label
+              htmlFor="tags"
+              className="text-violet11 font-bold text-[11px] leading-[18px] pb-[5px]"
+            >
+              소분류
+            </label>
+            <TagsInput
+              tags={tags}
+              onTagsChange={(newTags) =>
+                setFormData({
+                  ...formData,
+                  knowledge_tags: newTags.map((tag) => ({
+                    name: tag?.name ?? tag,
+                    id: tag?.id ?? null,
+                  })),
+                })
+              }
+              existingTags={formData?.knowledge_tags ?? []}
+            />
           </Flex>
           <Flex direction={`column`} className="my-2">
             <label
@@ -189,12 +248,36 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
           </Flex>
           <Flex gap="2" className="gap-4">
             <Flex align="center" justify="center" gap="1" className="gap-2">
-              <input type="checkbox" id="frequently_asked" name="frequently_asked" checked={formData?.frequently_asked ?? false} onChange={handleChange} className="w-4 h-4" />
-              <label htmlFor="frequently_asked" className="text-violet11 text-sm leading-[18px]">자주 묻는 질문</label>
+              <input
+                type="checkbox"
+                id="frequently_asked"
+                name="frequently_asked"
+                checked={formData?.frequently_asked ?? false}
+                onChange={handleChange}
+                className="w-4 h-4"
+              />
+              <label
+                htmlFor="frequently_asked"
+                className="text-violet11 text-sm leading-[18px]"
+              >
+                자주 묻는 질문
+              </label>
             </Flex>
             <Flex align="center" justify="center" gap="1" className="gap-2">
-              <input type="checkbox" id="caution_required" name="caution_required" checked={formData?.caution_required ?? false} onChange={handleChange} className="w-4 h-4" />
-              <label htmlFor="caution_required" className="text-violet11 text-sm leading-[18px]">답변 주의</label>
+              <input
+                type="checkbox"
+                id="caution_required"
+                name="caution_required"
+                checked={formData?.caution_required ?? false}
+                onChange={handleChange}
+                className="w-4 h-4"
+              />
+              <label
+                htmlFor="caution_required"
+                className="text-violet11 text-sm leading-[18px]"
+              >
+                답변 주의
+              </label>
             </Flex>
           </Flex>
         </>
@@ -212,8 +295,8 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
               {mode === "create"
                 ? "등록 하기"
                 : mode === "edit"
-                  ? "수정 하기"
-                  : "삭제 하기"}
+                ? "수정 하기"
+                : "삭제 하기"}
             </Box>
           </Button>
         </Box>

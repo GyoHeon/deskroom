@@ -33,20 +33,21 @@ import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { useMixpanel } from "@/contexts/MixpanelContext";
 import { KnowledgeImage, PartialKnowledgeImage } from "@/lib/supabase.types";
 import Image from "next/image";
+import { createClient } from "@/utils/supabase/client";
 
 export type KnowledgeItem =
   Database["public"]["Tables"]["knowledge_base"]["Row"];
 export type KnowledgeCategory =
   Database["public"]["Tables"]["knowledge_categories"]["Row"];
 export type QuestionTag = Database["public"]["Tables"]["knowledge_tags"]["Row"];
-type QuestionTagName = Pick<QuestionTag, "name">;
-type KnowledgeCategoryName = Pick<KnowledgeCategory, "name">;
+type QuestionTagName = Pick<QuestionTag, "name" | "id">;
+type KnowledgeCategoryName = Pick<KnowledgeCategory, "name" | "id">;
 type QuestionImageURL = Pick<KnowledgeImage, "image_url" | "file_name">;
 export type KnowledgeItemQueryType = KnowledgeItem & {
-  knowledge_categories: KnowledgeCategoryName & {
-    knowledge_tags: QuestionTagName[];
-  };
-} & { knowledge_images: QuestionImageURL[] };
+  knowledge_categories?: KnowledgeCategoryName;
+  knowledge_tags?: Partial<QuestionTagName>[];
+  knowledge_images?: QuestionImageURL[];
+};
 
 export type KnowledgeBaseListViewProps = {
   knowledgeItems: KnowledgeItemQueryType[];
@@ -143,7 +144,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   categories,
   callback,
 }) => {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -169,7 +170,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
   const mixpanel = useMixpanel();
 
   const tags = knowledgeItems
-    .map((item) => item.knowledge_categories?.knowledge_tags)
+    .map((item) => item.knowledge_tags)
     .flat()
     .filter((tag) => !!tag?.name)
     .map((tag) => tag.name);
@@ -248,7 +249,12 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
     return (
       <Container>
         <Flex direction={`column`}>
-          <Image src="/deskroom-deactivated.png" alt="Error" width={100} height={100} />
+          <Image
+            src="/deskroom-deactivated.png"
+            alt="Error"
+            width={100}
+            height={100}
+          />
           <Heading size="2" className="font-semibold">
             Q&A가 없습니다.
           </Heading>
@@ -326,7 +332,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                     setFilteredItems(
                       value
                         ? knowledgeItems.filter((item) =>
-                            item.knowledge_categories?.knowledge_tags
+                            item.knowledge_tags
                               .map((tag) => tag.name)
                               .includes(value)
                           )
@@ -412,19 +418,23 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                     </Flex>
                     {item.question}
                   </Table.RowHeaderCell>
-                  <Table.Cell>{item.category}</Table.Cell>
+                  <Table.Cell>
+                    {categories?.find(
+                      (category) => category.id === item.category_id
+                    )?.name ?? item.category}
+                    {/* TODO: find a better way */}
+                  </Table.Cell>
                   <Table.Cell>
                     <Flex gap="2">
-                      {item?.knowledge_categories?.knowledge_tags.map(
-                        (tag, idx) => (
+                      {item?.knowledge_tags &&
+                        item.knowledge_tags.map((tag, idx) => (
                           <Box
                             key={idx}
                             className="bg-primary-800 text-[11px] rounded text-white text-center px-2"
                           >
                             {tag.name}
                           </Box>
-                        )
-                      )}
+                        ))}
                     </Flex>
                   </Table.Cell>
                   <Table.Cell className="max-w-96">{item.answer}</Table.Cell>
@@ -484,7 +494,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
               </Dialog.Description>
               <KnowledgeBaseUpdateForm
                 organization={organization}
-                categories={categories.map((category, idx) => category.name)}
+                categories={categories}
                 onSubmit={() => {
                   // TODO: abridge this
                   setOpenDialog(false);
@@ -506,6 +516,7 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                 }}
                 selectedKnowledgeItem={selectedItem}
                 mode={dialogMode}
+                tags={tags}
               />
             </Dialog.Content>
           </Dialog.Portal>
