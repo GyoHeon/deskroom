@@ -10,6 +10,12 @@ import {
   KnowledgeItemQueryType,
 } from "./KnowledgeBaseListView";
 import TagsInput from "./TagsInput";
+import {
+  createKnowledgeBase,
+  updateKnowledgeBase,
+  updateTags,
+} from "@/app/actions";
+import { KnowledgeBase } from "@/lib/supabase.types";
 
 interface KnowledgeBaseUpdateFormProps {
   onSubmit: (data: KnowledgeItemQueryType) => void;
@@ -50,27 +56,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
       return;
     }
     if (mode === "create") {
-      const { data: newKnowledgeItem, error } = await supabase
-        .from("knowledge_base")
-        .insert([
-          {
-            question: formData.question,
-            answer: formData.answer,
-            support_manual: formData.support_manual,
-            frequently_asked: formData.frequently_asked,
-            caution_required: formData.caution_required,
-            org_id: organization.id,
-            org_name: organization.key,
-            org_key: organization.key,
-            category_id: formData.knowledge_categories.id,
-          },
-        ])
-        .select();
-      if (error) {
-        alert(`Error creating knowledge item: ${error}`);
-        return;
-      }
-      // setFormData(newKnowledgeItem[0]);
+      await createKnowledgeBase(formData);
       onSubmit(formData);
       return;
     }
@@ -78,77 +64,19 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
     // if knowledge tags exists, create new tags
     // TODO: make it look easier to understand
     if (formData.knowledge_tags) {
-      const { data: newTags, error } = await supabase
-        .from("knowledge_tags")
-        .upsert(
-          formData.knowledge_tags.map((tag) => ({
-            id: tag?.id ?? undefined,
-            name: tag.name,
-            category_id: formData?.knowledge_categories?.id ?? null,
-            question_id: formData?.id,
-          })),
-          {
-            onConflict: "name,question_id,category_id",
-            defaultToNull: false,
-          }
-        )
-        .select();
-      if (error) {
-        console.error("Error creating new tags:", error);
-        return;
-      }
-      const { data: newTagsCategories, error: newTagsCategoriesError } =
-        await supabase
-          .from("tags_categories")
-          .upsert(
-            newTags.map((tag) => ({
-              tag_id: tag.id,
-              tag_name: tag.name,
-              category_id: formData?.knowledge_categories?.id,
-            }))
-          )
-          .select();
-      if (newTagsCategoriesError) {
-        console.error("Error creating tags categories:", error);
-        return;
-      }
-      const { error: knowledgeBaseTagsError } = await supabase
-        .from("knowledge_base_tags")
-        .upsert(
-          newTagsCategories.map((tagCategory) => ({
-            knowledge_base_id: formData.id,
-            tag_id: tagCategory.id,
-            tag_name: tagCategory.tag_name,
-            org_key: organization.key,
-          }))
-        )
-        .select();
-      if (knowledgeBaseTagsError) {
-        console.error("Error creating knowledge base tags:", error);
-        return;
-      }
-    }
-
-    const { data: updatedKnowledgeItem, error } = await supabase
-      .from("knowledge_base")
-      .upsert([
-        {
-          id: formData.id,
-          question: formData.question,
-          answer: formData.answer,
-          support_manual: formData.support_manual,
-          frequently_asked: formData.frequently_asked,
-          caution_required: formData.caution_required,
-          org_id: organization.id,
-          org_name: organization.key,
-          org_key: organization.key,
-          category_id: formData?.knowledge_categories?.id,
-        },
-      ])
-      .select();
-    if (error) {
-      console.error("Error updating knowledge item:", error);
-      return;
+      await updateTags(
+        formData.knowledge_tags,
+        formData.knowledge_categories.id,
+        formData.id,
+        organization.key
+      );
+      const knowledgeBaseData: KnowledgeBase = (({
+        knowledge_categories,
+        knowledge_tags,
+        knowledge_images,
+        ...data
+      }) => ({ ...data }))(formData);
+      await updateKnowledgeBase(knowledgeBaseData);
     }
     onSubmit(formData);
   };
