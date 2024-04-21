@@ -418,7 +418,12 @@ const KnowledgeBaseListView: React.FC<KnowledgeBaseListViewProps> = ({
                     </Flex>
                     {item.question}
                   </Table.RowHeaderCell>
-                  <Table.Cell>{item.category}</Table.Cell>
+                  <Table.Cell>
+                    {categories?.find(
+                      (category) => category.id === item.category_id
+                    )?.name ?? item.category}
+                    {/* TODO: find a better way */}
+                  </Table.Cell>
                   <Table.Cell>
                     <Flex gap="2">
                       {item?.knowledge_tags &&

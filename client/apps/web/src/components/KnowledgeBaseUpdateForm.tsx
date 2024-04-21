@@ -74,15 +74,33 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
 
     // if knowledge tags exists, create new tags
     // TODO: make it look easier to understand
-    if (formData.knowledge_tags) {
-      await updateTags(
-        formData.knowledge_tags,
-        formData.knowledge_categories?.id,
-        formData.id,
-        organization.key
-      );
-      await updateKnowledgeBase(knowledgeBaseData);
+    if (mode === "edit") {
+      const knowledgeItemToUpdate = {
+        ...knowledgeBaseData,
+        category_id: formData.knowledge_categories?.id,
+      };
+      if (formData.knowledge_tags) {
+        await updateTags(
+          formData.knowledge_tags,
+          formData.knowledge_categories?.id,
+          formData.id,
+          organization.key
+        );
+      }
+      if (
+        selectedKnowledgeItem.category_id != formData.knowledge_categories?.id
+      ) {
+        await updateTags(
+          formData.knowledge_tags,
+          formData.knowledge_categories?.id,
+          formData.id,
+          organization.key
+        );
+      }
+
+      updateKnowledgeBase(knowledgeItemToUpdate);
     }
+
     onSubmit(formData);
   };
 
