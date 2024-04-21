@@ -42,11 +42,22 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const knowledgeBaseData: KnowledgeBase = (({
+      knowledge_categories,
+      knowledge_tags,
+      knowledge_images,
+      ...data
+    }) => ({
+      ...data,
+      org_id: organization.id,
+      org_key: organization.key,
+      org_name: organization.key,
+    }))(formData);
     if (mode === "delete") {
       const { error } = await supabase
         .from("knowledge_base")
         .delete()
-        .match({ id: formData?.id })
+        .match({ id: knowledgeBaseData?.id })
         .returns();
       if (error) {
         console.error("Error deleting knowledge item:", error);
@@ -56,7 +67,7 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
       return;
     }
     if (mode === "create") {
-      await createKnowledgeBase(formData);
+      await createKnowledgeBase(knowledgeBaseData);
       onSubmit(formData);
       return;
     }
@@ -66,16 +77,10 @@ const KnowledgeBaseUpdateForm: React.FC<KnowledgeBaseUpdateFormProps> = ({
     if (formData.knowledge_tags) {
       await updateTags(
         formData.knowledge_tags,
-        formData.knowledge_categories.id,
+        formData.knowledge_categories?.id,
         formData.id,
         organization.key
       );
-      const knowledgeBaseData: KnowledgeBase = (({
-        knowledge_categories,
-        knowledge_tags,
-        knowledge_images,
-        ...data
-      }) => ({ ...data }))(formData);
       await updateKnowledgeBase(knowledgeBaseData);
     }
     onSubmit(formData);
