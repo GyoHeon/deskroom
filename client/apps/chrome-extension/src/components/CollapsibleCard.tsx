@@ -1,7 +1,8 @@
-import { CopyIcon, ImageIcon } from "@radix-ui/react-icons"
+import { CopyIcon } from "@radix-ui/react-icons"
 import { Box, Flex } from "@radix-ui/themes"
 import React, { useState } from "react"
 
+import Image from "./dialog/Image"
 import Manual from "./dialog/Manual"
 
 function copyToClipboard(content: string) {
@@ -38,6 +39,7 @@ const CollapsibleCard: React.FC<CardProps> = ({
     onCopyClicked()
     copyToClipboard(content)
   }
+
   const handleMouseEnter = () => {
     setIsCollapsed(false)
   }
@@ -66,14 +68,8 @@ const CollapsibleCard: React.FC<CardProps> = ({
         </Flex>
 
         <Flex className="flex items-center gap-2">
-          {supportManual && (
-            <Manual manual={supportManual} isCollapsed={isCollapsed} />
-          )}
-          {supportImages.length > 0 && (
-            <Box className="cursor-pointer" onClick={handleCopyClick}>
-              <ImageIcon color={isCollapsed ? "#C4C4C4" : "black"} />
-            </Box>
-          )}
+          <Manual manual={supportManual} isCollapsed={isCollapsed} />
+          <Image images={supportImages} isCollapsed={isCollapsed} />
           <Box className="cursor-pointer" onClick={handleCopyClick}>
             <CopyIcon color={isCollapsed ? "#C4C4C4" : "black"} />
           </Box>
