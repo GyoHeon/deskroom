@@ -31,6 +31,7 @@ jobs:
           echo "PLASMO_PUBLIC_SENTRY_DSN=${{ secrets.DSKRM_EXTENSION_SENTRY_DSN }}" >> .env
           echo "PLASMO_PUBLIC_KMS_URL=https://app.deskroom.so" >> .env
           echo "PLASMO_PUBLIC_KMS_COOKIE_PREFIX=${{ secrets.DSKRM_KMS_COOKIE_PREFIX }}" >> .env
+          echo "PLASMO_PUBLIC_DSKRM_SERVER_URL=${{ secrets.DSKRM_SERVER_URL }}" >> .env
       - name: Build
         working-directory: client/apps/chrome-extension
         run: |
