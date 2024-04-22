@@ -1,6 +1,6 @@
-import { ImageIcon } from "@radix-ui/react-icons"
-
 import openPopup from "~lib/popup/openPopup"
+
+import SaveIcon from "./SaveIcon"
 
 interface ImageProps {
   images: string[]
@@ -22,7 +22,7 @@ const Image = ({ images, isCollapsed }: ImageProps) => {
 
   return (
     <button onClick={openImagePopup}>
-      <ImageIcon color={isCollapsed ? "#C4C4C4" : "black"} />
+      <SaveIcon active={!isCollapsed} />
     </button>
   )
 }
