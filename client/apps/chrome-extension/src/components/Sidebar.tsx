@@ -75,9 +75,8 @@ const Sidebar: React.FC<
     setLoading(true)
     setAnswers(undefined) // reset
     mixpanel.track("Answer Search Started", { question: message })
-
     const res = await fetch(
-      "https://api-dev.deskroom.so/v1/retrieve/extended",
+      `${process.env.PLASMO_PUBLIC_DSKRM_SERVER_URL}/v1/retrieve/extended`,
       {
         body: JSON.stringify({
           organization_key: org?.currentOrg.key,
