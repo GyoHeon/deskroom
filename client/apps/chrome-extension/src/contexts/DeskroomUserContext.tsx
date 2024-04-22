@@ -53,7 +53,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           console.error(err)
         }
       }
-updateCategory()
+      updateCategory()
     }
   }, [orgs])
 
