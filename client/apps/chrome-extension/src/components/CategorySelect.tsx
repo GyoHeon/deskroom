@@ -11,7 +11,6 @@ const CategorySelect = () => {
         <select
           name="category"
           id="category"
-          value="카테고리"
           className="mx-2 w-fit rounded-md border border-1 text-xs border-gray-900 px-[2px] py-[0.5px] h-fit"
           defaultValue="카테고리"
           >
