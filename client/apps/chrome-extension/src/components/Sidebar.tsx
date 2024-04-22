@@ -75,14 +75,14 @@ const Sidebar: React.FC<
     setLoading(true)
     setAnswers(undefined) // reset
     mixpanel.track("Answer Search Started", { question: message })
-    // TODO: make url with node_env
+
     const res = await fetch(
       "https://api-dev.deskroom.so/v1/retrieve/extended",
       {
         body: JSON.stringify({
           organization_key: org?.currentOrg.key,
           question: message,
-          category: category.currentCategory.name
+          category: category?.currentCategory?.name || null
         }),
         headers: {
           "Content-Type": "application/json"

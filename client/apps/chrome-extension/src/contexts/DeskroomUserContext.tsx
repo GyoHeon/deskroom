@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
-import type { CategoryStorage } from "~api/categories"
+import { getCategories, type CategoryStorage } from "~api/categories"
 import type { OrganizationStorage } from "~api/organization"
 
 import { useMixpanel } from "./MixpanelContext"
@@ -43,6 +43,17 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       mixpanel.register({
         org: orgs.currentOrg.key
       })
+
+      const updateCategory = async () => {
+        try {
+          const category = await getCategories(orgs.currentOrg.key)
+
+          setCategory(category)
+        } catch (err) {
+          console.error(err)
+        }
+      }
+updateCategory()
     }
   }, [orgs])
 

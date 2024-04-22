@@ -101,8 +101,7 @@ async function getSessionFromCookie() {
   }
 
   const organizations = await getOrganizations(user.email)
-  // const categories = await getCategories(organizations.currentOrg.key)
-  const categories = await getCategories("demo")
+  const categories = await getCategories(organizations.currentOrg.key)
 
   return {
     user,

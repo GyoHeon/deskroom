@@ -33,7 +33,14 @@ export async function getCategories(orgKey?: string): Promise<CategoryStorage> {
   const categories = await getCategoriesFromSupabase(orgKey)
 
   // 현재는 카테고리가 존재하지 않는 org가 있고 이는 정상적인 데이터임.
-  // const noCategories = !categories || categories.length === 0
+  const noCategories = !categories || categories?.length === 0
+
+  if (noCategories) {
+    return {
+      availableCategories: [],
+      currentCategory: undefined
+    }
+  }
 
   return {
     availableCategories: categories,
