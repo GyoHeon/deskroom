@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     SENTRY_ENABLED: bool = Field(False, alias="SENTY_ENABLED")
     SENTRY_DSN: str = Field("", alias="SENTRY_DSN")
 
+    # mixpanel
+    MIXPANEL_TOKEN: str = ""
+
     model_config = SettingsConfigDict(
         env_prefix="dskrm_",
         env_file_encoding="utf-8",
