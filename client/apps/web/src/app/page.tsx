@@ -16,11 +16,13 @@ export default async function NewIndex({ searchParams }) {
     .from("knowledge_base")
     .select(`
       *, 
-      knowledge_categories(
-        name,
-        knowledge_tags (
-          name
-        )
+      knowledge_tags (
+        id,
+        name
+      ),
+      knowledge_categories (
+        id,
+        name
       ),
       knowledge_images (
         file_name,

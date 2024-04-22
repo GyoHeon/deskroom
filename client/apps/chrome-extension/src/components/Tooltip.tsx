@@ -35,20 +35,20 @@ const Tooltip: React.FC<TooltipProps> = ({ clickHandler }) => {
   }, [text, rects])
 
   const handleOnClick = () => {
+    if (tooltipPosition.top === 0 && tooltipPosition.left === 0) return
     clickHandler()
     mixpanel.track("Answer Panel Triggered") // TODO: add question in select
   }
 
   return (
     <div
-      className={`tooltip flex items-center justify-end fixed transition-opacity ease-linear duration-75 cursor-pointer w-fit h-fit z-50 hover:scale-110 hover:transition-transform rounded-md ${
-        text === "" ? "opacity-0" : "opacity-1"
-      }`}
+      className={`tooltip flex items-center justify-end fixed transition-opacity ease-linear duration-75 cursor-pointer w-fit h-fit z-50 hover:scale-110 hover:transition-transform rounded-md ${text === "" ? "opacity-0" : "opacity-1"} ${(tooltipPosition.top === 0 && tooltipPosition.left === 0) && 'hidden'}`}
       onClick={handleOnClick}
       style={{
         top: tooltipPosition.top,
         left: tooltipPosition.left
-      }}>
+      }}
+    >
       <div className="bg-gray-300 p-1 rounded-lg flex-1 cursor-pointer">
         <IconButton className="cursor-pointer">
           <img src={deskroomIcon} width={45} height={45} />
