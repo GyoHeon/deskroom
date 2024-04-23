@@ -1,6 +1,6 @@
 import { ClipboardIcon } from "@radix-ui/react-icons"
 
-import makeManual from "~lib/popup/makeManual"
+import makeManual from "~lib/popup/attachManualToHtml"
 import openPopup from "~lib/popup/openPopup"
 
 const Manual = ({ manual, isCollapsed }) => {

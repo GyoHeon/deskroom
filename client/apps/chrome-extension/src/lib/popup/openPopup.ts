@@ -64,7 +64,7 @@ const closeButtonStr = `<button class="close-button" aria-role="close">
   <img src=${CloseIcon} alt="Close Button" style="width: 32px; height: 32px;">
 </button>`
 
-interface IOpenPopupProps {
+type OpenPopupProps= {
   contentsRaw: string
   title: string
   description: string
@@ -76,7 +76,7 @@ const openPopup = ({
   description,
   title,
   contentsTitle
-}: IOpenPopupProps) => {
+}: OpenPopupProps) => {
   const openFn = () => {
     const contents = `
     <html>
@@ -100,22 +100,22 @@ const openPopup = ({
     </html>
   `
 
-    const imagePopup = window.open(
+    const popupWindow = window.open(
       "",
       `${title} popup`,
       "width=800,height=1200"
     )
 
-    imagePopup.document.write(contents)
+    popupWindow.document.write(contents)
 
-    imagePopup.document.close()
+    popupWindow.document.close()
 
-    imagePopup.onload = () => {
-      const closeButton = imagePopup.document.getElementsByClassName(
+    popupWindow.onload = () => {
+      const closeButton = popupWindow.document.getElementsByClassName(
         "close-button"
       )[0] as HTMLButtonElement
 
-      closeButton.onclick = () => imagePopup.close()
+      closeButton.onclick = () => popupWindow.close()
     }
   }
 
