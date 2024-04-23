@@ -6,14 +6,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Category {
-  id: number
-  created_at: string
-  org_key: string
-  name: string
-  description?: string | null
-}
-
 export type Database = {
   public: {
     Tables: {
@@ -70,44 +62,59 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "questions"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       knowledge_base: {
         Row: {
           answer: string | null
           category: string | null
+          category_id: number | null
+          caution_required: boolean | null
           created_at: string
+          frequently_asked: boolean | null
           id: number
           intent: string | null
           org_id: number
+          org_key: string | null
           org_name: string | null
           question: string | null
           similar_questions: string | null
+          support_manual: string | null
           updated_at: string
         }
         Insert: {
           answer?: string | null
           category?: string | null
+          category_id?: number | null
+          caution_required?: boolean | null
           created_at?: string
+          frequently_asked?: boolean | null
           id?: number
           intent?: string | null
           org_id: number
+          org_key?: string | null
           org_name?: string | null
           question?: string | null
           similar_questions?: string | null
+          support_manual?: string | null
           updated_at?: string
         }
         Update: {
           answer?: string | null
           category?: string | null
+          category_id?: number | null
+          caution_required?: boolean | null
           created_at?: string
+          frequently_asked?: boolean | null
           id?: number
           intent?: string | null
           org_id?: number
+          org_key?: string | null
           org_name?: string | null
           question?: string | null
           similar_questions?: string | null
+          support_manual?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -117,13 +124,192 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
-          }
+          },
+          {
+            foreignKeyName: "public_knowledge_base_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_base_tags: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: number
+          knowledge_base_id: number
+          org_key: string
+          tag_id: number
+          tag_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: number
+          knowledge_base_id: number
+          org_key: string
+          tag_id: number
+          tag_name?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: number
+          knowledge_base_id?: number
+          org_key?: string
+          tag_id?: number
+          tag_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_knowledge_base_tags_knowledge_base_id_fkey"
+            columns: ["knowledge_base_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_base"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_knowledge_base_tags_org_key_fkey"
+            columns: ["org_key"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "public_knowledge_base_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags_categories"
+            referencedColumns: ["id"]
+          },
         ]
       }
       knowledge_categories: {
-        Row: Category
-        Insert: Category
-        Update: Category
+        Row: {
+          created_at: string
+          description: string | null
+          id: number
+          name: string
+          org_key: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          name: string
+          org_key: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          name?: string
+          org_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_knowledge_categories_org_key_fkey"
+            columns: ["org_key"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      knowledge_images: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          id: number
+          image_url: string | null
+          org_key: string | null
+          question_id: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          id?: number
+          image_url?: string | null
+          org_key?: string | null
+          question_id: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          id?: number
+          image_url?: string | null
+          org_key?: string | null
+          question_id?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_knowledge_images_org_key_fkey"
+            columns: ["org_key"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "public_question_image_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_base"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_tags: {
+        Row: {
+          category_id: number | null
+          created_at: string
+          id: number
+          name: string | null
+          question_id: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: number | null
+          created_at?: string
+          id?: number
+          name?: string | null
+          question_id?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: number | null
+          created_at?: string
+          id?: number
+          name?: string | null
+          question_id?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_knowledge_tags_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_knowledge_tags_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_base"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       organizations: {
         Row: {
@@ -209,15 +395,57 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
+        ]
+      }
+      tags_categories: {
+        Row: {
+          category_id: number | null
+          created_at: string
+          id: number
+          tag_id: number | null
+          tag_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: number | null
+          created_at?: string
+          id?: number
+          tag_id?: number | null
+          tag_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: number | null
+          created_at?: string
+          id?: number
+          tag_id?: number | null
+          tag_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_tags_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_tags_categories_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_tags"
+            referencedColumns: ["id"]
+          },
         ]
       }
       uploads: {
         Row: {
           created_at: string
           id: number
-          org_id: number
-          org_name: string | null
+          job_id: string
+          org_key: string
           status: string
           updated_at: string
           user_id: string
@@ -225,8 +453,8 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: number
-          org_id: number
-          org_name?: string | null
+          job_id: string
+          org_key: string
           status?: string
           updated_at?: string
           user_id: string
@@ -234,19 +462,19 @@ export type Database = {
         Update: {
           created_at?: string
           id?: number
-          org_id?: number
-          org_name?: string | null
+          job_id?: string
+          org_key?: string
           status?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "public_uploads_org_id_fkey"
-            columns: ["org_id"]
+            foreignKeyName: "public_uploads_org_key_fkey"
+            columns: ["org_key"]
             isOneToOne: false
             referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedColumns: ["key"]
           },
           {
             foreignKeyName: "public_uploads_user_id_fkey"
@@ -261,7 +489,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       user_organizations: {
@@ -304,7 +532,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }
@@ -422,10 +650,25 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      create_organization_and_user_organization: {
+        Args: {
+          user_id: string
+          org_name: string
+          org_eng_name: string
+          org_key: string
+        }
+        Returns: {
+          org_id: number
+          org_name_kor: string
+          org_name_eng: string
+          organization_key: string
+          user_org_id: number
+          user_uuid: string
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      JobStatus: "CREATED" | "PENDING" | "DONE" | "FAILED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -433,14 +676,16 @@ export type Database = {
   }
 }
 
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -448,10 +693,10 @@ export type Tables<
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
-        Database["public"]["Views"])
-    ? (Database["public"]["Tables"] &
-        Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -460,19 +705,19 @@ export type Tables<
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -481,19 +726,19 @@ export type TablesInsert<
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -502,13 +747,13 @@ export type TablesUpdate<
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof Database["public"]["Enums"]
+    | keyof PublicSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never
+    : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
-    ? Database["public"]["Enums"][PublicEnumNameOrOptions]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
     : never
