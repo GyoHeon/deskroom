@@ -174,7 +174,7 @@ async def get_more_answers(
         )
         .eq("org_key", knowledge_query_in.organization_key)
     )
-    if knowledge_query_in.category == "" or knowledge_query_in.category is None:
+    if not knowledge_query_in.category:
         knowledge_base_response = await knowledge_base_client.execute()
 
     else:
