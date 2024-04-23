@@ -62,7 +62,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "questions"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       knowledge_base: {
@@ -131,7 +131,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "knowledge_categories"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       knowledge_base_tags: {
@@ -186,7 +186,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tags_categories"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       knowledge_categories: {
@@ -218,7 +218,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["key"]
-          },
+          }
         ]
       }
       knowledge_images: {
@@ -266,7 +266,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "knowledge_base"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       knowledge_tags: {
@@ -308,7 +308,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "knowledge_base"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       organizations: {
@@ -395,7 +395,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       tags_categories: {
@@ -437,7 +437,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "knowledge_tags"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       uploads: {
@@ -489,7 +489,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       user_organizations: {
@@ -532,7 +532,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
     }
@@ -685,7 +685,7 @@ export type Tables<
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -709,7 +709,7 @@ export type TablesInsert<
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
@@ -730,7 +730,7 @@ export type TablesUpdate<
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
@@ -751,7 +751,7 @@ export type Enums<
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never = never
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]

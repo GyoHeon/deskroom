@@ -64,7 +64,7 @@ const closeButtonStr = `<button class="close-button" aria-role="close">
   <img src=${CloseIcon} alt="Close Button" style="width: 32px; height: 32px;">
 </button>`
 
-type OpenPopupProps= {
+type OpenPopupProps = {
   contentsRaw: string
   title: string
   description: string
