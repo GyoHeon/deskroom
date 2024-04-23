@@ -167,15 +167,20 @@ async def get_more_answers(
 ) -> KnowledgeQueryOutWithCategory:
     company_policy = ""
 
-    knowledge_base_response = (
-        await supabase.table("knowledge_base")
+    knowledge_base_client = (
+        supabase.table("knowledge_base")
         .select(
             "id, question,category, answer, support_manual, frequently_asked, caution_required, knowledge_images(image_url),knowledge_base_tags(tag_name)"
         )
         .eq("org_key", knowledge_query_in.organization_key)
-        .eq("category", knowledge_query_in.category)
-        .execute()
     )
+    if not knowledge_query_in.category:
+        knowledge_base_response = await knowledge_base_client.execute()
+
+    else:
+        knowledge_base_response = await knowledge_base_client.eq(
+            "category", knowledge_query_in.category
+        ).execute()
     if not knowledge_base_response.data:
         raise HTTPException(status_code=404, detail="Item not found")
 
